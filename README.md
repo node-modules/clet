@@ -1,18 +1,18 @@
-# ctu
+# btr
 
-cli test utils
+another bin test runer
 
-[![NPM Version](https://img.shields.io/npm/v/ctu.svg?style=flat-square)](https://npmjs.org/package/ctu)
-[![NPM Quality](http://npm.packagequality.com/shield/ctu.svg?style=flat-square)](http://packagequality.com/#?package=ctu)
-[![NPM Download](https://img.shields.io/npm/dm/ctu.svg?style=flat-square)](https://npmjs.org/package/ctu)
+[![NPM Version](https://img.shields.io/npm/v/btr.svg?style=flat-square)](https://npmjs.org/package/btr)
+[![NPM Quality](http://npm.packagequality.com/shield/btr.svg?style=flat-square)](http://packagequality.com/#?package=btr)
+[![NPM Download](https://img.shields.io/npm/dm/btr.svg?style=flat-square)](https://npmjs.org/package/btr)
 
-[![CI](https://github.com/node-modules/ctu/actions/workflows/nodejs.yml/badge.svg)](https://github.com/node-modules/ctu/actions/workflows/nodejs.yml)
-[![Coverage](https://img.shields.io/codecov/c/github/node-modules/ctu.svg?style=flat-square)](https://codecov.io/gh/node-modules/ctu)
+[![CI](https://github.com/node-modules/btr/actions/workflows/nodejs.yml/badge.svg)](https://github.com/node-modules/btr/actions/workflows/nodejs.yml)
+[![Coverage](https://img.shields.io/codecov/c/github/node-modules/btr.svg?style=flat-square)](https://codecov.io/gh/node-modules/btr)
 
 ## Usage
 
 ```bash
-npm i --save ctu
+npm i --save btr
 ```
 
 ## TODO
@@ -21,6 +21,7 @@ npm i --save ctu
   - [ ] API
   - [ ] context obj
   - [ ] stub
+  - [ ] fn.length, next is optional?
 - Tool
   - [ ] esm-first
   - [ ] prettier
@@ -29,10 +30,12 @@ npm i --save ctu
 
 ## Example
 
-LifeCycle: `prepare -> middleware pre -> prompt -> run -> wait for ready/unready/end/timeout -> assertion -> wait for exit -> middleware post -> end`
+LifeCycle: `prepare -> middleware pre -> prompt -> run -> wait for ready/unready/end/timeout -> assertion -> wait for exit -> middleware post -> cleanup(kill) -> end`
 
 ```js
-ctu(opts)
+import runner from 'btr';
+
+runner(opts)
   .middleware(async next => await next())
   .plugin(key, fn)
   .debug(level)
@@ -92,3 +95,20 @@ ctu(opts)
 ```
 
 
+```js
+runner()
+  .run('egg-scripts start')
+  .stdout(/starting.../)
+  .ready('egg-ready')
+  .stdout(/egg started/)
+  .file('logs/egg-web.log')
+  .server(8080)
+  .request('/', async ({ body }) => {
+    assert(body === 'hi, egg');
+  })
+  .stdout(/request '/' router/)
+  .expect(fn)
+  .exit()
+  .code(0)
+  .end()
+```

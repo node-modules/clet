@@ -1,14 +1,15 @@
 {
-  "name": "ctx",
+  "name": "btr",
   "version": "0.0.0",
-  "description": "another cli test utils",
+  "description": "another bin test runner",
   "type": "module",
   "main": "./lib/runner.js",
   "exports": "./lib/runner.js",
   "author": "TZ <atian25@qq.com> (https://github.com/atian25)",
-  "homepage": "https://github.com/node-modules/ctu",
-  "repository": "git@github.com:node-modules/ctu.git",
+  "homepage": "https://github.com/node-modules/btr",
+  "repository": "git@github.com:node-modules/btr.git",
   "dependencies": {
+    "execa": "^5.1.1",
     "throwback": "^4.1.0"
   },
   "devDependencies": {
