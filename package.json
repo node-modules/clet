@@ -2,15 +2,20 @@
   "name": "ctx",
   "version": "0.0.0",
   "description": "another cli test utils",
+  "type": "module",
+  "main": "./lib/runner.js",
+  "exports": "./lib/runner.js",
   "author": "TZ <atian25@qq.com> (https://github.com/atian25)",
   "homepage": "https://github.com/node-modules/ctu",
   "repository": "git@github.com:node-modules/ctu.git",
-  "dependencies": {},
+  "dependencies": {
+    "throwback": "^4.1.0"
+  },
   "devDependencies": {
-    "egg-bin": "^4",
     "egg-ci": "^1",
     "eslint": "^7",
-    "eslint-config-egg": "^9"
+    "eslint-config-egg": "^9",
+    "jest": "^27.0.4"
   },
   "files": [
     "bin",
@@ -19,15 +24,16 @@
   ],
   "scripts": {
     "lint": "eslint .",
-    "test": "npm run lint -- --fix && egg-bin pkgfiles && npm run test-local",
-    "test-local": "egg-bin test",
-    "cov": "egg-bin cov",
-    "ci": "npm run lint && egg-bin pkgfiles --check && npm run cov",
-    "pkgfiles": "egg-bin pkgfiles"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "cov": "NODE_OPTIONS=--experimental-vm-modules jest --coverage",
+    "ci": "npm run lint && npm run cov"
   },
   "ci": {
     "version": "14",
     "type": "github"
+  },
+  "jest": {
+    "transform": {}
   },
   "eslintIgnore": [
     "coverage",

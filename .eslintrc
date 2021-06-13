@@ -1,4 +1,7 @@
 {
   "extends": "eslint-config-egg",
-  "root": true
+  "root": true,
+  "parserOptions": {
+    "sourceType": "module"
+  }
 }

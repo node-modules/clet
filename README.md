@@ -17,8 +17,15 @@ npm i --save ctu
 
 ## TODO
 
-- [ ] RFC
-- [ ] esm-first
+- RFC
+  - [ ] API
+  - [ ] context obj
+  - [ ] stub
+- Tool
+  - [ ] esm-first
+  - [ ] prettier
+  - [ ] semver-release
+  - [x] jest
 
 ## Example
 
