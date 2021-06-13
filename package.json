@@ -1,0 +1,40 @@
+{
+  "name": "ctx",
+  "version": "0.0.0",
+  "description": "another cli test utils",
+  "author": "TZ <atian25@qq.com> (https://github.com/atian25)",
+  "homepage": "https://github.com/node-modules/ctu",
+  "repository": "git@github.com:node-modules/ctu.git",
+  "dependencies": {},
+  "devDependencies": {
+    "autod": "^3",
+    "egg-bin": "^4",
+    "egg-ci": "^1",
+    "eslint": "^7",
+    "eslint-config-egg": "^9"
+  },
+  "files": [
+    "bin",
+    "lib",
+    "index.js"
+  ],
+  "scripts": {
+    "start": "node index.js",
+    "lint": "eslint .",
+    "test": "npm run lint -- --fix && egg-bin pkgfiles && npm run test-local",
+    "test-local": "egg-bin test",
+    "cov": "egg-bin cov",
+    "ci": "npm run lint && egg-bin pkgfiles --check && npm run cov",
+    "pkgfiles": "egg-bin pkgfiles",
+    "autod": "autod"
+  },
+  "ci": {
+    "version": "14",
+    "type": "github"
+  },
+  "eslintIgnore": [
+    "coverage",
+    "dist"
+  ],
+  "license": "MIT"
+}
