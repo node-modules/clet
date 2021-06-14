@@ -17,15 +17,20 @@ describe('test/runner.test.js', () => {
       //   await next();
       //   ctx.logger.info('3');
       // })
-      // .expect(ctx => {
-      //   ctx.logger.info('assert');
-      // })
       .cwd(fixtures)
       .fork('./simple.js', [ '--name=test' ])
       .stdout('this is simple bin')
       .stdout(/argv:/)
       .notStdout('xxxx')
       .notStdout(/^abc/)
+      .expect(ctx => {
+        const { stdout } = ctx.result;
+        ctx.assert(stdout, /simple bin/);
+      })
+      .notExpect(function abc(ctx) {
+        const { stdout } = ctx.result;
+        ctx.assert(stdout, /simple bin/);
+      })
       .end();
   });
 });
