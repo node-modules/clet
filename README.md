@@ -26,6 +26,7 @@ npm i --save btr
   - [ ] assert - act as mws, but after next
   - [ ] run - await first event msg + execa
   - [ ] code - assert final after exit
+  - [ ] addOperator(fn, afterRun?), this.beforeChain, this.afterRun
 - Tool
   - [ ] esm-first
   - [ ] prettier
@@ -64,14 +65,17 @@ runner(opts)
   // execa
   .run(cmd, opts)
 
+  .then(fn) // or tap?
+  .inject('result.stdout') // or log?
+
   .on(event, async ctx => {})
 
-  .ready('egg-ready')
+  .ready('egg-ready') // or wait?
   // .ready(/egg started/)
   // .unready('start-fail')
 
   .stdin(respond)
-  .stdin(match, respond)
+  .stdin(match, respond) // ~~watch stdout + stderr ?~~
 
   .stdout(/hello/)
   .stderr(/some error/)
@@ -86,7 +90,7 @@ runner(opts)
 
   // impl at plugin
   .server(8080)
-  // supertest
+  // supertest or popsicle
   .request('/', opts, async () => {})
   // .get().post().put().del().head()
 
