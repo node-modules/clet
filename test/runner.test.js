@@ -2,6 +2,12 @@ import runner from '..';
 import path from 'path';
 import { dirname } from 'dirname-filename-esm';
 
+function sleep(ms) {
+  return new Promise(resolve => {
+    setTimeout(resolve, ms);
+  });
+}
+
 describe('test/runner.test.js', () => {
   const fixtures = path.resolve(dirname(import.meta), 'fixtures');
 
@@ -27,8 +33,9 @@ describe('test/runner.test.js', () => {
         const { stdout } = ctx.result;
         ctx.assert(stdout, /simple bin/);
       })
-      .notExpect(function abc(ctx) {
+      .expect(async ctx => {
         const { stdout } = ctx.result;
+        await sleep(1000);
         ctx.assert(stdout, /simple bin/);
       })
       .end();
