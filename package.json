@@ -16,6 +16,8 @@
     "throwback": "^4.1.0"
   },
   "devDependencies": {
+    "assert-file": "^1.0.0",
+    "del": "^6.0.0",
     "egg-ci": "^1",
     "eslint": "^7",
     "eslint-config-egg": "^9",

@@ -8,3 +8,4 @@ run/
 *.swp
 *-lock.json
 .vscode/history
+.tmp

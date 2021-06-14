@@ -47,9 +47,8 @@ runner(opts)
 
   // coverage?
 
-  .mkdir(filePath)
+  .mkdir(filePath, autoDelete)
   .rm(filePath)
-  .tmpDir(dirPath) // mkdir and rm after test
   .writeFile(filePath, content)
   .writeFile(filePath, fn)
   .exec('git init') // whether detect as stdout ??
