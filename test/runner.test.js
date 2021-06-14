@@ -1,23 +1,28 @@
 import runner from '..';
+import path from 'path';
+import { dirname } from 'dirname-filename-esm';
 
 describe('test/runner.test.js', () => {
+  const fixtures = path.resolve(dirname(import.meta), 'fixtures');
+
   it('should work', async () => {
     return runner()
       .middleware(async (ctx, next) => {
-        console.log('1');
+        ctx.logger.info('1');
         await next();
-        console.log('4');
+        ctx.logger.info('4');
       })
       .middleware(async (ctx, next) => {
-        console.log('2');
+        ctx.logger.info('2');
         await next();
-        console.log('3');
+        ctx.logger.info('3');
       })
       .expect(ctx => {
-        console.log('assert', ctx);
+        ctx.logger.info('assert');
       })
       .stdout()
-      .run('ls ./')
+      .cwd(fixtures)
+      .run('./simple.js', [ '--name=test' ])
       .end();
   });
 });

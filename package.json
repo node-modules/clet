@@ -9,6 +9,8 @@
   "homepage": "https://github.com/node-modules/btr",
   "repository": "git@github.com:node-modules/btr.git",
   "dependencies": {
+    "consola": "^2.15.3",
+    "dirname-filename-esm": "^1.1.1",
     "execa": "^5.1.1",
     "throwback": "^4.1.0"
   },
