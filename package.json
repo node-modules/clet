@@ -12,6 +12,7 @@
     "consola": "^2.15.3",
     "dirname-filename-esm": "^1.1.1",
     "execa": "^5.1.1",
+    "p-any": "^4.0.0",
     "throwback": "^4.1.0"
   },
   "devDependencies": {
