@@ -22,6 +22,10 @@ npm i --save btr
   - [ ] context obj
   - [ ] stub
   - [ ] fn.length, next is optional?
+  - [ ] tmpdir - mkdir + next + rm
+  - [ ] assert - act as mws, but after next
+  - [ ] run - await first event msg + execa
+  - [ ] code - assert final after exit
 - Tool
   - [ ] esm-first
   - [ ] prettier
@@ -45,6 +49,7 @@ runner(opts)
 
   .mkdir(filePath)
   .rm(filePath)
+  .tmpDir(dirPath) // mkdir and rm after test
   .writeFile(filePath, content)
   .writeFile(filePath, fn)
   .exec('git init') // whether detect as stdout ??
@@ -88,12 +93,10 @@ runner(opts)
 
   .exit()
 
-  .expect(fn)
-  .notExpect(fn)
+  .expect(async ctx => {})
 
   .end(fn)
 ```
-
 
 ```js
 runner()

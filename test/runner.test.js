@@ -38,6 +38,7 @@ describe('test/runner.test.js', () => {
         await sleep(1000);
         ctx.assert(stdout, /simple bin/);
       })
+      .code(0)
       .end();
   });
 });
