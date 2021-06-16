@@ -1,14 +1,14 @@
-import runner from '..';
 import path from 'path';
 import fs from 'fs';
+import runner from '../lib/runner';
 import * as utils from './utils';
 
 describe('test/middleware.test.js', () => {
   const fixtures = utils.resolve(import.meta, 'fixtures');
-  const tmpDir = path.resolve(fixtures, '../.tmp');
+  const tmpDir = utils.getTempDir(expect);
   const filePath = path.resolve(tmpDir, 'middleware.md');
 
-  beforeEach(() => utils.mkdir(tmpDir));
+  beforeEach(() => utils.initDir(tmpDir));
 
   it('should support middleware', async () => {
     utils.assertFile.fail(filePath);
@@ -25,6 +25,7 @@ describe('test/middleware.test.js', () => {
         fs.appendFileSync(filePath, '4');
       })
       .cwd(fixtures)
+      .env('targetPath', filePath)
       .fork('./middleware.js')
       .end();
 
@@ -50,6 +51,7 @@ describe('test/middleware.test.js', () => {
         fs.appendFileSync(filePath, '4');
       })
       .cwd(fixtures)
+      .env('targetPath', filePath)
       .end();
 
     // check

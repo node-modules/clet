@@ -9,3 +9,4 @@ run/
 *-lock.json
 .vscode/history
 .tmp
+.vscode

@@ -2,4 +2,6 @@
 
 import fs from 'fs';
 
-fs.appendFileSync('../.tmp/middleware.md', '3');
+const targetPath = process.env.targetPath;
+
+fs.appendFileSync(targetPath, '3');

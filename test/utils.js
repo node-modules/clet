@@ -1,25 +1,22 @@
-
-import fs from 'fs';
 import path from 'path';
-import del from 'del';
-import { dirname } from 'dirname-filename-esm';
+import * as utils from '../lib/utils';
 
-export { del };
+export * from '../lib/utils';
 export { default as assertFile } from 'assert-file';
 export { strict as assert } from 'assert';
 
-export async function mkdir(p, opts) {
-  const { recursive = true, clean = true } = opts || {};
-  if (clean) await del(p);
-  return await fs.promises.mkdir(p, { recursive });
+// calc tmp dir by jest test file name
+export function getTempDir(expect) {
+  const { testPath } = expect.getState();
+  let p = testPath;
+  do {
+    p = path.dirname(testPath);
+  } while (path.basename(p) !== 'test');
+
+  return path.resolve(p, '.tmp', path.basename(testPath, '.test.js'));
 }
 
-export function resolve(meta, ...args) {
-  return path.resolve(dirname(meta), ...args);
-}
-
-export function sleep(ms) {
-  return new Promise(resolve => {
-    setTimeout(resolve, ms);
-  });
+export async function initDir(p) {
+  await utils.del(p);
+  await utils.mkdir(p);
 }

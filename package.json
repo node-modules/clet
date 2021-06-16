@@ -10,14 +10,18 @@
   "repository": "git@github.com:node-modules/btr.git",
   "dependencies": {
     "consola": "^2.15.3",
+    "del": "^6.0.0",
     "dirname-filename-esm": "^1.1.1",
+    "dot-prop": "^6.0.1",
     "execa": "^5.1.1",
+    "is-type-of": "^1.2.1",
+    "lodash.ismatch": "^4.4.0",
     "p-any": "^4.0.0",
+    "p-event": "^4.2.0",
     "throwback": "^4.1.0"
   },
   "devDependencies": {
     "assert-file": "^1.0.0",
-    "del": "^6.0.0",
     "egg-ci": "^1",
     "eslint": "^7",
     "eslint-config-egg": "^9",

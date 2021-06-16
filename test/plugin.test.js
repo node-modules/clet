@@ -1,4 +1,4 @@
-import runner from '..';
+import runner from '../lib/runner';
 import * as utils from './utils';
 
 describe('test/plugin.test.js', () => {

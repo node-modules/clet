@@ -1,4 +1,4 @@
-import runner from '..';
+import runner from '../lib/runner';
 import * as utils from './utils';
 
 describe('test/runner.test.js', () => {
@@ -12,15 +12,7 @@ describe('test/runner.test.js', () => {
       .stdout(/argv:/)
       .notStdout('xxxx')
       .notStdout(/^abc/)
-      .expect(ctx => {
-        const { stdout } = ctx.result;
-        ctx.assert(stdout, /simple bin/);
-      })
-      .expect(async ctx => {
-        const { stdout } = ctx.result;
-        await utils.sleep(1000);
-        ctx.assert(stdout, /simple bin/);
-      })
+      .log('result: %j', 'result.stdout')
       .code(0)
       .end();
 
