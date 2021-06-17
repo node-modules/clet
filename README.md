@@ -73,6 +73,8 @@ runner(opts)
   .ready('egg-ready') // or wait?
   // .ready(/egg started/)
   // .unready('start-fail')
+  .wait(/egg started/)
+  .wait()
 
   .stdin(respond)
   .stdin(match, respond) // ~~watch stdout + stderr ?~~

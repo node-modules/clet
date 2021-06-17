@@ -19,4 +19,20 @@ describe('test/runner.test.js', () => {
     // ensure chain return instance
     utils.assert.equal(instance.constructor.name, 'TestRunner');
   });
+
+  it('should await event', async () => {
+    await runner()
+      .cwd(fixtures)
+      .fork('./long-run.js')
+      .log('result: %j', 'result.stdout')
+      .wait('egg-ready')
+      .sleep(200)
+      .log('result: %j', 'result.stdout')
+      .sleep(200)
+      .log('result: %j', 'result.stdout')
+      .sleep(1000)
+      .log('result: %j', 'result.stdout')
+      .code(0)
+      .end();
+  });
 });
