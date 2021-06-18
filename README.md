@@ -74,7 +74,13 @@ runner(opts)
   // .ready(/egg started/)
   // .unready('start-fail')
   .wait(/egg started/)
-  .wait()
+  .wait('message', msg => msg && msg.action === 'egg-ready')
+  .wait('stdout', /egg started/)
+
+  .waitMessage({ action: 'egg-ready' })
+  .waitMessage(/egg-ready/)
+  .waitMessage(msg => msg && msg.action === 'egg-ready')
+  .waitStdout(/egg started/)
 
   .stdin(respond)
   .stdin(match, respond) // ~~watch stdout + stderr ?~~

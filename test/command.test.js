@@ -23,13 +23,13 @@ describe('test/command.test.js', () => {
   });
 
   // FIXME
-  it.skip('should exec', async () => {
-    const { ctx: { result } } = await runner()
-      .exec('node ./version.js')
-      .cwd(fixtures)
-      .end();
+  // it.skip('should exec', async () => {
+  //   const { ctx: { result } } = await runner()
+  //     .exec('node ./version.js')
+  //     .cwd(fixtures)
+  //     .end();
 
-    utils.assert.match(result.stdout, /^v\d+\.\d+\.\d+/);
-  });
+  //   utils.assert.match(result.stdout, /^v\d+\.\d+\.\d+/);
+  // });
 
 });
