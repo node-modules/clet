@@ -18,11 +18,13 @@
     "lodash.ismatch": "^4.4.0",
     "p-any": "^4.0.0",
     "p-event": "^4.2.0",
+    "strip-ansi": "^7.0.0",
     "throwback": "^4.1.0"
   },
   "devDependencies": {
     "assert-file": "^1.0.0",
     "egg-ci": "^1",
+    "enquirer": "^2.3.6",
     "eslint": "^7",
     "eslint-config-egg": "^9",
     "jest": "^27.0.4"
