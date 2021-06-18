@@ -1,7 +1,7 @@
 import path from 'path';
-import * as utils from '../lib/utils';
+import * as utils from '../lib/utils.js';
 
-export * from '../lib/utils';
+export * from '../lib/utils.js';
 export { default as assertFile } from 'assert-file';
 export { strict as assert } from 'assert';
 

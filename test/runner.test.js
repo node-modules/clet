@@ -24,14 +24,16 @@ describe('test/runner.test.js', () => {
     await runner()
       .cwd(fixtures)
       .fork('./long-run.js')
-      .log('result: %j', 'result.stdout')
-      .wait('egg-ready')
-      .sleep(200)
-      .log('result: %j', 'result.stdout')
-      .sleep(200)
-      .log('result: %j', 'result.stdout')
-      .sleep(1000)
-      .log('result: %j', 'result.stdout')
+
+      .wait('stdout', /loading egg controller/)
+      // .log('result.stdout')
+
+      .wait('message', { action: 'egg-ready' })
+      .stdout(/send message to parent/)
+      .notStdout(/after send message/)
+      // .log('result.stdout')
+
+      .wait('close')
       .code(0)
       .end();
   });
