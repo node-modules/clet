@@ -33,6 +33,15 @@ describe('test/example.test.js', () => {
       .cwd(fixtures)
       .fork('server.js')
       .wait('stdout', /server started/)
+      .request('http://localhost:3000', { path: '/?name=tz' }, async ({ ctx, body }) => {
+        let res = '';
+        for await (const data of body) {
+          res += data.toString();
+        }
+        // TODO: when assert fail, don't kill pid
+        ctx.assert.equal(res, 'hi, tz');
+      })
+      .log('>>> %j', 'result.stdout')
       .kill()
       .code(0)
       .end();

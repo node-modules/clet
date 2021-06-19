@@ -20,7 +20,8 @@
     "p-any": "^4.0.0",
     "p-event": "^4.2.0",
     "strip-ansi": "^7.0.0",
-    "throwback": "^4.1.0"
+    "throwback": "^4.1.0",
+    "undici": "^4.0.0"
   },
   "devDependencies": {
     "assert-file": "^1.0.0",
