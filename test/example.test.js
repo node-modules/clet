@@ -1,0 +1,40 @@
+import runner from '../lib/runner';
+import * as utils from './utils';
+
+describe('test/example.test.js', () => {
+  const fixtures = utils.resolve(import.meta, 'fixtures');
+  const tmpDir = utils.getTempDir(expect);
+
+  beforeEach(() => utils.initDir(tmpDir));
+
+  it('should fork cli', async () => {
+    await runner()
+      .cwd(fixtures)
+      .fork('./simple.js', [ '--name=test' ], { nodeOptions: [ '--inspect' ] })
+      .stdout('this is simple bin')
+      .stdout(/--name=\w+/)
+      .stderr(/Debugger listening/)
+      .code(0)
+      .end();
+  });
+
+  it('should spawn command', async () => {
+    await runner()
+      .cwd(tmpDir)
+      .spawn('npm init -y')
+      .stdout(/"name": "example"/)
+      .file('package.json', { name: 'example' })
+      .code(0)
+      .end();
+  });
+
+  it('should test long-run server', async () => {
+    await runner()
+      .cwd(fixtures)
+      .fork('server.js')
+      .wait('stdout', /server started/)
+      .kill()
+      .code(0)
+      .end();
+  });
+});

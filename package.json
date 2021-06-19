@@ -47,7 +47,8 @@
     "type": "github"
   },
   "jest": {
-    "transform": {}
+    "transform": {},
+    "testTimeout": 10000
   },
   "eslintIgnore": [
     "coverage",
