@@ -1,10 +1,9 @@
 import { resolve } from 'path';
-import fs from 'fs';
 import runner from '../lib/runner';
 import * as utils from './utils';
 
 describe('test/operatation.test.js', () => {
-  const fixtures = utils.resolve(import.meta, 'fixtures');
+  // const fixtures = utils.resolve(import.meta, 'fixtures');
   const tmpDir = utils.getTempDir(expect);
 
   beforeEach(() => utils.initDir(tmpDir));

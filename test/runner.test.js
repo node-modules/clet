@@ -1,6 +1,5 @@
 import runner from '../lib/runner';
 import * as utils from './utils';
-import path from 'path';
 
 describe('test/runner.test.js', () => {
   const fixtures = utils.resolve(import.meta, 'fixtures');
@@ -25,22 +24,6 @@ describe('test/runner.test.js', () => {
     utils.assert.equal(instance.constructor.name, 'TestRunner');
   });
 
-  it('should await event', async () => {
-    const filePath = path.join(tmpDir, 'event.md');
-
-    await runner()
-      .cwd(fixtures)
-      .env('filePath', filePath)
-      .notFile(filePath)
-      .fork('./long-run.js')
-
-      .tap(() => console.log(new Date().toLocaleString()))
-      .notFile(filePath)
-      .wait('message', { action: 'egg-ready' })
-      .file(filePath)
-
-      .wait('close')
-      .code(0)
-      .end();
-  });
+  it.todo('kill');
+  it.todo('timeout');
 });

@@ -52,7 +52,7 @@ runner(opts)
   .rm(filePath)
   .writeFile(filePath, content)
   .writeFile(filePath, fn)
-  .exec('git init') // whether detect as stdout ??
+  .shell('git init') // whether detect as stdout ??
 
   .cwd(__dirname)
   .env(key, value)
