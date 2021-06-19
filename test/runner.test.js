@@ -11,7 +11,6 @@ describe('test/runner.test.js', () => {
     const instance = await runner()
       .cwd(fixtures)
       .fork('./simple.js', [ '--name=test' ])
-      .wait('close')
       .stdout('this is simple bin')
       .stdout(/argv:/)
       .notStdout('xxxx')

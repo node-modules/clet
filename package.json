@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "assert-file": "^1.0.0",
+    "cross-env": "^7.0.3",
     "egg-ci": "^1",
     "enquirer": "^2.3.6",
     "eslint": "^7",
@@ -37,8 +38,8 @@
   ],
   "scripts": {
     "lint": "eslint .",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
-    "cov": "NODE_OPTIONS=--experimental-vm-modules jest --coverage",
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest",
+    "cov": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --coverage",
     "ci": "npm run lint && npm run cov"
   },
   "ci": {
