@@ -30,7 +30,7 @@ describe('test/utils.test.js', () => {
     assert(fs.existsSync(p));
   });
 
-  it('sleep', async () => {
+  it.skip('sleep', async () => {
     const start = Date.now();
     await utils.sleep(1000);
     assert(Date.now() - start >= 1000);

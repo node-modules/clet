@@ -44,7 +44,7 @@
     "ci": "npm run lint && npm run cov"
   },
   "ci": {
-    "version": "14",
+    "version": "12, 14",
     "type": "github"
   },
   "jest": {
