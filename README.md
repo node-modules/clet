@@ -1,6 +1,6 @@
-# btr
+# CLET
 
-another bin test runer
+Command Line E2E Testing.
 
 [![NPM Version](https://img.shields.io/npm/v/btr.svg?style=flat-square)](https://npmjs.org/package/btr)
 [![NPM Quality](http://npm.packagequality.com/shield/btr.svg?style=flat-square)](http://packagequality.com/#?package=btr)
@@ -9,10 +9,11 @@ another bin test runer
 [![CI](https://github.com/node-modules/btr/actions/workflows/nodejs.yml/badge.svg)](https://github.com/node-modules/btr/actions/workflows/nodejs.yml)
 [![Coverage](https://img.shields.io/codecov/c/github/node-modules/btr.svg?style=flat-square)](https://codecov.io/gh/node-modules/btr)
 
-## Showcase
+
+## How it looks
 
 ```js
-import runner from 'btr';
+import runner from 'clet';
 
 describe('command-line end-to-end testing', () => {
 
@@ -49,18 +50,24 @@ describe('command-line end-to-end testing', () => {
       })
       .stdout(/GET \/?name=tz/)
       .kill()
-      .code(0)
       .end();
   });
 });
 
 ```
 
-## Usage
+## Installation
 
 ```bash
 npm i --save btr
 ```
+
+## API
+
+## License
+
+## Usage
+
 
 ## TODO
 
