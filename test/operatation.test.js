@@ -25,7 +25,7 @@ describe('test/operatation.test.js', () => {
     utils.assertFile(resolve(targetPath, 'c'));
   });
 
-  it('should support shell', async () => {
+  it.skip('should support shell', async () => {
     const targetPath = resolve(tmpDir, 'package.json');
     utils.assertFile.fail(targetPath);
 

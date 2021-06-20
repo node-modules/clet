@@ -1,4 +1,4 @@
-import assert from '../lib/assert';
+import { assert, matchRule, doesNotMatchRule } from '../lib/utils';
 
 describe('test/assert.test.js', () => {
   const pkgInfo = {
@@ -11,11 +11,11 @@ describe('test/assert.test.js', () => {
 
   it('matchRule', () => {
     // regex
-    assert.matchRule(123456, /\d+/);
-    assert.matchRule('abc', /\w+/);
+    matchRule(123456, /\d+/);
+    matchRule('abc', /\w+/);
 
     assert.throws(() => {
-      assert.matchRule(123456, /abc/);
+      matchRule(123456, /abc/);
     }, {
       name: 'AssertionError',
       message: /The input did not match the regular expression/,
@@ -24,9 +24,9 @@ describe('test/assert.test.js', () => {
     });
 
     // string
-    assert.matchRule('abc', 'b');
+    matchRule('abc', 'b');
     assert.throws(() => {
-      assert.matchRule('abc', 'cd');
+      matchRule('abc', 'cd');
     }, {
       name: 'AssertionError',
       message: /'abc' should includes 'cd'/,
@@ -35,12 +35,12 @@ describe('test/assert.test.js', () => {
     });
 
     // JSON
-    assert.matchRule(pkgInfo, { name: 'btr', config: { port: 8080 } });
-    assert.matchRule(JSON.stringify(pkgInfo), { name: 'btr', config: { port: 8080 } });
+    matchRule(pkgInfo, { name: 'btr', config: { port: 8080 } });
+    matchRule(JSON.stringify(pkgInfo), { name: 'btr', config: { port: 8080 } });
 
     const unexpected = { name: 'btr', config: { a: '1' } };
     assert.throws(() => {
-      assert.matchRule(pkgInfo, unexpected);
+      matchRule(pkgInfo, unexpected);
     }, {
       name: 'AssertionError',
       message: /should partial includes/,
@@ -49,7 +49,7 @@ describe('test/assert.test.js', () => {
     });
 
     assert.throws(() => {
-      assert.matchRule(JSON.stringify(pkgInfo), unexpected);
+      matchRule(JSON.stringify(pkgInfo), unexpected);
     }, {
       name: 'AssertionError',
       message: /should partial includes/,
@@ -60,11 +60,11 @@ describe('test/assert.test.js', () => {
 
   it('doesNotMatchRule', () => {
     // regex
-    assert.doesNotMatchRule(123456, /abc/);
-    assert.doesNotMatchRule('abc', /\d+/);
+    doesNotMatchRule(123456, /abc/);
+    doesNotMatchRule('abc', /\d+/);
 
     assert.throws(() => {
-      assert.doesNotMatchRule(123456, /\d+/);
+      doesNotMatchRule(123456, /\d+/);
     }, {
       name: 'AssertionError',
       message: /The input was expected to not match the regular expression/,
@@ -73,9 +73,9 @@ describe('test/assert.test.js', () => {
     });
 
     // string
-    assert.doesNotMatchRule('abc', '123');
+    doesNotMatchRule('abc', '123');
     assert.throws(() => {
-      assert.doesNotMatchRule('abcd', 'cd');
+      doesNotMatchRule('abcd', 'cd');
     }, {
       name: 'AssertionError',
       message: /'abcd' should not includes 'cd'/,
@@ -84,12 +84,12 @@ describe('test/assert.test.js', () => {
     });
 
     // JSON
-    assert.doesNotMatchRule(pkgInfo, { name: 'btr', config: { a: '1' } });
-    assert.doesNotMatchRule(JSON.stringify(pkgInfo), { name: 'btr', config: { a: '1' } });
+    doesNotMatchRule(pkgInfo, { name: 'btr', config: { a: '1' } });
+    doesNotMatchRule(JSON.stringify(pkgInfo), { name: 'btr', config: { a: '1' } });
 
     const unexpected = { name: 'btr', config: { port: 8080 } };
     assert.throws(() => {
-      assert.doesNotMatchRule(pkgInfo, unexpected);
+      doesNotMatchRule(pkgInfo, unexpected);
     }, {
       name: 'AssertionError',
       message: /should not partial includes/,
@@ -98,7 +98,7 @@ describe('test/assert.test.js', () => {
     });
 
     assert.throws(() => {
-      assert.doesNotMatchRule(JSON.stringify(pkgInfo), unexpected);
+      doesNotMatchRule(JSON.stringify(pkgInfo), unexpected);
     }, {
       name: 'AssertionError',
       message: /should not partial includes/,
