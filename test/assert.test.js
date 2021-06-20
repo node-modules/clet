@@ -2,7 +2,7 @@ import { assert, matchRule, doesNotMatchRule } from '../lib/utils';
 
 describe('test/assert.test.js', () => {
   const pkgInfo = {
-    name: 'btr',
+    name: 'clet',
     version: '1.0.0',
     config: {
       port: 8080,
@@ -35,10 +35,10 @@ describe('test/assert.test.js', () => {
     });
 
     // JSON
-    matchRule(pkgInfo, { name: 'btr', config: { port: 8080 } });
-    matchRule(JSON.stringify(pkgInfo), { name: 'btr', config: { port: 8080 } });
+    matchRule(pkgInfo, { name: 'clet', config: { port: 8080 } });
+    matchRule(JSON.stringify(pkgInfo), { name: 'clet', config: { port: 8080 } });
 
-    const unexpected = { name: 'btr', config: { a: '1' } };
+    const unexpected = { name: 'clet', config: { a: '1' } };
     assert.throws(() => {
       matchRule(pkgInfo, unexpected);
     }, {
@@ -84,10 +84,10 @@ describe('test/assert.test.js', () => {
     });
 
     // JSON
-    doesNotMatchRule(pkgInfo, { name: 'btr', config: { a: '1' } });
-    doesNotMatchRule(JSON.stringify(pkgInfo), { name: 'btr', config: { a: '1' } });
+    doesNotMatchRule(pkgInfo, { name: 'clet', config: { a: '1' } });
+    doesNotMatchRule(JSON.stringify(pkgInfo), { name: 'clet', config: { a: '1' } });
 
-    const unexpected = { name: 'btr', config: { port: 8080 } };
+    const unexpected = { name: 'clet', config: { port: 8080 } };
     assert.throws(() => {
       doesNotMatchRule(pkgInfo, unexpected);
     }, {

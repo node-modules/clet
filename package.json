@@ -1,13 +1,13 @@
 {
-  "name": "btr",
+  "name": "clet",
   "version": "0.0.0",
   "description": "another bin test runner",
   "type": "module",
   "main": "./lib/runner.js",
   "exports": "./lib/runner.js",
   "author": "TZ <atian25@qq.com> (https://github.com/atian25)",
-  "homepage": "https://github.com/node-modules/btr",
-  "repository": "git@github.com:node-modules/btr.git",
+  "homepage": "https://github.com/node-modules/clet",
+  "repository": "git@github.com:node-modules/clet.git",
   "dependencies": {
     "consola": "^2.15.3",
     "del": "^6.0.0",

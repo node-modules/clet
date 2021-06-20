@@ -2,12 +2,12 @@
 
 Command Line E2E Testing.
 
-[![NPM Version](https://img.shields.io/npm/v/btr.svg?style=flat-square)](https://npmjs.org/package/btr)
-[![NPM Quality](http://npm.packagequality.com/shield/btr.svg?style=flat-square)](http://packagequality.com/#?package=btr)
-[![NPM Download](https://img.shields.io/npm/dm/btr.svg?style=flat-square)](https://npmjs.org/package/btr)
+[![NPM Version](https://img.shields.io/npm/v/clet.svg?style=flat-square)](https://npmjs.org/package/clet)
+[![NPM Quality](http://npm.packagequality.com/shield/clet.svg?style=flat-square)](http://packagequality.com/#?package=clet)
+[![NPM Download](https://img.shields.io/npm/dm/clet.svg?style=flat-square)](https://npmjs.org/package/clet)
 
-[![CI](https://github.com/node-modules/btr/actions/workflows/nodejs.yml/badge.svg)](https://github.com/node-modules/btr/actions/workflows/nodejs.yml)
-[![Coverage](https://img.shields.io/codecov/c/github/node-modules/btr.svg?style=flat-square)](https://codecov.io/gh/node-modules/btr)
+[![CI](https://github.com/node-modules/clet/actions/workflows/nodejs.yml/badge.svg)](https://github.com/node-modules/clet/actions/workflows/nodejs.yml)
+[![Coverage](https://img.shields.io/codecov/c/github/node-modules/clet.svg?style=flat-square)](https://codecov.io/gh/node-modules/clet)
 
 
 ## How it looks
@@ -59,7 +59,7 @@ describe('command-line end-to-end testing', () => {
 ## Installation
 
 ```bash
-npm i --save btr
+npm i --save clet
 ```
 
 ## API
@@ -92,7 +92,7 @@ npm i --save btr
 LifeCycle: `prepare -> middleware pre -> prompt -> run -> wait for ready/unready/end/timeout -> assertion -> wait for exit -> middleware post -> cleanup(kill) -> end`
 
 ```js
-import runner from 'btr';
+import runner from 'clet';
 
 runner(opts)
   .middleware(async next => await next())
