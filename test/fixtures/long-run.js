@@ -14,6 +14,7 @@ async function run() {
   process.send && process.send({ action: 'egg-ready' });
   process.send && process.send('egg-ready');
   console.log('egg started at localhost:8080');
+  console.error('be careful');
 
   console.log('stopping...');
   await utils.del(filePath, { force: true });

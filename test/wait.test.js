@@ -51,6 +51,23 @@ describe('test/wait.test.js', () => {
       .end();
   });
 
+  it('should wait stderr', async () => {
+    const filePath = path.join(tmpDir, 'event.md');
+
+    await runner()
+      .cwd(fixtures)
+      .env('filePath', filePath)
+      .notFile(filePath)
+      .fork('./long-run.js')
+      .notFile(filePath)
+      .wait('stderr', /be careful/)
+      .file(filePath)
+      .wait('close')
+      .code(0)
+      .notFile(filePath) // will del when exit
+      .end();
+  });
+
   it('should wait message with object', async () => {
     const filePath = path.join(tmpDir, 'event.md');
 
@@ -114,6 +131,19 @@ describe('test/wait.test.js', () => {
       .fork('./long-run.js')
       .notFile(filePath)
       .wait('message', /not-exist-event/)
+      .code(0)
+      .notFile(filePath) // will del when exit
+      .end();
+  });
+
+  it('should auto wait end without calling .wait()', async () => {
+    const filePath = path.join(tmpDir, 'event.md');
+
+    await runner()
+      .cwd(fixtures)
+      .env('filePath', filePath)
+      .notFile(filePath)
+      .fork('./long-run.js')
       .code(0)
       .notFile(filePath) // will del when exit
       .end();
