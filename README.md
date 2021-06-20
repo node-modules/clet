@@ -26,6 +26,7 @@ npm i --save btr
   - [ ] fn.length, next is optional?
   - [ ] tmpdir - mkdir + next + rm
   - [ ] private method to replace _fn
+  - [ ] pipe stdout when debug, and indent
 - Tool
   - [ ] esm-first
   - [ ] prettier

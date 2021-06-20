@@ -1,3 +1,6 @@
+
+import { strict as assert } from 'assert';
+
 import runner from '../lib/runner';
 import * as utils from './utils';
 
@@ -20,7 +23,20 @@ describe('test/runner.test.js', () => {
       .end();
 
     // ensure chain return instance
-    utils.assert.equal(instance.constructor.name, 'TestRunner');
+    assert.equal(instance.constructor.name, 'TestRunner');
+  });
+
+  it('should ensure proc is kill if assert fail', async () => {
+    await assert.rejects(async () => {
+      await runner()
+        .cwd(fixtures)
+        .fork('long-run.js')
+        .wait('stdout', /long run/)
+        .tap(() => {
+          throw new Error('trigger break');
+        })
+        .end();
+    }, /trigger break/);
   });
 
   it.todo('kill');

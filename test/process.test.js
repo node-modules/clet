@@ -1,4 +1,5 @@
 import runner from '../lib/runner';
+import { strict as assert } from 'assert';
 import * as utils from './utils';
 
 describe('test/process.test.js', () => {
@@ -67,5 +68,28 @@ describe('test/process.test.js', () => {
         .code(1)
         .end();
     }, /Command failed/);
+  });
+
+  it('should timeout', async () => {
+    await assert.rejects(async () => {
+      await runner()
+        .cwd(fixtures)
+        .timeout(1000)
+        .fork('long-run.js')
+        .wait('stdout', /long run/)
+        .sleep(2000)
+        .end();
+    }, /timed out after 1000/);
+  });
+
+  it('should kill', async () => {
+    await runner()
+      .cwd(fixtures)
+      .fork('long-run.js')
+      .wait('stdout', /long run/)
+      .kill()
+      .stdout(/recieve SIGTERM/)
+      .notStdout(/exit long-run/)
+      .end();
   });
 });
