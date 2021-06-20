@@ -24,4 +24,21 @@ describe('test/operatation.test.js', () => {
     utils.assertFile(targetPath);
     utils.assertFile(resolve(targetPath, 'c'));
   });
+
+  it('should support shell', async () => {
+    const targetPath = resolve(tmpDir, 'package.json');
+    utils.assertFile.fail(targetPath);
+
+    await runner()
+      .cwd(tmpDir)
+      .shell('npm init -y')
+      .file(targetPath)
+      .spawn('ls')
+      .mkdir('a/b/c')
+      .end();
+
+    // check
+    utils.assertFile(targetPath);
+    utils.assertFile(resolve(targetPath, 'c'));
+  });
 });

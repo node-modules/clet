@@ -9,6 +9,53 @@ another bin test runer
 [![CI](https://github.com/node-modules/btr/actions/workflows/nodejs.yml/badge.svg)](https://github.com/node-modules/btr/actions/workflows/nodejs.yml)
 [![Coverage](https://img.shields.io/codecov/c/github/node-modules/btr.svg?style=flat-square)](https://codecov.io/gh/node-modules/btr)
 
+## Showcase
+
+```js
+import runner from 'btr';
+
+describe('command-line end-to-end testing', () => {
+
+  // testing shell
+  it('should spawn', async () => {
+    await runner()
+      .cwd(baseDir)
+      .spawn('npm init -y')
+      .stdout(/"name":/)
+      .file('package.json', { version: '1.0.0' })
+      .code(0)
+      .end();
+  });
+
+  // testing node cli with prompt
+  it('should fork', async () => {
+    await runner()
+      .cwd(baseDir)
+      .fork('./bin/cli.js', [ '--name=tz' ], { execArgv: [ '--no-deprecation' ] })
+      .stdin(/Name:/, 'tz')
+      .stdout(/hi, tz/)
+      .code(0)
+      .end();
+  });
+
+  // testing a http server which will not auto exit
+  it('should test server', async () => {
+    await runner()
+      .cwd(baseDir)
+      .fork('server.js', [], { env: { PORT: 8080 } })
+      .wait('stdout', /server started/)
+      .request('http://localhost:3000', { path: '/?name=tz' }, async ({ ctx, body }) => {
+        ctx.assert.equal(body, 'hi, tz');
+      })
+      .stdout(/GET \/?name=tz/)
+      .kill()
+      .code(0)
+      .end();
+  });
+});
+
+```
+
 ## Usage
 
 ```bash

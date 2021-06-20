@@ -39,6 +39,5 @@ describe('test/runner.test.js', () => {
     }, /trigger break/);
   });
 
-  it.todo('kill');
-  it.todo('timeout');
+  it.todo('logger');
 });

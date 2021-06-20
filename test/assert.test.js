@@ -106,4 +106,6 @@ describe('test/assert.test.js', () => {
       expected: unexpected,
     });
   });
+
+  it.todo('error stack');
 });
