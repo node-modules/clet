@@ -10,8 +10,8 @@ describe('test/runner.test.js', () => {
   it('should work', async () => {
     const instance = await runner()
       .cwd(fixtures)
-      .fork('./simple.js', [ '--name=test' ])
-      .stdout('this is simple bin')
+      .fork('./example.js', [ '--name=test' ])
+      .stdout('this is example bin')
       .stdout(/argv:/)
       .notStdout('xxxx')
       .notStdout(/^abc/)

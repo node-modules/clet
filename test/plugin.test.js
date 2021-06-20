@@ -26,8 +26,8 @@ describe('test/plugin.test.js', () => {
           return this;
         },
         b(...args) {
-          // not return this
           this.ctx.b = args.join(',');
+          return this;
         },
       })
       .spawn('node', [ '-v' ])

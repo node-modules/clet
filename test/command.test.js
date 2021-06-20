@@ -24,20 +24,18 @@ describe('test/command.test.js', () => {
     it('should fork with opts', async () => {
       await runner()
         .cwd(fixtures)
-        .fork('./command.js', { nodeOptions: [ '--inspect' ] })
+        .fork('./command.js', { nodeOptions: [ '--no-deprecation' ] })
         .stdout(/argv=\[]/)
-        .stdout(/execArgv=\["--inspect"]/)
-        .stderr(/Debugger listening/)
+        .stdout(/execArgv=\["--no-deprecation"]/)
         .end();
     });
 
     it('should fork with args + env', async () => {
       await runner()
         .cwd(fixtures)
-        .fork('./command.js', [ '--name=tz' ], { execArgv: [ '--inspect' ] })
+        .fork('./command.js', [ '--name=tz' ], { execArgv: [ '--no-deprecation' ] })
         .stdout(/argv=.*--name=tz/)
-        .stdout(/execArgv=\["--inspect"]/)
-        .stderr(/Debugger listening/)
+        .stdout(/execArgv=\["--no-deprecation"]/)
         .end();
     });
 

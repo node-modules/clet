@@ -10,10 +10,10 @@ describe('test/example.test.js', () => {
   it('should fork cli', async () => {
     await runner()
       .cwd(fixtures)
-      .fork('./simple.js', [ '--name=test' ], { nodeOptions: [ '--inspect' ] })
-      .stdout('this is simple bin')
+      .fork('./example.js', [ '--name=test' ])
+      .stdout('this is example bin')
       .stdout(/--name=\w+/)
-      .stderr(/Debugger listening/)
+      .stderr(/this is a warning/)
       .code(0)
       .end();
   });

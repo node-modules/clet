@@ -19,14 +19,14 @@ npm i --save btr
 
 - RFC
   - [ ] API
+  - [ ] Docs
+  - [ ] refactor plugin system
+  - [ ] assert error stack
   - [ ] context obj
-  - [ ] stub
+  - [ ] stub api
   - [ ] fn.length, next is optional?
   - [ ] tmpdir - mkdir + next + rm
-  - [ ] assert - act as mws, but after next
-  - [ ] run - await first event msg + execa
-  - [ ] code - assert final after exit
-  - [ ] addOperator(fn, afterRun?), this.beforeChain, this.afterRun
+  - [ ] private method to replace _fn
 - Tool
   - [ ] esm-first
   - [ ] prettier
