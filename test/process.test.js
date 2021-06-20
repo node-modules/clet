@@ -1,6 +1,6 @@
 import runner from '../lib/runner';
-import { strict as assert } from 'assert';
 import * as utils from './utils';
+const { assert } = utils;
 
 describe('test/process.test.js', () => {
   const fixtures = utils.resolve(import.meta, 'fixtures');

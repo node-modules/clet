@@ -1,7 +1,7 @@
 {
   "name": "clet",
   "version": "0.0.0",
-  "description": "another bin test runner",
+  "description": "Command Line E2E Testing",
   "type": "module",
   "main": "./lib/runner.js",
   "exports": "./lib/runner.js",

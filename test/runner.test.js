@@ -1,8 +1,6 @@
-
-import { strict as assert } from 'assert';
-
 import runner from '../lib/runner';
 import * as utils from './utils';
+const { assert } = utils;
 
 describe('test/runner.test.js', () => {
   const fixtures = utils.resolve(import.meta, 'fixtures');

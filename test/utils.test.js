@@ -1,6 +1,7 @@
-import * as utils from '../lib/utils';
-import { strict as assert } from 'assert';
 import fs from 'fs';
+import * as utils from '../lib/utils';
+const { assert } = utils;
+
 
 describe('test/utils.test.js', () => {
   it('is', () => {
