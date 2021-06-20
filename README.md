@@ -22,7 +22,6 @@ npm i --save btr
   - [ ] Docs
   - [ ] refactor plugin system
   - [ ] assert error stack
-  - [ ] context obj
   - [ ] stub api
   - [ ] fn.length, next is optional?
   - [ ] tmpdir - mkdir + next + rm

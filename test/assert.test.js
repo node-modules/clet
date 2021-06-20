@@ -1,6 +1,6 @@
-import assert from '../lib/assert-extend';
+import assert from '../lib/assert';
 
-describe('test/assert-extend.test.js', () => {
+describe('test/assert.test.js', () => {
   const pkgInfo = {
     name: 'btr',
     version: '1.0.0',
