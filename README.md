@@ -17,16 +17,15 @@ import runner from 'clet';
 
 describe('command-line end-to-end testing', () => {
 
-  // testing shell
-  it('should spawn', async () => {
+  it('should works with boilerplate', async () => {
     await runner()
       .cwd(tmpDir)
       .spawn('npm init')
-      .stdin(/name:/, 'example\n')
+      .stdin(/name:/, 'example\n')  // wait for stdout, then respond
       .stdin(/version:/, new Array(9).fill('\n')) // don't care about others, just enter
-      .stdout(/"name": "example"/)
-      .file('package.json', { name: 'example', version: '1.0.0' })
-      .code(0)
+      .stdout(/"name": "example"/)  // validate stdout
+      .file('package.json', { name: 'example', version: '1.0.0' })  // validate file content
+      .code(0) // validate exitCode
       .end();
   });
 
@@ -42,12 +41,11 @@ describe('command-line end-to-end testing', () => {
       .end();
   });
 
-  // testing a http server which will not auto exit
-  it('should works with long-run server', async () => {
+  it('should works with long-run apps', async () => {
     await runner()
       .cwd(fixtures)
       .fork('server.js')
-      .wait('stdout', /server started/)
+      .wait('stdout', /server started/) // wait for stdout, then resume validator chains
       .request('http://localhost:3000', { path: '/?name=tz' }, async ({ ctx, text }) => {
         const result = await text();
         ctx.assert.equal(result, 'hi, tz');

@@ -7,15 +7,15 @@ describe('test/example.test.js', () => {
 
   beforeEach(() => utils.initDir(tmpDir));
 
-  it('should works with boilerplate scene', async () => {
+  it('should works with boilerplate', async () => {
     await runner()
       .cwd(tmpDir)
       .spawn('npm init')
-      .stdin(/name:/, 'example\n')
+      .stdin(/name:/, 'example\n') // wait for stdout, then respond
       .stdin(/version:/, new Array(9).fill('\n')) // don't care about others, just enter
-      .stdout(/"name": "example"/)
-      .file('package.json', { name: 'example', version: '1.0.0' })
-      .code(0)
+      .stdout(/"name": "example"/) // validate stdout
+      .file('package.json', { name: 'example', version: '1.0.0' }) // validate file content
+      .code(0) // validate exitCode
       .end();
   });
 
@@ -31,7 +31,7 @@ describe('test/example.test.js', () => {
       .end();
   });
 
-  it('should works with long-run server', async () => {
+  it('should works with long-run apps', async () => {
     await runner()
       .cwd(fixtures)
       .fork('server.js')

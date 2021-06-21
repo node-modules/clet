@@ -1,6 +1,6 @@
 import { assert, matchRule, doesNotMatchRule } from '../lib/utils';
 
-describe('test/assert.test.js', () => {
+describe('test/validator.test.js', () => {
   const pkgInfo = {
     name: 'clet',
     version: '1.0.0',
