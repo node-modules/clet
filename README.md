@@ -65,9 +65,9 @@ npm i --save clet
 
 ## API
 
-### Validator
+## Validator
 
-#### stdout
+### stdout
 
 Validate stdout, support `regex` and `string.includes`.
 
@@ -81,11 +81,11 @@ it('should support stdout()', async () => {
 });
 ```
 
-#### notStdout
+### notStdout
 
 Opposite of `stdout()`
 
-#### stderr
+### stderr
 
 Validate stdout, support `regex` and `string.includes`.
 
@@ -100,11 +100,11 @@ it('should support stderr()', async () => {
 });
 ```
 
-#### notStderr
+### notStderr
 
 Opposite of `stderr()`
 
-#### code
+### code
 
 Validate process exit code.
 
@@ -119,12 +119,12 @@ it('should support code()', async () => {
 });
 ```
 
-#### file
+### file
 
 
-#### notFile
+### notFile
 
-#### expect
+### expect
 
 Validate with custom function.
 
@@ -139,6 +139,10 @@ it('should support expect()', async () => {
     .end();
 });
 ```
+
+## Context
+
+### assert
 
 
 ## License

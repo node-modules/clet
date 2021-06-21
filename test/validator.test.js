@@ -2,6 +2,8 @@ import path from 'path';
 import runner from '../lib/runner';
 import * as utils from './utils';
 
+const { assert } = utils;
+
 describe('test/validator.test.js', () => {
   const fixtures = utils.resolve(import.meta, 'fixtures');
   const tmpDir = utils.getTempDir(expect);
@@ -69,6 +71,15 @@ describe('test/validator.test.js', () => {
         .code(1)
         .end();
     });
+
+    it('should double check code()', async () => {
+      await runner()
+        .cwd(fixtures)
+        .fork('process.js', [ '--delay' ])
+        .wait('stdout', /delay for a while/)
+        .code(0)
+        .end();
+    });
   });
 
   describe('file', () => {
@@ -88,7 +99,7 @@ describe('test/validator.test.js', () => {
         .file(`${tmpDir}/test.json`, { name: 'test', config: { port: 8080 } })
         .end();
 
-      await utils.assert.rejects(async () => {
+      await assert.rejects(async () => {
         await runner()
           .cwd(tmpDir)
           .fork(cliPath)
@@ -98,7 +109,7 @@ describe('test/validator.test.js', () => {
           .end();
       }, /not-exist.md to be exists/);
 
-      await utils.assert.rejects(async () => {
+      await assert.rejects(async () => {
         await runner()
           .cwd(tmpDir)
           .fork(cliPath)
@@ -125,7 +136,7 @@ describe('test/validator.test.js', () => {
         .end();
 
 
-      await utils.assert.rejects(async () => {
+      await assert.rejects(async () => {
         await runner()
           .cwd(tmpDir)
           .fork(cliPath)
@@ -135,7 +146,7 @@ describe('test/validator.test.js', () => {
           .end();
       }, /not-exist.md to be exists/);
 
-      await utils.assert.rejects(async () => {
+      await assert.rejects(async () => {
         await runner()
           .cwd(tmpDir)
           .fork(cliPath)
