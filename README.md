@@ -65,29 +65,183 @@ npm i --save clet
 
 ## API
 
+### fork(cmd, args, opts)
+
+Execute a Node.js script as a child process.
+
+```js
+it('should fork', async () => {
+  await runner()
+    .cwd(fixtures)
+    .fork('example.js', [ '--name=test' ], { execArgv: [ '--no-deprecation' ] })
+    .stdout('this is example bin')
+    .stdout(/argv: \["--name=\w+"\]/)
+    .stdout(/execArgv: \["--no-deprecation"\]/)
+    .stderr(/this is a warning/)
+    .code(0)
+    .end();
+});
+```
+
+Options:
+
+- `timeout`: {Number} - will kill after timeout.
+- `execArgv`: {Array} - pass to child process's execArgv, default to `process.execArgv`.
+- `cwd`: {String} - working directory, prefer to use `.cwd()` instead of this.
+- `env`: {Object} - prefer to use `.env()` instead of this.
+- `extendEnv`: {Boolean} - whether extend `process.env`, default to true.
+- more detail: https://github.com/sindresorhus/execa#options
+
+### spawn(cmd, args, opts)
+
+Exec a shell
+
+```js
+it('should support spawn', async () => {
+  await runner()
+    .cwd(tmpDir)
+    .spawn('node -v')
+    .stdout(/v\d+\.\d+\.\d+/)
+    .code(0)
+    .end();
+});
+```
+
+### end()
+
+Start running the test.
+
+```js
+it('should support spawn', async () => {
+  await runner()
+    .spawn('node -v')
+    .stdout(/v\d+\.\d+\.\d+/)
+    .code(0)
+    .end();
+});
+```
+
+### cwd(dir)
+
+Change the current working directory.
+
+> Notice: it will affect `fork()` script relative path, `file()`, `mkdir()` etc.
+
+```js
+runner()
+  .cwd(fixtures)
+  .fork('./example.js')
+```
+### env(key, value)
+
+Set environment variables.
+
+> Notice:  if you don't want to extend the environment variables, set `opts.extendEnv` to false.
+
+```js
+runner()
+  .env('DEBUG', 'CLI')
+  .fork('./example.js', [], { extendEnv: false })
+```
+
+### timeout(ms)
+
+Set a timeout, will kill SIGTERM then SIGKILL.
+
+```js
+runner()
+  .timeout(5000)
+  .fork('./example.js')
+```
+
+### wait(type, expected)
+
+Wait for some condition, then resume the chain, useful for tesing long-run http server apps.
+
+- `type`: {String} - support `message` / `stdout` / `stderr` / `close`
+- `expected`: {String|RegExp|Object|Function}
+  - {String}: check whether includes specified string
+  - {RegExp}: check whether match regexp
+  - {Object}: check whether partial includes specified JSON
+  - {Function}: check whether with specified function
+
+> Notice: don't forgot to kill() after test.
+
+```js
+it('should wait', async () => {
+  const filePath = path.join(tmpDir, 'event.md');
+
+  await runner()
+    .fork('./wait.js')
+    .wait('stdout', /server started/)
+    // .wait('message', { action: 'egg-ready' }) // ipc message
+    .file('logs/web.log')
+    .kill()
+    .end();
+});
+```
+
+### kill()
+
+Kill the child process.
+
+useful for manually end long-run server after validate.
+
+> Notice: when kill, exit code maybe undefined if user don't hook signal event.
+
+```js
+it('should kill() manually after test server', async () => {
+  await runner()
+    .cwd(fixtures)
+    .fork('server.js')
+    .wait('stdout', /server started/)
+    .kill()
+    .end();
+});
+```
+
+### stdin(expected, respond)
+
+Detect a prompt for user input, then respond to it.
+
+- `expected`: {String|RegExp} - test `stdout` with regexp match or string includes
+- `respond`: {String|Array} - respond content, if set to array then write each with a delay.
+
+```js
+it('should support stdin respomd', async () => {
+  await runner()
+    .cwd(tmpDir)
+    .spawn('npm init')
+    .stdin(/name:/, 'example\n')  // wait for stdout, then respond
+    .stdin(/version:/, new Array(9).fill('\n')) // don't care about others, just enter
+    .file('package.json', { name: 'example' })
+    .end();
+});
+```
+
 ## Validator
 
-### stdout
+### stdout(expected)
 
-Validate stdout, support `regex` and `string.includes`.
+Validate stdout, support `regexp` and `string.includes`.
 
 ```js
 it('should support stdout()', async () => {
   await runner()
     .spawn('node -v')
-    .stdout(/v\d+\.\d+\.\d+/) // regex match
+    .stdout(/v\d+\.\d+\.\d+/) // regexp match
     .stdout(process.version)  // string includes
     .end();
 });
 ```
 
-### notStdout
+### notStdout(unexpected)
 
 Opposite of `stdout()`
 
-### stderr
+### stderr(expected)
 
-Validate stdout, support `regex` and `string.includes`.
+Validate stdout, support `regexp` and `string.includes`.
 
 ```js
 it('should support stderr()', async () => {
@@ -100,11 +254,11 @@ it('should support stderr()', async () => {
 });
 ```
 
-### notStderr
+### notStderr(unexpected)
 
 Opposite of `stderr()`
 
-### code
+### code(n)
 
 Validate process exit code.
 
@@ -119,14 +273,38 @@ it('should support code()', async () => {
 });
 ```
 
-### file
+### file(filePath, expected)
 
+Validate file.
 
-### notFile
+- `file(filePath)`: check whether file is exists
+- `file(filePath, 'some string')`: check whether file content includes specified string
+- `file(filePath, /some regexp/)`: checke whether file content match regexp
+- `file(filePath, {})`: checke whether file content partial includes specified JSON
 
-### expect
+```js
+it('should support file()', async () => {
+  await runner()
+    .cwd(tmpDir)
+    .fork('npm init -y')
+    .file('package.json')
+    .file('package.json', /"name":/)
+    .file('package.json', { name: 'example', config: { port: 8080 } })
+    .end();
+});
+```
+
+### notFile(filePath, unexpected)
+
+Opposite of `file()`
+
+> Notice: `.notFile('not-exist.md', 'abc')` will throw due to file is not exists.
+
+### expect(fn)
 
 Validate with custom function.
+
+Provide useful assert method `ctx.assert`.
 
 ```js
 it('should support expect()', async () => {
@@ -140,10 +318,36 @@ it('should support expect()', async () => {
 });
 ```
 
+## Operation
+
+### log
+
+### tap
+
+### sleep
+
+### shell
+
+### mkdir
+
+### rm
+
+### writeFile
+### http
+
 ## Context
 
 ### assert
 
+### logger
+
+### debug(level)
+
+## Unstable API
+
+### middleware
+
+### register
 
 ## License
 
@@ -163,7 +367,8 @@ it('should support expect()', async () => {
   - [ ] private method to replace _fn
   - [ ] pipe stdout when debug, and indent
   - [ ] middleware mkdir
-  - [ ] http api
+  - [ ] http api, wrap get/post, and body, query, contentType
+  - [ ] stdin key mapping and auto add \n
 - Tool
   - [ ] esm-first
   - [ ] prettier

@@ -15,7 +15,7 @@ describe('test/assert.test.js', () => {
   });
 
   describe('matchRule', () => {
-    it('should support regex', () => {
+    it('should support regexp', () => {
       matchRule(123456, /\d+/);
       matchRule('abc', /\w+/);
 
@@ -68,7 +68,7 @@ describe('test/assert.test.js', () => {
   });
 
   describe('matchRule', () => {
-    it('should support regex', () => {
+    it('should support regexp', () => {
       doesNotMatchRule(123456, /abc/);
       doesNotMatchRule('abc', /\d+/);
 

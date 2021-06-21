@@ -2,7 +2,7 @@ import { resolve } from 'path';
 import runner from '../lib/runner';
 import * as utils from './utils';
 
-describe('test/operatation.test.js', () => {
+describe('test/operation.test.js', () => {
   // const fixtures = utils.resolve(import.meta, 'fixtures');
   const tmpDir = utils.getTempDir(expect);
 
