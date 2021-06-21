@@ -20,36 +20,39 @@ describe('command-line end-to-end testing', () => {
   // testing shell
   it('should spawn', async () => {
     await runner()
-      .cwd(baseDir)
-      .spawn('npm init -y')
-      .stdout(/"name":/)
-      .file('package.json', { version: '1.0.0' })
+      .cwd(tmpDir)
+      .spawn('npm init')
+      .stdin(/name:/, 'example\n')
+      .stdin(/version:/, new Array(9).fill('\n')) // don't care about others, just enter
+      .stdout(/"name": "example"/)
+      .file('package.json', { name: 'example', version: '1.0.0' })
       .code(0)
       .end();
   });
 
-  // testing node cli with prompt
-  it('should fork', async () => {
+  it('should works with command-line apps', async () => {
     await runner()
-      .cwd(baseDir)
-      .fork('./bin/cli.js', [ '--name=tz' ], { execArgv: [ '--no-deprecation' ] })
-      .stdin(/Name:/, 'tz')
-      .stdout(/hi, tz/)
+      .cwd(fixtures)
+      .fork('example.js', [ '--name=test' ], { execArgv: [ '--no-deprecation' ] })
+      .stdout('this is example bin')
+      .stdout(/argv: \["--name=\w+"\]/)
+      .stdout(/execArgv: \["--no-deprecation"\]/)
+      .stderr(/this is a warning/)
       .code(0)
       .end();
   });
 
   // testing a http server which will not auto exit
-  it('should test server', async () => {
+  it('should works with long-run server', async () => {
     await runner()
-      .cwd(baseDir)
-      .fork('server.js', [], { env: { PORT: 8080 } })
+      .cwd(fixtures)
+      .fork('server.js')
       .wait('stdout', /server started/)
-      .request('http://localhost:3000', { path: '/?name=tz' }, async ({ ctx, body }) => {
-        ctx.assert.equal(body, 'hi, tz');
+      .request('http://localhost:3000', { path: '/?name=tz' }, async ({ ctx, text }) => {
+        const result = await text();
+        ctx.assert.equal(result, 'hi, tz');
       })
-      .stdout(/GET \/?name=tz/)
-      .kill()
+      .kill() // long-run server will not auto exit, so kill it manually after test
       .end();
   });
 });
@@ -81,6 +84,7 @@ npm i --save clet
   - [ ] tmpdir - mkdir + next + rm
   - [ ] private method to replace _fn
   - [ ] pipe stdout when debug, and indent
+  - [ ] middleware mkdir
 - Tool
   - [ ] esm-first
   - [ ] prettier

@@ -7,43 +7,40 @@ describe('test/example.test.js', () => {
 
   beforeEach(() => utils.initDir(tmpDir));
 
-  it('should fork cli', async () => {
+  it('should works with boilerplate scene', async () => {
+    await runner()
+      .cwd(tmpDir)
+      .spawn('npm init')
+      .stdin(/name:/, 'example\n')
+      .stdin(/version:/, new Array(9).fill('\n')) // don't care about others, just enter
+      .stdout(/"name": "example"/)
+      .file('package.json', { name: 'example', version: '1.0.0' })
+      .code(0)
+      .end();
+  });
+
+  it('should works with command-line apps', async () => {
     await runner()
       .cwd(fixtures)
-      .fork('./example.js', [ '--name=test' ])
+      .fork('example.js', [ '--name=test' ], { execArgv: [ '--no-deprecation' ] })
       .stdout('this is example bin')
-      .stdout(/--name=\w+/)
+      .stdout(/argv: \["--name=\w+"\]/)
+      .stdout(/execArgv: \["--no-deprecation"\]/)
       .stderr(/this is a warning/)
       .code(0)
       .end();
   });
 
-  it('should spawn command', async () => {
-    await runner()
-      .cwd(tmpDir)
-      .spawn('npm init')
-      .stdin(/name:/, [ 'example\n', '\n', 'this is an example\n', '\n', '\n', '\n', '\n', '\n', '\n', '\n' ])
-      .stdout(/"name": "example"/)
-      .file('package.json', { name: 'example' })
-      .code(0)
-      .end();
-  });
-
-  it('should test long-run server', async () => {
+  it('should works with long-run server', async () => {
     await runner()
       .cwd(fixtures)
       .fork('server.js')
       .wait('stdout', /server started/)
-      .request('http://localhost:3000', { path: '/?name=tz' }, async ({ ctx, body }) => {
-        let res = '';
-        for await (const data of body) {
-          res += data.toString();
-        }
-        // TODO: when assert fail, don't kill pid
-        ctx.assert.equal(res, 'hi, tz');
+      .request('http://localhost:3000', { path: '/?name=tz' }, async ({ ctx, text }) => {
+        const result = await text();
+        ctx.assert.equal(result, 'hi, tz');
       })
-      .log('>>> %j', 'result.stdout')
-      .kill()
+      .kill() // long-run server will not auto exit, so kill it manually after test
       .end();
   });
 });

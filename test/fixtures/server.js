@@ -10,7 +10,7 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(3000, () => {
-  console.log('[%j] server started at localhost:3000', process.pid);
+  console.log('[%s] server started at localhost:3000', process.pid);
 });
 
 // setTimeout(() => {
