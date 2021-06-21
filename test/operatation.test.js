@@ -16,7 +16,7 @@ describe('test/operatation.test.js', () => {
       .cwd(tmpDir)
       .mkdir('a/b')
       .file(targetPath)
-      .spawn('ls')
+      .spawn('ls -l')
       .mkdir('a/b/c')
       .end();
 

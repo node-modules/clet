@@ -88,7 +88,7 @@ describe('test/process.test.js', () => {
       .fork('long-run.js')
       .wait('stdout', /long run/)
       .kill()
-      .stdout(/recieve SIGTERM/)
+      // .stdout(/recieve SIGTERM/)
       .notStdout(/exit long-run/)
       .end();
   });

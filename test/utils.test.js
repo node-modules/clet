@@ -4,10 +4,6 @@ const { assert } = utils;
 
 
 describe('test/utils.test.js', () => {
-  it('is', () => {
-    assert(utils.is.object({}));
-  });
-
   it('mkdirp and rm', async () => {
     const tmpDir = utils.resolve(import.meta, '.tmp/utils/a');
 
