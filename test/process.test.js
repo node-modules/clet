@@ -54,22 +54,20 @@ describe('test/process.test.js', () => {
   });
 
   it('should assert process with fail', async () => {
-    await utils.assert.rejects(async () => {
-      await runner()
-        .cwd(fixtures)
-        .fork(`${fixtures}/process.js`, [ '--fail' ])
-        .stdout('version: v')
-        .stderr(/this is an error/)
-        .stderr('an error')
-        .notStderr('xxxx')
-        .notStderr(/^abc/)
-        .expect(ctx => {
-          const { stdout } = ctx.result;
-          ctx.assert.match(stdout, /argv:/);
-        })
-        .code(1)
-        .end();
-    }, /Command failed/);
+    await runner()
+      .cwd(fixtures)
+      .fork(`${fixtures}/process.js`, [ '--fail' ])
+      .stdout('version: v')
+      .stderr(/this is an error/)
+      .stderr('an error')
+      .notStderr('xxxx')
+      .notStderr(/^abc/)
+      .expect(ctx => {
+        const { stdout } = ctx.result;
+        ctx.assert.match(stdout, /argv:/);
+      })
+      .code(1)
+      .end();
   });
 
   it('should timeout', async () => {
