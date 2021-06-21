@@ -17,7 +17,7 @@ describe('test/wait.test.js', () => {
       .fork('./wait.js')
       .wait('close')
       .code(0)
-      .notFile(filePath) // will del when exit
+      .notFile(filePath) // will rm when exit
       .end();
   });
 
@@ -30,7 +30,7 @@ describe('test/wait.test.js', () => {
       .fork('./wait.js')
       .wait()
       .code(0)
-      .notFile(filePath) // will del when exit
+      .notFile(filePath) // will rm when exit
       .end();
   });
 
@@ -47,7 +47,7 @@ describe('test/wait.test.js', () => {
       .file(filePath)
       .wait('close')
       .code(0)
-      .notFile(filePath) // will del when exit
+      .notFile(filePath) // will rm when exit
       .end();
   });
 
@@ -64,7 +64,7 @@ describe('test/wait.test.js', () => {
       .file(filePath)
       .wait('close')
       .code(0)
-      .notFile(filePath) // will del when exit
+      .notFile(filePath) // will rm when exit
       .end();
   });
 
@@ -81,7 +81,7 @@ describe('test/wait.test.js', () => {
       .file(filePath)
       .wait('close')
       .code(0)
-      .notFile(filePath) // will del when exit
+      .notFile(filePath) // will rm when exit
       .end();
   });
 
@@ -100,7 +100,7 @@ describe('test/wait.test.js', () => {
       .file(filePath)
       .wait('close')
       .code(0)
-      .notFile(filePath) // will del when exit
+      .notFile(filePath) // will rm when exit
       .end();
   });
 
@@ -117,7 +117,7 @@ describe('test/wait.test.js', () => {
       .file(filePath)
       .wait('close')
       .code(0)
-      .notFile(filePath) // will del when exit
+      .notFile(filePath) // will rm when exit
       .end();
   });
 
@@ -132,7 +132,7 @@ describe('test/wait.test.js', () => {
       .notFile(filePath)
       .wait('message', /not-exist-event/)
       .code(0)
-      .notFile(filePath) // will del when exit
+      .notFile(filePath) // will rm when exit
       .end();
   });
 
@@ -145,7 +145,7 @@ describe('test/wait.test.js', () => {
       .notFile(filePath)
       .fork('./wait.js')
       .code(0)
-      .notFile(filePath) // will del when exit
+      .notFile(filePath) // will rm when exit
       .end();
   });
 });

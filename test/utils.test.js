@@ -8,14 +8,14 @@ describe('test/utils.test.js', () => {
     assert(utils.is.object({}));
   });
 
-  it('mkdirp and del', async () => {
+  it('mkdirp and rm', async () => {
     const tmpDir = utils.resolve(import.meta, '.tmp/utils/a');
 
     assert(!fs.existsSync(tmpDir));
     await utils.mkdir(tmpDir);
     assert(fs.existsSync(tmpDir));
 
-    await utils.del(tmpDir);
+    await utils.rm(tmpDir);
     assert(!fs.existsSync(tmpDir));
   });
 

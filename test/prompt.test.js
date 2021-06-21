@@ -17,6 +17,18 @@ describe('test/prompt.test.js', () => {
       .end();
   });
 
+  it('should support multi respond', async () => {
+    await runner()
+      .cwd(fixtures)
+      .fork('./prompt.js')
+      .stdin(/Name:/, [ 'tz\n', 'tz@eggjs.com\n' ])
+      .stdout(/Name:/)
+      .stdout(/Email:/)
+      .stdout(/Author: tz <tz@eggjs.com>/)
+      .code(0)
+      .end();
+  });
+
   it('should work no matter stdin order', async () => {
     await runner()
       .cwd(fixtures)

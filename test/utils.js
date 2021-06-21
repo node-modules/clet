@@ -17,6 +17,6 @@ export function getTempDir(expect) {
 }
 
 export async function initDir(p) {
-  await utils.del(p);
+  await utils.rm(p);
   await utils.mkdir(p);
 }

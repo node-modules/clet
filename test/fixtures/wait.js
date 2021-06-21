@@ -17,7 +17,7 @@ async function run() {
   console.error('be careful');
 
   console.log('stopping...');
-  await utils.del(filePath, { force: true });
+  await utils.rm(filePath, { force: true });
 }
 
 run().catch(console.error);

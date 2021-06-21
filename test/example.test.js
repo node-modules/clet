@@ -21,7 +21,8 @@ describe('test/example.test.js', () => {
   it('should spawn command', async () => {
     await runner()
       .cwd(tmpDir)
-      .spawn('npm init -y')
+      .spawn('npm init')
+      .stdin(/name:/, [ 'example\n', '\n', 'this is an example\n', '\n', '\n', '\n', '\n', '\n', '\n', '\n' ])
       .stdout(/"name": "example"/)
       .file('package.json', { name: 'example' })
       .code(0)
@@ -43,7 +44,6 @@ describe('test/example.test.js', () => {
       })
       .log('>>> %j', 'result.stdout')
       .kill()
-      .code(0)
       .end();
   });
 });
