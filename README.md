@@ -65,6 +65,8 @@ npm i --save clet
 
 ## API
 
+### Validation
+
 ## License
 
 ## Usage
@@ -83,6 +85,7 @@ npm i --save clet
   - [ ] private method to replace _fn
   - [ ] pipe stdout when debug, and indent
   - [ ] middleware mkdir
+  - [ ] http api
 - Tool
   - [ ] esm-first
   - [ ] prettier
