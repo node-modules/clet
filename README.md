@@ -65,7 +65,81 @@ npm i --save clet
 
 ## API
 
-### Validation
+### Validator
+
+#### stdout
+
+Validate stdout, support `regex` and `string.includes`.
+
+```js
+it('should support stdout()', async () => {
+  await runner()
+    .spawn('node -v')
+    .stdout(/v\d+\.\d+\.\d+/) // regex match
+    .stdout(process.version)  // string includes
+    .end();
+});
+```
+
+#### notStdout
+
+Opposite of `stdout()`
+
+#### stderr
+
+Validate stdout, support `regex` and `string.includes`.
+
+```js
+it('should support stderr()', async () => {
+  await runner()
+    .cwd(fixtures)
+    .fork('example.js')
+    .stderr(/a warning/)
+    .stderr('this is a warning')
+    .end();
+});
+```
+
+#### notStderr
+
+Opposite of `stderr()`
+
+#### code
+
+Validate process exit code.
+
+> Notice: when proc is kill, code maybe undefined if you don't hook Signal Events.
+
+```js
+it('should support code()', async () => {
+  await runner()
+    .spawn('node -v')
+    .code(0)
+    .end();
+});
+```
+
+#### file
+
+
+#### notFile
+
+#### expect
+
+Validate with custom function.
+
+```js
+it('should support expect()', async () => {
+  await runner()
+    .spawn('node -v')
+    .expect(ctx => {
+      const { assert, result } = ctx;
+      assert.match(result.stdout, /v\d+\.\d+\.\d+/);
+    })
+    .end();
+});
+```
+
 
 ## License
 
