@@ -95,7 +95,6 @@ describe('test/validator.test.js', () => {
           .cwd(fixtures)
           .fork('process.js', [ '--fail' ])
           .end();
-
       }, /Command failed with exit code 1/);
     });
   });

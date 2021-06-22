@@ -369,6 +369,7 @@ it('should support expect()', async () => {
   - [ ] middleware mkdir
   - [ ] http api, wrap get/post, and body, query, contentType
   - [ ] stdin key mapping and auto add \n
+  - [ ] validate stdin rest and throw
 - Tool
   - [ ] esm-first
   - [ ] prettier
