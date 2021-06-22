@@ -94,7 +94,7 @@ Options:
 
 ### spawn(cmd, args, opts)
 
-Exec a shell
+Execute a shell script as a child process.
 
 ```js
 it('should support spawn', async () => {
@@ -109,7 +109,7 @@ it('should support spawn', async () => {
 
 ### end()
 
-Start running the test.
+Finish chain packaging and start the test.
 
 ```js
 it('should support spawn', async () => {
@@ -165,12 +165,10 @@ Wait for some condition, then resume the chain, useful for tesing long-run http 
   - {Object}: check whether partial includes specified JSON
   - {Function}: check whether with specified function
 
-> Notice: don't forgot to kill() after test.
+> Notice: don't forgot to `wait('end')` or `kill()` later.
 
 ```js
 it('should wait', async () => {
-  const filePath = path.join(tmpDir, 'event.md');
-
   await runner()
     .fork('./wait.js')
     .wait('stdout', /server started/)
@@ -187,7 +185,7 @@ Kill the child process.
 
 useful for manually end long-run server after validate.
 
-> Notice: when kill, exit code maybe undefined if user don't hook signal event.
+> Notice: when kill, exit code maybe undefined if the command don't hook signal event.
 
 ```js
 it('should kill() manually after test server', async () => {
@@ -262,13 +260,15 @@ Opposite of `stderr()`
 
 Validate process exit code.
 
+will auto check whether proc is exit unexpected by default, so only use this if you wan't to validate fail exitCode.
+
 > Notice: when proc is kill, code maybe undefined if you don't hook Signal Events.
 
 ```js
 it('should support code()', async () => {
   await runner()
-    .spawn('node -v')
-    .code(0)
+    .spawn('node --unknown-argv')
+    .code(1)
     .end();
 });
 ```

@@ -80,6 +80,24 @@ describe('test/validator.test.js', () => {
         .code(0)
         .end();
     });
+
+    it('should support code(fn)', async () => {
+      await runner()
+        .cwd(fixtures)
+        .spawn('node --no-exists-argv')
+        .code(n => n < 0)
+        .end();
+    });
+
+    it('should throw if not calling code() when proc fail', async () => {
+      await assert.rejects(async () => {
+        await runner()
+          .cwd(fixtures)
+          .fork('process.js', [ '--fail' ])
+          .end();
+
+      }, /Command failed with exit code 1/);
+    });
   });
 
   describe('file', () => {
