@@ -260,9 +260,9 @@ Opposite of `stderr()`
 
 Validate process exit code.
 
-will auto check whether proc is exit unexpected by default, so only use this if you wan't to validate fail exitCode.
+will auto check whether proc is exit unexpected by default, so only use this if you want to validate fail exitCode.
 
-> Notice: when proc is kill, code maybe undefined if you don't hook Signal Events.
+> Notice: when proc is kill, exit code maybe undefined if you don't hook signal events.
 
 ```js
 it('should support code()', async () => {

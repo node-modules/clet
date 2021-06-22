@@ -56,4 +56,19 @@ describe('test/prompt.test.js', () => {
       .code(0)
       .end();
   });
+
+  it('should handle error', async () => {
+    await runner()
+      .cwd(fixtures)
+      .fork('./prompt.js')
+      .on('spawn', ({ proc }) => {
+        // console.log(proc);
+        // proc.stdin.end();
+        // proc.stdin.destroy();
+      })
+      .stdin(/Name:/, 'tz\n')
+      .stdout(/Author: tz <tz@eggjs.com>/)
+      .code(0)
+      .end();
+  });
 });
