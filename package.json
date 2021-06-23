@@ -47,7 +47,7 @@
   },
   "jest": {
     "transform": {},
-    "testTimeout": 10000,
+    "testTimeout": 5000,
     "setupFilesAfterEnv": [
       "./test/jest.setup.js"
     ]

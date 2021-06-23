@@ -31,10 +31,21 @@ describe('test/runner.test.js', () => {
         .fork('long-run.js')
         .wait('stdout', /long run/)
         .tap(() => {
-          throw new Error('trigger break');
+          throw new Error('fork trigger break');
         })
         .end();
-    }, /trigger break/);
+    }, /fork trigger break/);
+
+    await assert.rejects(async () => {
+      await runner()
+        .cwd(fixtures)
+        .spawn('node', [ 'long-run.js' ])
+        .wait('stdout', /long run/)
+        .tap(() => {
+          throw new Error('spawn trigger break');
+        })
+        .end();
+    }, /spawn trigger break/);
   });
 
   it('should logger', async () => {
