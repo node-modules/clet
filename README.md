@@ -200,18 +200,22 @@ it('should kill() manually after test server', async () => {
 
 ### stdin(expected, respond)
 
-Detect a prompt for user input, then respond to it.
+Detect a prompt, then respond to it.
 
-- `expected`: {String|RegExp} - test `stdout` with regexp match or string includes
+- `expected`: {String|RegExp} - test `stdout` with regexp match or string includes.
 - `respond`: {String|Array} - respond content, if set to array then write each with a delay.
 
+You could use `KEYS.UP` / `KEYS.DOWN` to respond to choices prompt.
+
 ```js
-it('should support stdin respomd', async () => {
+import runner, { KEYS } from '../lib/runner.js';
+
+it('should support stdin respond', async () => {
   await runner()
     .cwd(tmpDir)
     .spawn('npm init')
     .stdin(/name:/, 'example\n')  // wait for stdout, then respond
-    .stdin(/version:/, new Array(9).fill('\n')) // don't care about others, just enter
+    .stdin(/version:/, new Array(9).fill(KEYS.ENTER)) // don't care about others, just enter
     .file('package.json', { name: 'example' })
     .end();
 });

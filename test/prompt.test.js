@@ -1,5 +1,7 @@
-import runner from '../lib/runner.js';
+import runner, { KEYS } from '../lib/runner.js';
 import * as utils from './test-utils.js';
+
+const { assert } = utils;
 
 describe('test/prompt.test.js', () => {
   const fixtures = utils.resolve(import.meta, 'fixtures');
@@ -17,15 +19,15 @@ describe('test/prompt.test.js', () => {
       .end();
   });
 
-  it('should work', async () => {
+  it('should work with prompt', async () => {
     await runner()
       .cwd(fixtures)
       .fork('./prompt.js')
       .stdin(/Name:/, 'tz\n')
       .stdin(/Email:/, 'tz@eggjs.com\n')
-      .stdout(/Name:/)
-      .stdout(/Email:/)
+      .stdin(/Gender:/, [ KEYS.DOWN, KEYS.ENTER ])
       .stdout(/Author: tz <tz@eggjs.com>/)
+      .stdout(/Gender: girl/)
       .code(0)
       .end();
   });
@@ -34,54 +36,26 @@ describe('test/prompt.test.js', () => {
     await runner()
       .cwd(fixtures)
       .fork('./prompt.js')
-      .stdin(/Name:/, [ 'tz\n', 'tz@eggjs.com\n' ])
-      .stdout(/Name:/)
-      .stdout(/Email:/)
+      .stdin(/Name:/, [ 'tz\n', 'tz@eggjs.com\n', '\n' ])
       .stdout(/Author: tz <tz@eggjs.com>/)
+      .stdout(/Gender: boy/)
       .code(0)
       .end();
   });
 
-  // it('should work no matter stdin order', async () => {
-  //   await runner()
-  //     .cwd(fixtures)
-  //     .fork('./prompt.js')
-  //     .stdin(/Email:/, 'tz@eggjs.com\n')
-  //     .stdin(/Name:/, 'tz\n')
-  //     .stdout(/Name:/)
-  //     .stdout(/Email:/)
-  //     .stdout(/Author: tz <tz@eggjs.com>/)
-  //     .code(0)
-  //     .end();
-  // });
 
-  // it('should work with extra stdin', async () => {
-  //   await runner()
-  //     .cwd(fixtures)
-  //     .fork('./prompt.js')
-  //     .stdin(/Email:/, 'tz@eggjs.com\n')
-  //     .stdin(/Name:/, 'tz\n')
-  //     .stdin(/Description:/, 'this is a test\n')
-  //     .stdout(/Name:/)
-  //     .stdout(/Email:/)
-  //     .stdout(/Author: tz <tz@eggjs.com>/)
-  //     .log('result.stdout')
-  //     .code(0)
-  //     .end();
-  // });
-
-  it.skip('should handle error', async () => {
-    await runner()
-      .cwd(fixtures)
-      .fork('./prompt.js')
-      .on('spawn', ({ proc }) => {
-        console.log(proc);
-        // proc.stdin.end();
-        // proc.stdin.destroy();
-      })
-      .stdin(/Name:/, 'tz\n')
-      .stdout(/Author: tz <tz@eggjs.com>/)
-      .code(0)
-      .end();
+  it('should throw when process exit before the prompt is resolve', async () => {
+    await assert.rejects(async () => {
+      await runner()
+        .cwd(fixtures)
+        .fork('./prompt.js')
+        .stdin(/Name:/, 'tz\n')
+        .stdin(/Email:/, 'tz@eggjs.com\n')
+        .stdin(/Gender:/, '\n')
+        .stdin(/Unknown:/, 'still wait\n')
+        .stdout(/Author: tz <tz@eggjs.com>/)
+        .code(1)
+        .end();
+    }, /wait for prompt, but proccess is terminate/);
   });
 });
