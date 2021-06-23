@@ -1,5 +1,5 @@
-import runner from '../lib/runner';
-import * as utils from './utils';
+import runner from '../lib/runner.js';
+import * as utils from './test-utils.js';
 const { assert } = utils;
 
 describe('test/runner.test.js', () => {

@@ -20,3 +20,24 @@ export async function initDir(p) {
   await utils.rm(p);
   await utils.mkdir(p);
 }
+
+export const timePlugin = {
+  time(label = 'default') {
+    return this.tap(() => {
+      this.ctx.timeMapping = this.ctx.timeMapping || {};
+      this.ctx.timeMapping[label] = Date.now();
+    });
+  },
+  timeEnd(label, fn) {
+    if (utils.types.isFunction(label)) {
+      fn = label;
+      label = 'default';
+    }
+    return this.tap(() => {
+      const start = this.ctx.timeMapping[label];
+      const now = Date.now();
+      const cost = now - start;
+      fn(cost, start, now);
+    });
+  },
+};

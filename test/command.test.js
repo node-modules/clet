@@ -1,5 +1,5 @@
-import runner from '../lib/runner';
-import * as utils from './utils';
+import runner from '../lib/runner.js';
+import * as utils from './test-utils.js';
 
 describe('test/command.test.js', () => {
   const fixtures = utils.resolve(import.meta, 'fixtures');

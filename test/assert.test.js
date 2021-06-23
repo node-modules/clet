@@ -1,4 +1,4 @@
-import { assert, matchRule, doesNotMatchRule } from '../lib/utils';
+import { assert, matchRule, doesNotMatchRule } from '../lib/utils.js';
 
 describe('test/assert.test.js', () => {
   const pkgInfo = {

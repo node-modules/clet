@@ -1,5 +1,6 @@
-import runner from '../lib/runner';
-import * as utils from './utils';
+import request from 'supertest';
+import runner from '../lib/runner.js';
+import * as utils from './test-utils.js';
 
 describe('test/example.test.js', () => {
   const fixtures = utils.resolve(import.meta, 'fixtures');
@@ -36,10 +37,17 @@ describe('test/example.test.js', () => {
       .cwd(fixtures)
       .fork('server.js')
       .wait('stdout', /server started/)
-      .request('http://localhost:3000', { path: '/?name=tz' }, async ({ ctx, text }) => {
-        const result = await text();
-        ctx.assert.equal(result, 'hi, tz');
+      .expect(async () => {
+        return request('http://localhost:3000')
+          .get('/')
+          .query({ name: 'tz' })
+          .expect(200)
+          .expect('hi, tz');
       })
+      // .request('http://localhost:3000', { path: '/?name=tz' }, async ({ ctx, text }) => {
+      //   const result = await text();
+      //   ctx.assert.equal(result, 'hi, tz');
+      // })
       .kill() // long-run server will not auto exit, so kill it manually after test
       .end();
   });

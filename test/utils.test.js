@@ -1,5 +1,5 @@
 import fs from 'fs';
-import * as utils from '../lib/utils';
+import * as utils from '../lib/utils.js';
 const { assert } = utils;
 
 

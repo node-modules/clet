@@ -109,7 +109,7 @@ it('should support spawn', async () => {
 
 ### end()
 
-Finish chain packaging and start the test.
+Perform the test.
 
 ```js
 it('should support spawn', async () => {
@@ -370,6 +370,7 @@ it('should support expect()', async () => {
   - [ ] http api, wrap get/post, and body, query, contentType
   - [ ] stdin key mapping and auto add \n
   - [ ] validate stdin rest and throw
+  - [ ] wait stdout with new content
 - Tool
   - [ ] esm-first
   - [ ] prettier

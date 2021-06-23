@@ -1,23 +1,16 @@
 #!/usr/bin/env node
 
-import * as utils from '../utils.js';
+import { sleep } from '../test-utils.js';
 
 async function run() {
-  console.log('this is long run process');
-  const filePath = process.env.filePath;
-  console.log('starting egg....');
-
-  await utils.sleep(1000);
-  console.log(`log to ${filePath}`);
-  await utils.writeFile(filePath, 'this is a log');
-
+  console.log('starting...');
+  await sleep(500);
+  console.log('started');
+  console.error('be careful');
   process.send && process.send({ action: 'egg-ready' });
   process.send && process.send('egg-ready');
-  console.log('egg started at localhost:8080');
-  console.error('be careful');
-
-  console.log('stopping...');
-  await utils.rm(filePath, { force: true });
+  await sleep(500);
+  process.exit(0);
 }
 
 run().catch(console.error);

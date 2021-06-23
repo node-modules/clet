@@ -10,6 +10,5 @@ run/
 .vscode/history
 .tmp
 .vscode
-snippet.cjs
-snippet.js
 .tempCodeRunnerFile.js
+/snippet/
