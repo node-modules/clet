@@ -37,6 +37,13 @@ describe('test/runner.test.js', () => {
     }, /trigger break/);
   });
 
-  it.todo('logger');
-
+  it('should logger', async () => {
+    await runner()
+      .cwd(fixtures)
+      .log('command-line test start')
+      .fork('example.js')
+      .stdout(/this is example/)
+      .log('command-line test end')
+      .end();
+  });
 });

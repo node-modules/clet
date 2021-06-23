@@ -5,15 +5,12 @@ const { assert } = utils;
 
 describe('test/wait.test.js', () => {
   const fixtures = utils.resolve(import.meta, 'fixtures');
-  const tmpDir = utils.getTempDir(expect);
   const cliPath = path.join(fixtures, 'wait.js');
-
-  beforeEach(() => utils.initDir(tmpDir));
 
   it('should wait stdout', async () => {
     await runner()
       .register(utils.timePlugin)
-      .cwd(tmpDir)
+      .cwd(fixtures)
       .time()
       .fork(cliPath)
       .timeEnd(cost => assert(cost < 500))
@@ -26,7 +23,7 @@ describe('test/wait.test.js', () => {
   it('should wait stderr', async () => {
     await runner()
       .register(utils.timePlugin)
-      .cwd(tmpDir)
+      .cwd(fixtures)
       .time()
       .fork(cliPath)
       .timeEnd(cost => assert(cost < 500))
@@ -39,7 +36,7 @@ describe('test/wait.test.js', () => {
   it('should wait message with object', async () => {
     await runner()
       .register(utils.timePlugin)
-      .cwd(tmpDir)
+      .cwd(fixtures)
       .time()
       .fork(cliPath)
       .timeEnd(cost => assert(cost < 500))
@@ -52,7 +49,7 @@ describe('test/wait.test.js', () => {
   it('should wait message with regex', async () => {
     await runner()
       .register(utils.timePlugin)
-      .cwd(tmpDir)
+      .cwd(fixtures)
       .time()
       .fork(cliPath)
       .timeEnd(cost => assert(cost < 500))
@@ -65,7 +62,7 @@ describe('test/wait.test.js', () => {
   it('should wait message with fn', async () => {
     await runner()
       .register(utils.timePlugin)
-      .cwd(tmpDir)
+      .cwd(fixtures)
       .time()
       .fork(cliPath)
       .timeEnd(cost => assert(cost < 500))

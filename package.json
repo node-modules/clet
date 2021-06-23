@@ -47,7 +47,8 @@
   },
   "jest": {
     "transform": {},
-    "testTimeout": 10000
+    "testTimeout": 10000,
+    "setupFilesAfterEnv": [ "./test/jest.setup.js" ]
   },
   "eslintIgnore": [
     "coverage",
