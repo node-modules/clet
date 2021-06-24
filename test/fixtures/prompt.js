@@ -3,6 +3,12 @@
 import enquirer from 'enquirer';
 
 async function run() {
+  if (process.env.throw) {
+    setTimeout(() => {
+      console.log('going exit');
+      process.exit(1);
+    }, 1000);
+  }
   const answers = await enquirer.prompt([{
     type: 'input',
     name: 'name',

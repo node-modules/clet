@@ -51,6 +51,7 @@ describe('test/prompt.test.js', () => {
       await runner()
         .cwd(fixtures)
         .fork('./prompt.js')
+        .env('throw', true)
         .stdin(/Name:/, 'tz\n')
         .stdin(/Email:/, 'tz@eggjs.com\n')
         .stdin(/Gender:/, '\n')
