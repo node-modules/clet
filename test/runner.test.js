@@ -1,9 +1,10 @@
+import path from 'path';
 import runner from '../lib/runner.js';
 import * as utils from './test-utils.js';
 const { assert } = utils;
 
 describe('test/runner.test.js', () => {
-  const fixtures = utils.resolve(import.meta, 'fixtures');
+  const fixtures = path.resolve('test/fixtures');
   const tmpDir = utils.getTempDir();
 
   beforeEach(() => utils.initDir(tmpDir));
@@ -11,12 +12,7 @@ describe('test/runner.test.js', () => {
   it('should work', async () => {
     const instance = await runner()
       .cwd(fixtures)
-      .fork('./example.js', [ '--name=test' ])
-      .stdout('this is example bin')
-      .stdout(/argv:/)
-      .notStdout('xxxx')
-      .notStdout(/^abc/)
-      .log('result: %j', 'result.stdout')
+      .spawn('node -v')
       .code(0)
       .end();
 
@@ -28,8 +24,8 @@ describe('test/runner.test.js', () => {
     await runner()
       .cwd(fixtures)
       .log('command-line test start')
-      .fork('example.js')
-      .stdout(/this is example/)
+      .spawn('node -v')
+      .stdout(/v\d+\.\d+\.\d+/)
       .log('command-line test end')
       .end();
   });
@@ -38,7 +34,7 @@ describe('test/runner.test.js', () => {
     await runner()
       .cwd(fixtures)
       .env('a', 'b')
-      .spawn('npm -v')
+      .spawn('node -v')
       .tap(ctx => {
         ctx.assert(ctx.cwd === fixtures);
         ctx.assert(ctx.env.a === 'b');

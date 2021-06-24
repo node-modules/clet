@@ -1,10 +1,12 @@
+
+import path from 'path';
 import runner, { KEYS } from '../lib/runner.js';
 import * as utils from './test-utils.js';
 
 const { assert } = utils;
 
 describe('test/prompt.test.js', () => {
-  const fixtures = utils.resolve(import.meta, 'fixtures');
+  const fixtures = path.resolve('test/fixtures');
 
   it('should work with readline', async () => {
     await runner()

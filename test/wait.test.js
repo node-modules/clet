@@ -4,7 +4,7 @@ import path from 'path';
 const { assert } = utils;
 
 describe('test/wait.test.js', () => {
-  const fixtures = utils.resolve(import.meta, 'fixtures');
+  const fixtures = path.resolve('test/fixtures');
   const cliPath = path.join(fixtures, 'wait.js');
 
   it('should wait stdout', async () => {

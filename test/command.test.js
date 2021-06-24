@@ -1,22 +1,23 @@
 import runner from '../lib/runner.js';
-import * as utils from './test-utils.js';
+import path from 'path';
 
 describe('test/command.test.js', () => {
-  const fixtures = utils.resolve(import.meta, 'fixtures');
+  const fixtures = path.resolve('test/fixtures/command');
 
   describe('fork', () => {
     it('should fork', async () => {
       await runner()
         .cwd(fixtures)
-        .fork('./command.js')
+        .fork('./bin/cli.js')
         .stdout(/version=v\d+\.\d+\.\d+/)
+        .stdout(`cwd=${fixtures}`)
         .end();
     });
 
     it('should fork with args', async () => {
       await runner()
         .cwd(fixtures)
-        .fork('./command.js', [ '--name=tz' ])
+        .fork('./bin/cli.js', [ '--name=tz' ])
         .stdout(/argv=.*--name=tz/)
         .end();
     });
@@ -24,7 +25,7 @@ describe('test/command.test.js', () => {
     it('should fork with opts', async () => {
       await runner()
         .cwd(fixtures)
-        .fork('./command.js', { nodeOptions: [ '--no-deprecation' ] })
+        .fork('./bin/cli.js', { nodeOptions: [ '--no-deprecation' ] })
         .stdout(/argv=\[]/)
         .stdout(/execArgv=\["--no-deprecation"]/)
         .end();
@@ -33,7 +34,7 @@ describe('test/command.test.js', () => {
     it('should fork with args + env', async () => {
       await runner()
         .cwd(fixtures)
-        .fork('./command.js', [ '--name=tz' ], { execArgv: [ '--no-deprecation' ] })
+        .fork('./bin/cli.js', [ '--name=tz' ], { execArgv: [ '--no-deprecation' ] })
         .stdout(/argv=.*--name=tz/)
         .stdout(/execArgv=\["--no-deprecation"]/)
         .end();
@@ -43,7 +44,7 @@ describe('test/command.test.js', () => {
       await runner()
         .cwd(fixtures)
         .env('a', 1)
-        .fork('./command.js', { env: { logEnv: 'PATH,a,b', b: 2 } })
+        .fork('./bin/cli.js', { env: { logEnv: 'PATH,a,b', b: 2 } })
         .stdout(/env.a=1/)
         .stdout(/env.b=2/)
         .stdout(/env.PATH=/)
@@ -62,8 +63,9 @@ describe('test/command.test.js', () => {
     it('should spawn with args', async () => {
       await runner()
         .cwd(fixtures)
-        .spawn('node', [ './command.js' ])
+        .spawn('node', [ './bin/cli.js' ])
         .stdout(/version=v\d+\.\d+\.\d+/)
+        .stdout(`cwd=${fixtures}`)
         .end();
     });
 
@@ -71,7 +73,7 @@ describe('test/command.test.js', () => {
       await runner()
         .cwd(fixtures)
         .env('a', 1)
-        .spawn('node ./command.js', { env: { logEnv: 'PATH,a,b', b: 2 } })
+        .spawn('node ./bin/cli.js', { env: { logEnv: 'PATH,a,b', b: 2 } })
         .stdout(/version=v\d+\.\d+\.\d+/)
         .stdout(/env.a=1/)
         .stdout(/env.b=2/)
@@ -83,7 +85,7 @@ describe('test/command.test.js', () => {
       await runner()
         .cwd(fixtures)
         .env('a', 1)
-        .spawn('node', [ './command.js' ], { env: { logEnv: 'PATH,a,b', b: 2 } })
+        .spawn('node', [ './bin/cli.js' ], { env: { logEnv: 'PATH,a,b', b: 2 } })
         .stdout(/version=v\d+\.\d+\.\d+/)
         .stdout(/env.a=1/)
         .stdout(/env.b=2/)

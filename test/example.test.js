@@ -5,7 +5,7 @@ import runner from '../lib/runner.js';
 import * as utils from './test-utils.js';
 
 describe('test/example.test.js', () => {
-  const fixtures = utils.resolve(import.meta, 'fixtures');
+  const fixtures = path.resolve('test/fixtures');
   const tmpDir = utils.getTempDir();
 
   beforeEach(() => utils.initDir(tmpDir));
@@ -28,9 +28,9 @@ describe('test/example.test.js', () => {
       .cwd(baseDir)
       .fork('bin/cli.js', [ '--name=test' ], { execArgv: [ '--no-deprecation' ] })
       .stdout('this is example bin')
-      .stdout(`cwd: ${baseDir}`)
-      .stdout(/argv: \["--name=\w+"\]/)
-      .stdout(/execArgv: \["--no-deprecation"\]/)
+      .stdout(`cwd=${baseDir}`)
+      .stdout(/argv=\["--name=\w+"\]/)
+      .stdout(/execArgv=\["--no-deprecation"\]/)
       .stderr(/this is a warning/)
       .end();
   });

@@ -76,8 +76,8 @@ it('should fork', async () => {
     .cwd(fixtures)
     .fork('example.js', [ '--name=test' ], { execArgv: [ '--no-deprecation' ] })
     .stdout('this is example bin')
-    .stdout(/argv: \["--name=\w+"\]/)
-    .stdout(/execArgv: \["--no-deprecation"\]/)
+    .stdout(/argv=\["--name=\w+"\]/)
+    .stdout(/execArgv=\["--no-deprecation"\]/)
     .stderr(/this is a warning/)
     .code(0)
     .end();

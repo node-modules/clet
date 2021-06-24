@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-console.log('cwd: %s', process.cwd());
+console.log('cwd=%s', process.cwd());
 console.log('version=%s', process.version);
 console.log('argv=%j', process.argv.slice(2));
 console.log('execArgv=%j', process.execArgv);

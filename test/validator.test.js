@@ -5,7 +5,7 @@ import * as utils from './test-utils.js';
 const { assert } = utils;
 
 describe('test/validator.test.js', () => {
-  const fixtures = utils.resolve(import.meta, 'fixtures');
+  const fixtures = path.resolve('test/fixtures');
   const tmpDir = utils.getTempDir();
 
   beforeEach(() => utils.initDir(tmpDir));
