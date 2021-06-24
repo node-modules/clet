@@ -389,7 +389,7 @@ LifeCycle: `prepare -> middleware pre -> prompt -> run -> wait for ready/unready
 import runner from 'clet';
 
 runner(opts)
-  .middleware(async next => await next())
+  .use(async next => await next())
   .plugin(key, fn)
   .debug(level)
   .clone()

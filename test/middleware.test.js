@@ -5,12 +5,12 @@ describe('test/middleware.test.js', () => {
   it('should support middleware', async () => {
     const tmp = [];
     await runner()
-      .middleware(async (ctx, next) => {
+      .use(async (ctx, next) => {
         tmp.push('1');
         await next();
         tmp.push('5');
       })
-      .middleware(async (ctx, next) => {
+      .use(async (ctx, next) => {
         tmp.push('2');
         await next();
         tmp.push('4');
@@ -28,7 +28,7 @@ describe('test/middleware.test.js', () => {
   it('should always fork after middleware', async () => {
     const tmp = [];
     await runner()
-      .middleware(async (ctx, next) => {
+      .use(async (ctx, next) => {
         tmp.push('1');
         await next();
         tmp.push('5');
@@ -39,7 +39,7 @@ describe('test/middleware.test.js', () => {
         tmp.push(ctx.result.stdout.replace(/\r?\n/, ''));
       })
 
-      .middleware(async (ctx, next) => {
+      .use(async (ctx, next) => {
         tmp.push('2');
         await next();
         tmp.push('4');
