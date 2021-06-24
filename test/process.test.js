@@ -8,7 +8,8 @@ describe('test/process.test.js', () => {
 
   beforeEach(() => utils.initDir(tmpDir));
 
-  it.todo('fork fullpath');
+  it.todo('fork relative path');
+  it.todo('fork bin path');
 
   it('should assert process', async () => {
     await runner()

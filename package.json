@@ -21,7 +21,6 @@
     "undici": "^4.0.0"
   },
   "devDependencies": {
-    "assert-file": "^1.0.0",
     "cross-env": "^7.0.3",
     "egg-ci": "^1",
     "enquirer": "^2.3.6",

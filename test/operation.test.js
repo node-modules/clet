@@ -8,7 +8,7 @@ describe('test/operation.test.js', () => {
 
   beforeEach(() => utils.initDir(tmpDir));
 
-  it('should support mkdir', async () => {
+  it.skip('should support mkdir', async () => {
     const targetPath = resolve(tmpDir, 'a/b');
     utils.assertFile.fail(targetPath);
 

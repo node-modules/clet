@@ -2,8 +2,6 @@ import path from 'path';
 import { types } from 'util';
 import { dirname } from 'dirname-filename-esm';
 import { promises as fs } from 'fs';
-
-export { default as assertFile } from 'assert-file';
 export { strict as assert } from 'assert';
 
 export function resolve(meta, ...args) {

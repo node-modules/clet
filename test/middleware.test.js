@@ -1,60 +1,52 @@
-import path from 'path';
-import fs from 'fs';
 import runner from '../lib/runner.js';
-import * as utils from './test-utils.js';
+import { strict as assert } from 'assert';
 
 describe('test/middleware.test.js', () => {
-  const fixtures = utils.resolve(import.meta, 'fixtures');
-  const tmpDir = utils.getTempDir();
-  const filePath = path.resolve(tmpDir, 'middleware.md');
-
-  beforeEach(() => utils.initDir(tmpDir));
-
   it('should support middleware', async () => {
-    utils.assertFile.fail(filePath);
-
+    const tmp = [];
     await runner()
       .middleware(async (ctx, next) => {
-        fs.appendFileSync(filePath, '1');
+        tmp.push('1');
         await next();
-        fs.appendFileSync(filePath, '5');
+        tmp.push('5');
       })
       .middleware(async (ctx, next) => {
-        fs.appendFileSync(filePath, '2');
+        tmp.push('2');
         await next();
-        fs.appendFileSync(filePath, '4');
+        tmp.push('4');
       })
-      .cwd(fixtures)
-      .env('targetPath', filePath)
-      .fork('./middleware.js')
+      .spawn('node -p "3"')
+      .tap(ctx => {
+        tmp.push(ctx.result.stdout.replace(/\r?\n/, ''));
+      })
       .end();
 
     // check
-    utils.assertFile(filePath, '12345');
+    assert.equal(tmp.join(''), '12345');
   });
 
   it('should always fork after middleware', async () => {
-    utils.assertFile.fail(filePath);
-
+    const tmp = [];
     await runner()
       .middleware(async (ctx, next) => {
-        fs.appendFileSync(filePath, '1');
+        tmp.push('1');
         await next();
-        fs.appendFileSync(filePath, '5');
+        tmp.push('5');
       })
 
-      .fork('./middleware.js')
+      .spawn('node -p "3"')
+      .tap(ctx => {
+        tmp.push(ctx.result.stdout.replace(/\r?\n/, ''));
+      })
 
       .middleware(async (ctx, next) => {
-        fs.appendFileSync(filePath, '2');
+        tmp.push('2');
         await next();
-        fs.appendFileSync(filePath, '4');
+        tmp.push('4');
       })
-      .cwd(fixtures)
-      .env('targetPath', filePath)
       .end();
 
     // check
-    utils.assertFile(filePath, '12345');
+    assert.equal(tmp.join(''), '12345');
   });
 });
