@@ -92,4 +92,28 @@ describe('test/process.test.js', () => {
       .notStdout(/exit long-run/)
       .end();
   });
+
+  it('should ensure proc is kill if assert fail', async () => {
+    await assert.rejects(async () => {
+      await runner()
+        .cwd(fixtures)
+        .fork('long-run.js')
+        .wait('stdout', /long run/)
+        .tap(() => {
+          throw new Error('fork trigger break');
+        })
+        .end();
+    }, /fork trigger break/);
+
+    await assert.rejects(async () => {
+      await runner()
+        .cwd(fixtures)
+        .spawn('node', [ 'long-run.js' ])
+        .wait('stdout', /long run/)
+        .tap(() => {
+          throw new Error('spawn trigger break');
+        })
+        .end();
+    }, /spawn trigger break/);
+  });
 });
