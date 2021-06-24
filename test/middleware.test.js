@@ -5,7 +5,7 @@ import * as utils from './test-utils.js';
 
 describe('test/middleware.test.js', () => {
   const fixtures = utils.resolve(import.meta, 'fixtures');
-  const tmpDir = utils.getTempDir(expect);
+  const tmpDir = utils.getTempDir();
   const filePath = path.resolve(tmpDir, 'middleware.md');
 
   beforeEach(() => utils.initDir(tmpDir));

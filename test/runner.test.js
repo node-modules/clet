@@ -4,7 +4,7 @@ const { assert } = utils;
 
 describe('test/runner.test.js', () => {
   const fixtures = utils.resolve(import.meta, 'fixtures');
-  const tmpDir = utils.getTempDir(expect);
+  const tmpDir = utils.getTempDir();
 
   beforeEach(() => utils.initDir(tmpDir));
 
@@ -55,6 +55,20 @@ describe('test/runner.test.js', () => {
       .fork('example.js')
       .stdout(/this is example/)
       .log('command-line test end')
+      .end();
+  });
+
+  it('should export context', async () => {
+    await runner()
+      .cwd(fixtures)
+      .env('a', 'b')
+      .spawn('npm -v')
+      .tap(ctx => {
+        ctx.assert(ctx.cwd === fixtures);
+        ctx.assert(ctx.env.a === 'b');
+        ctx.assert(ctx.proc);
+        ctx.assert(ctx.result);
+      })
       .end();
   });
 });

@@ -6,7 +6,7 @@ const { assert } = utils;
 
 describe('test/validator.test.js', () => {
   const fixtures = utils.resolve(import.meta, 'fixtures');
-  const tmpDir = utils.getTempDir(expect);
+  const tmpDir = utils.getTempDir();
 
   beforeEach(() => utils.initDir(tmpDir));
 

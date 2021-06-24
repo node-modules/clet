@@ -4,7 +4,7 @@ import * as utils from './test-utils.js';
 
 describe('test/operation.test.js', () => {
   // const fixtures = utils.resolve(import.meta, 'fixtures');
-  const tmpDir = utils.getTempDir(expect);
+  const tmpDir = utils.getTempDir();
 
   beforeEach(() => utils.initDir(tmpDir));
 
