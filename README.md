@@ -19,7 +19,8 @@ describe('command-line end-to-end testing', () => {
 
   it('should works with boilerplate', async () => {
     await runner()
-      .cwd(tmpDir)
+      .cwd(targetDir)
+      .mkdir(targetDir)
       .spawn('npm init')
       .stdin(/name:/, 'example\n')  // wait for stdout, then respond
       .stdin(/version:/, new Array(9).fill('\n')) // don't care about others, just enter
@@ -32,7 +33,7 @@ describe('command-line end-to-end testing', () => {
   it('should works with command-line apps', async () => {
     await runner()
       .cwd(fixtures)
-      .fork('example.js', [ '--name=test' ], { execArgv: [ '--no-deprecation' ] })
+      .fork('bin/cli.js', [ '--name=test' ], { execArgv: [ '--no-deprecation' ] })
       .stdout('this is example bin')
       .stdout(/argv: \["--name=\w+"\]/)
       .stdout(/execArgv: \["--no-deprecation"\]/)
