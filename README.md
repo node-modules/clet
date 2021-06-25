@@ -26,8 +26,7 @@ describe('command-line end-to-end testing', () => {
       .stdin(/version:/, new Array(9).fill('\n')) // don't care about others, just enter
       .stdout(/"name": "example"/)  // validate stdout
       .file('package.json', { name: 'example', version: '1.0.0' })  // validate file content
-      .code(0) // validate exitCode
-      .end();
+      .code(0) // validate exitCode;
   });
 
   it('should works with command-line apps', async () => {
@@ -38,8 +37,7 @@ describe('command-line end-to-end testing', () => {
       .stdout(/argv: \["--name=\w+"\]/)
       .stdout(/execArgv: \["--no-deprecation"\]/)
       .stderr(/this is a warning/)
-      .code(0)
-      .end();
+      .code(0);
   });
 
   it('should works with long-run apps', async () => {
@@ -51,8 +49,7 @@ describe('command-line end-to-end testing', () => {
         const result = await text();
         ctx.assert.equal(result, 'hi, tz');
       })
-      .kill() // long-run server will not auto exit, so kill it manually after test
-      .end();
+      .kill() // long-run server will not auto exit, so kill it manually after test;
   });
 });
 
@@ -79,8 +76,7 @@ it('should fork', async () => {
     .stdout(/argv=\["--name=\w+"\]/)
     .stdout(/execArgv=\["--no-deprecation"\]/)
     .stderr(/this is a warning/)
-    .code(0)
-    .end();
+    .code(0);
 });
 ```
 
@@ -103,22 +99,7 @@ it('should support spawn', async () => {
     .cwd(tmpDir)
     .spawn('node -v')
     .stdout(/v\d+\.\d+\.\d+/)
-    .code(0)
-    .end();
-});
-```
-
-### end()
-
-Perform the test.
-
-```js
-it('should support spawn', async () => {
-  await runner()
-    .spawn('node -v')
-    .stdout(/v\d+\.\d+\.\d+/)
-    .code(0)
-    .end();
+    .code(0);
 });
 ```
 
@@ -175,8 +156,7 @@ it('should wait', async () => {
     .wait('stdout', /server started/)
     // .wait('message', { action: 'egg-ready' }) // ipc message
     .file('logs/web.log')
-    .kill()
-    .end();
+    .kill();
 });
 ```
 
@@ -194,8 +174,7 @@ it('should kill() manually after test server', async () => {
     .cwd(fixtures)
     .fork('server.js')
     .wait('stdout', /server started/)
-    .kill()
-    .end();
+    .kill();
 });
 ```
 
@@ -217,8 +196,7 @@ it('should support stdin respond', async () => {
     .spawn('npm init')
     .stdin(/name:/, 'example\n')  // wait for stdout, then respond
     .stdin(/version:/, new Array(9).fill(KEYS.ENTER)) // don't care about others, just enter
-    .file('package.json', { name: 'example' })
-    .end();
+    .file('package.json', { name: 'example' });
 });
 ```
 
@@ -233,8 +211,7 @@ it('should support stdout()', async () => {
   await runner()
     .spawn('node -v')
     .stdout(/v\d+\.\d+\.\d+/) // regexp match
-    .stdout(process.version)  // string includes
-    .end();
+    .stdout(process.version)  // string includes;
 });
 ```
 
@@ -252,8 +229,7 @@ it('should support stderr()', async () => {
     .cwd(fixtures)
     .fork('example.js')
     .stderr(/a warning/)
-    .stderr('this is a warning')
-    .end();
+    .stderr('this is a warning');
 });
 ```
 
@@ -273,8 +249,7 @@ will auto check whether proc is exit unexpected by default, so only use this if 
 it('should support code()', async () => {
   await runner()
     .spawn('node --unknown-argv')
-    .code(1)
-    .end();
+    .code(1);
 });
 ```
 
@@ -294,8 +269,7 @@ it('should support file()', async () => {
     .fork('npm init -y')
     .file('package.json')
     .file('package.json', /"name":/)
-    .file('package.json', { name: 'example', config: { port: 8080 } })
-    .end();
+    .file('package.json', { name: 'example', config: { port: 8080 } });
 });
 ```
 
@@ -318,8 +292,7 @@ it('should support expect()', async () => {
     .expect(ctx => {
       const { assert, result } = ctx;
       assert.match(result.stdout, /v\d+\.\d+\.\d+/);
-    })
-    .end();
+    });
 });
 ```
 
