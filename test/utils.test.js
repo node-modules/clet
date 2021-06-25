@@ -1,9 +1,18 @@
 import fs from 'fs';
+import path from 'path';
 import * as utils from '../lib/utils.js';
 const { assert } = utils;
 
 
 describe('test/utils.test.js', () => {
+  it('isParent', () => {
+    const cwd = process.cwd();
+    const file = path.join(cwd, 'index.js');
+    assert(utils.isParent(cwd, file));
+    assert(!utils.isParent(file, cwd));
+    assert(!utils.isParent(cwd, cwd));
+  });
+
   it('mkdirp and rm', async () => {
     const tmpDir = utils.resolve(import.meta, '.tmp/utils/a');
 

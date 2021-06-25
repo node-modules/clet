@@ -111,6 +111,47 @@ describe('test/process.test.js', () => {
     }, /timed out after 1000/);
   });
 
+  it('should auto create cwd', async () => {
+    const cliPath = path.resolve(fixtures, 'file.js');
+    const targetDir = utils.getTempDir('cwd-test');
+    await utils.writeFile(path.join(targetDir, 'should-delete.md'), 'foo');
+
+    await runner()
+      .cwd(targetDir, { init: true, clean: false })
+      .fork(cliPath)
+      .notFile('should-delete.md')
+      .file('test.md', /# test/)
+      .end();
+
+    assert.equal(await utils.exists(targetDir), true);
+
+    // clean: false
+    await runner()
+      .cwd(targetDir, { init: true })
+      .fork(cliPath)
+      .file('test.md', /# test/)
+      .end();
+
+    assert.equal(await utils.exists(targetDir), false);
+  });
+
+  it('should throw if auto create cwd will damage', async () => {
+    const cliPath = path.resolve(fixtures, 'file.js');
+    await assert.rejects(async () => {
+      await runner()
+        .cwd(fixtures, { init: true })
+        .fork(cliPath)
+        .end();
+    }, /rm.*too dangerous/);
+
+    await assert.rejects(async () => {
+      await runner()
+        .cwd(process.cwd(), { init: true })
+        .fork(cliPath)
+        .end();
+    }, /rm.*too dangerous/);
+  });
+
   it('should kill', async () => {
     await runner()
       .cwd(fixtures)
