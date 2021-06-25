@@ -16,6 +16,7 @@
     "lodash.ismatch": "^4.4.0",
     "p-event": "^4.2.0",
     "strip-ansi": "^7.0.0",
+    "throwback": "^4.1.0",
     "undici": "^4.0.0"
   },
   "devDependencies": {
@@ -46,7 +47,9 @@
     "transform": {},
     "testTimeout": 5000,
     "globalSetup": "./test/jest-global-setup.js",
-    "setupFilesAfterEnv": [ "./test/jest-test-setup.js" ]
+    "setupFilesAfterEnv": [
+      "./test/jest-test-setup.js"
+    ]
   },
   "eslintIgnore": [
     "coverage",

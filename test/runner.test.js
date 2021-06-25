@@ -10,14 +10,14 @@ describe('test/runner.test.js', () => {
   beforeEach(() => utils.initDir(tmpDir));
 
   it('should work', async () => {
-    const { instance } = await runner()
+    const ctx = await runner()
       .cwd(fixtures)
       .spawn('node -v')
       .code(0)
       .end();
 
-    // ensure chain return instance
-    assert.equal(instance.constructor.name, 'TestRunner');
+    // ensure chain return instance context
+    assert.equal(ctx.instance.constructor.name, 'TestRunner');
   });
 
   it('should logger', async () => {
