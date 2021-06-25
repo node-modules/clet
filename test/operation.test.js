@@ -1,44 +1,46 @@
-// import { resolve } from 'path';
-// import runner from '../lib/runner.js';
-// import * as utils from './test-utils.js';
+import { resolve } from 'path';
+import runner from '../lib/runner.js';
+import * as utils from './test-utils.js';
 
-// describe('test/operation.test.js', () => {
-//   // const fixtures = path.resolve('test/fixtures');
-//   const tmpDir = utils.getTempDir();
+describe('test/operation.test.js', () => {
+  // const fixtures = path.resolve('test/fixtures');
+  const tmpDir = utils.getTempDir();
 
-//   beforeEach(() => utils.initDir(tmpDir));
+  beforeEach(() => utils.initDir(tmpDir));
 
-//   it.skip('should support mkdir', async () => {
-//     const targetPath = resolve(tmpDir, 'a/b');
-//     utils.assertFile.fail(targetPath);
+  it.todo('operation');
 
-//     await runner()
-//       .cwd(tmpDir)
-//       .mkdir('a/b')
-//       .file(targetPath)
-//       .spawn('ls -l')
-//       .mkdir('a/b/c')
-//       .end();
+  it.skip('should support mkdir', async () => {
+    const targetPath = resolve(tmpDir, 'a/b');
+    utils.assertFile.fail(targetPath);
 
-//     // check
-//     utils.assertFile(targetPath);
-//     utils.assertFile(resolve(targetPath, 'c'));
-//   });
+    await runner()
+      .cwd(tmpDir)
+      .mkdir('a/b')
+      .file(targetPath)
+      .spawn('ls -l')
+      .mkdir('a/b/c')
+      .end();
 
-//   it.skip('should support shell', async () => {
-//     const targetPath = resolve(tmpDir, 'package.json');
-//     utils.assertFile.fail(targetPath);
+    // check
+    utils.assertFile(targetPath);
+    utils.assertFile(resolve(targetPath, 'c'));
+  });
 
-//     await runner()
-//       .cwd(tmpDir)
-//       .shell('npm init -y')
-//       .file(targetPath)
-//       .spawn('ls')
-//       .mkdir('a/b/c')
-//       .end();
+  it.skip('should support shell', async () => {
+    const targetPath = resolve(tmpDir, 'package.json');
+    utils.assertFile.fail(targetPath);
 
-//     // check
-//     utils.assertFile(targetPath);
-//     utils.assertFile(resolve(targetPath, 'c'));
-//   });
-// });
+    await runner()
+      .cwd(tmpDir)
+      .shell('npm init -y')
+      .file(targetPath)
+      .spawn('ls')
+      .mkdir('a/b/c')
+      .end();
+
+    // check
+    utils.assertFile(targetPath);
+    utils.assertFile(resolve(targetPath, 'c'));
+  });
+});

@@ -2,7 +2,6 @@ import runner from '../lib/runner.js';
 import * as utils from './test-utils.js';
 
 describe('test/plugin.test.js', () => {
-
   it('should support options.plugins', async () => {
     const opts = {
       plugins: [
@@ -16,16 +15,17 @@ describe('test/plugin.test.js', () => {
       ],
     };
 
-    const { ctx } = await runner(opts)
+    const ctx = await runner(opts)
       .spawn('node', [ '-v' ])
       .cache('a', 'b')
       .end();
+
 
     utils.assert.equal(ctx.cache.a, 'b');
   });
 
   it('should register(fn)', async () => {
-    const { ctx } = await runner()
+    const ctx = await runner()
       .register(target => {
         target.ctx.cache = {};
         target.cache = function(key, value) {
@@ -41,7 +41,7 @@ describe('test/plugin.test.js', () => {
   });
 
   it('should register(obj)', async () => {
-    const { ctx } = await runner()
+    const ctx = await runner()
       .register({
         a(...args) {
           this.ctx.a = args.join(',');

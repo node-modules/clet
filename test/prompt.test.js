@@ -27,9 +27,9 @@ describe('test/prompt.test.js', () => {
       .fork('./prompt.js')
       .stdin(/Name:/, 'tz\n')
       .stdin(/Email:/, 'tz@eggjs.com\n')
-      .stdin(/Gender:/, [ KEYS.DOWN, KEYS.ENTER ])
+      .stdin(/Gender:/, [ KEYS.DOWN + KEYS.DOWN, KEYS.ENTER ])
       .stdout(/Author: tz <tz@eggjs.com>/)
-      .stdout(/Gender: girl/)
+      .stdout(/Gender: unknown/)
       .code(0)
       .end();
   });

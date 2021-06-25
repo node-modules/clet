@@ -5,7 +5,7 @@ import enquirer from 'enquirer';
 async function run() {
   if (process.env.throw) {
     setTimeout(() => {
-      console.log('going exit');
+      console.log('manually exit due to test prompt timeout');
       process.exit(1);
     }, 1000);
   }

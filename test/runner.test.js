@@ -10,7 +10,7 @@ describe('test/runner.test.js', () => {
   beforeEach(() => utils.initDir(tmpDir));
 
   it('should work', async () => {
-    const instance = await runner()
+    const { instance } = await runner()
       .cwd(fixtures)
       .spawn('node -v')
       .code(0)
