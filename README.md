@@ -13,7 +13,7 @@ Command Line E2E Testing.
 ## How it looks
 
 ```js
-import runner from 'clet';
+import { runner, KEYS } from 'clet';
 
 describe('command-line end-to-end testing', () => {
 
@@ -22,8 +22,8 @@ describe('command-line end-to-end testing', () => {
       .cwd(targetDir)
       .mkdir(targetDir)
       .spawn('npm init')
-      .stdin(/name:/, 'example\n')  // wait for stdout, then respond
-      .stdin(/version:/, new Array(9).fill('\n')) // don't care about others, just enter
+      .stdin(/name:/, 'example')  // wait for stdout, then respond
+      .stdin(/version:/, new Array(9).fill(KEYS.ENTER)) // don't care about others, just enter
       .stdout(/"name": "example"/)  // validate stdout
       .file('package.json', { name: 'example', version: '1.0.0' })  // validate file content
       .code(0) // validate exitCode;
@@ -183,7 +183,7 @@ it('should kill() manually after test server', async () => {
 Detect a prompt, then respond to it.
 
 - `expected`: {String|RegExp} - test `stdout` with regexp match or string includes.
-- `respond`: {String|Array} - respond content, if set to array then write each with a delay.
+- `respond`: {String|Array} - respond content, if set to array then write each with a delay
 
 You could use `KEYS.UP` / `KEYS.DOWN` to respond to choices prompt.
 
@@ -192,11 +192,14 @@ import runner, { KEYS } from '../lib/runner.js';
 
 it('should support stdin respond', async () => {
   await runner()
-    .cwd(tmpDir)
-    .spawn('npm init')
-    .stdin(/name:/, 'example\n')  // wait for stdout, then respond
-    .stdin(/version:/, new Array(9).fill(KEYS.ENTER)) // don't care about others, just enter
-    .file('package.json', { name: 'example' });
+    .cwd(fixtures)
+    .fork('./prompt.js')
+    .stdin(/Name:/, 'tz')
+    .stdin(/Email:/, 'tz@eggjs.com')
+    .stdin(/Gender:/, [ KEYS.DOWN + KEYS.DOWN ])
+    .stdout(/Author: tz <tz@eggjs.com>/)
+    .stdout(/Gender: unknown/)
+    .code(0);
 });
 ```
 
