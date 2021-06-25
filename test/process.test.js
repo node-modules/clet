@@ -12,64 +12,91 @@ describe('test/process.test.js', () => {
   it.todo('fork relative path');
   it.todo('fork bin path');
 
-  it('should assert process', async () => {
+  it('should support expect()', async () => {
     await runner()
-      .cwd(fixtures)
-      .fork(`${fixtures}/process.js`)
-      .stdout('version: v')
-      .stdout(/argv:/)
+      .spawn('node -v')
+      .expect(ctx => {
+        const { assert, result } = ctx;
+        assert.match(result.stdout, /v\d+\.\d+\.\d+/);
+      })
+      .end();
+  });
+
+  it('should support spawn', async () => {
+    await runner()
+      .spawn('node -v')
+      .stdout(/v\d+\.\d+\.\d+/)
+      .stdout(process.version)
       .notStdout('xxxx')
       .notStdout(/^abc/)
-      .expect(ctx => {
-        const { stdout } = ctx.result;
-        ctx.assert.match(stdout, /argv:/);
-      })
-      .expect(async ctx => {
-        const { stdout } = ctx.result;
-        await utils.sleep(100);
-        ctx.assert.match(stdout, /argv:/);
-      })
+      .notStderr('xxxx')
+      .notStderr(/^abc/)
       .code(0)
       .end();
   });
 
-  it('should assert process with error', async () => {
+  it('should support stdout()', async () => {
     await runner()
       .cwd(fixtures)
-      .fork(`${fixtures}/process.js`, [ '--error' ])
-      .stdout('version: v')
-      .stderr(/this is an error/)
-      .stderr('an error')
+      .fork('process.js')
+      .stdout(/version: v\d+\.\d+\.\d+/)
+      .stdout('argv:')
+      .notStdout('xxxx')
+      .notStdout(/^abc/)
+      .end();
+  });
+
+  it('should support stderr()', async () => {
+    await runner()
+      .cwd(fixtures)
+      .fork('process.js', [ '--error' ])
+      .stderr(/an error/)
+      .stderr('this is an error')
       .notStderr('xxxx')
       .notStderr(/^abc/)
-      .expect(ctx => {
-        const { stdout } = ctx.result;
-        ctx.assert.match(stdout, /argv:/);
-      })
-      .expect(async ctx => {
-        const { stderr } = ctx.result;
-        await utils.sleep(100);
-        ctx.assert.match(stderr, /this is an error/);
-      })
+      .end();
+  });
+
+  it('should support code(0)', async () => {
+    await runner()
+      .cwd(fixtures)
+      .fork('process.js')
       .code(0)
       .end();
   });
 
-  it('should assert process with fail', async () => {
+  it('should support code(1)', async () => {
     await runner()
       .cwd(fixtures)
-      .fork(`${fixtures}/process.js`, [ '--fail' ])
-      .stdout('version: v')
-      .stderr(/this is an error/)
-      .stderr('an error')
-      .notStderr('xxxx')
-      .notStderr(/^abc/)
-      .expect(ctx => {
-        const { stdout } = ctx.result;
-        ctx.assert.match(stdout, /argv:/);
-      })
+      .fork('process.js', [ '--fail' ])
       .code(1)
       .end();
+  });
+
+  it('should double check code()', async () => {
+    await runner()
+      .cwd(fixtures)
+      .fork('process.js', [ '--delay' ])
+      .wait('stdout', /delay for a while/)
+      .code(0)
+      .end();
+  });
+
+  it('should support code(fn)', async () => {
+    await runner()
+      .cwd(fixtures)
+      .spawn('node --no-exists-argv')
+      .code(n => n < 0)
+      .end();
+  });
+
+  it('should throw if not calling code() when proc fail', async () => {
+    await assert.rejects(async () => {
+      await runner()
+        .cwd(fixtures)
+        .fork('process.js', [ '--fail' ])
+        .end();
+    }, /Command failed with exit code 1/);
   });
 
   it('should timeout', async () => {

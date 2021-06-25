@@ -9,12 +9,22 @@ describe('test/runner.test.js', () => {
 
   beforeEach(() => utils.initDir(tmpDir));
 
-  it('should work', async () => {
+  it('should work with end()', async () => {
     const ctx = await runner()
       .cwd(fixtures)
       .spawn('node -v')
       .code(0)
       .end();
+
+    // ensure chain return instance context
+    assert.equal(ctx.instance.constructor.name, 'TestRunner');
+  });
+
+  it('should work without end()', async () => {
+    const ctx = await runner()
+      .cwd(fixtures)
+      .spawn('node -v')
+      .code(0);
 
     // ensure chain return instance context
     assert.equal(ctx.instance.constructor.name, 'TestRunner');
