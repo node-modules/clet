@@ -116,6 +116,7 @@ describe('test/process.test.js', () => {
     const targetDir = utils.getTempDir('cwd-test');
     await utils.writeFile(path.join(targetDir, 'should-delete.md'), 'foo');
 
+    // clean: false
     await runner()
       .cwd(targetDir, { init: true, clean: false })
       .fork(cliPath)
@@ -125,7 +126,7 @@ describe('test/process.test.js', () => {
 
     assert.equal(await utils.exists(targetDir), true);
 
-    // clean: false
+    // clean: true
     await runner()
       .cwd(targetDir, { init: true })
       .fork(cliPath)
@@ -137,6 +138,8 @@ describe('test/process.test.js', () => {
 
   it('should throw if auto create cwd will damage', async () => {
     const cliPath = path.resolve(fixtures, 'file.js');
+    const targetDir = utils.getTempDir('cwd-test');
+
     await assert.rejects(async () => {
       await runner()
         .cwd(fixtures, { init: true })
@@ -150,6 +153,18 @@ describe('test/process.test.js', () => {
         .fork(cliPath)
         .end();
     }, /rm.*too dangerous/);
+
+    // rm event fail
+    await assert.rejects(async () => {
+      await runner()
+        .cwd(targetDir, { init: true })
+        .fork(cliPath)
+        .file('test.md', /# test/)
+        .tap(() => { throw new Error('trigger fail'); })
+        .end();
+    }, /trigger fail/);
+
+    assert.equal(await utils.exists(targetDir), false);
   });
 
   it('should kill', async () => {
