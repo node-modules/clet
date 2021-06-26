@@ -6,7 +6,7 @@ const { assert } = utils;
 
 describe('test/file.test.js', () => {
   const fixtures = path.resolve('test/fixtures');
-  const tmpDir = utils.getTempDir();
+  const tmpDir = utils.getTempDir('xx');
   const cliPath = path.resolve(fixtures, 'file.js');
 
   beforeEach(() => utils.initDir(tmpDir));
