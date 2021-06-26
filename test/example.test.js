@@ -12,14 +12,12 @@ describe('test/example.test.js', () => {
 
   it('should works with boilerplate', async () => {
     await runner()
-      .cwd(tmpDir)
-      .mkdir(tmpDir)
+      .cwd(tmpDir, { init: true })
       .spawn('npm init')
       .stdin(/name:/, 'example\n') // wait for stdout, then respond
       .stdin(/version:/, new Array(9).fill('\n')) // don't care about others, just enter
       .stdout(/"name": "example"/) // validate stdout
-      .file('package.json', { name: 'example', version: '1.0.0' }) // validate file content, relative to cwd
-      .end();
+      .file('package.json', { name: 'example', version: '1.0.0' }); // validate file content, relative to cwd
   });
 
   it('should works with command-line apps', async () => {
@@ -31,8 +29,7 @@ describe('test/example.test.js', () => {
       .stdout(`cwd=${baseDir}`)
       .stdout(/argv=\["--name=\w+"\]/)
       .stdout(/execArgv=\["--no-deprecation"\]/)
-      .stderr(/this is a warning/)
-      .end();
+      .stderr(/this is a warning/);
   });
 
   it('should works with long-run apps', async () => {
@@ -48,11 +45,6 @@ describe('test/example.test.js', () => {
           .expect(200)
           .expect('hi, tz');
       })
-      // .request('http://localhost:3000', { path: '/?name=tz' }, async ({ ctx, text }) => {
-      //   const result = await text();
-      //   ctx.assert.equal(result, 'hi, tz');
-      // })
-      .kill() // long-run server will not auto exit, so kill it manually after test
-      .end();
+      .kill(); // long-run server will not auto exit, so kill it manually after test
   });
 });

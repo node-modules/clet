@@ -113,7 +113,7 @@ describe('test/process.test.js', () => {
 
   it('should auto create cwd', async () => {
     const cliPath = path.resolve(fixtures, 'file.js');
-    const targetDir = utils.getTempDir('cwd-test');
+    const targetDir = utils.getTempDir('../cwd-test');
     await utils.writeFile(path.join(targetDir, 'should-delete.md'), 'foo');
 
     // clean: false
@@ -138,7 +138,7 @@ describe('test/process.test.js', () => {
 
   it('should throw if auto create cwd will damage', async () => {
     const cliPath = path.resolve(fixtures, 'file.js');
-    const targetDir = utils.getTempDir('cwd-test');
+    const targetDir = utils.getTempDir('../cwd-test-damage');
 
     await assert.rejects(async () => {
       await runner()
@@ -149,7 +149,7 @@ describe('test/process.test.js', () => {
 
     await assert.rejects(async () => {
       await runner()
-        .cwd(process.cwd(), { init: true })
+        .cwd(path.dirname(cliPath), { init: true })
         .fork(cliPath)
         .end();
     }, /rm.*too dangerous/);
