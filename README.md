@@ -326,7 +326,7 @@ it('should support expect()', async () => {
 
 ## Unstable API
 
-### middleware
+### use
 
 ### register
 
