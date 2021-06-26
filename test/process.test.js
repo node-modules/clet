@@ -94,8 +94,7 @@ describe('test/process.test.js', () => {
     await assert.rejects(async () => {
       await runner()
         .cwd(fixtures)
-        .fork('process.js', [ '--fail' ])
-        .end();
+        .fork('process.js', [ '--fail' ]);
     }, /Command failed with exit code 1/);
   });
 
@@ -106,8 +105,7 @@ describe('test/process.test.js', () => {
         .timeout(1000)
         .fork('long-run.js')
         .wait('stdout', /long run/)
-        .sleep(2000)
-        .end();
+        .sleep(2000);
     }, /timed out after 1000/);
   });
 
@@ -121,8 +119,7 @@ describe('test/process.test.js', () => {
       .cwd(targetDir, { init: true, clean: false })
       .fork(cliPath)
       .notFile('should-delete.md')
-      .file('test.md', /# test/)
-      .end();
+      .file('test.md', /# test/);
 
     assert.equal(await utils.exists(targetDir), true);
 
@@ -130,8 +127,7 @@ describe('test/process.test.js', () => {
     await runner()
       .cwd(targetDir, { init: true })
       .fork(cliPath)
-      .file('test.md', /# test/)
-      .end();
+      .file('test.md', /# test/);
 
     assert.equal(await utils.exists(targetDir), false);
   });
@@ -143,15 +139,13 @@ describe('test/process.test.js', () => {
     await assert.rejects(async () => {
       await runner()
         .cwd(fixtures, { init: true })
-        .fork(cliPath)
-        .end();
+        .fork(cliPath);
     }, /rm.*too dangerous/);
 
     await assert.rejects(async () => {
       await runner()
         .cwd(path.dirname(cliPath), { init: true })
-        .fork(cliPath)
-        .end();
+        .fork(cliPath);
     }, /rm.*too dangerous/);
 
     // rm event fail
@@ -160,8 +154,7 @@ describe('test/process.test.js', () => {
         .cwd(targetDir, { init: true })
         .fork(cliPath)
         .file('test.md', /# test/)
-        .tap(() => { throw new Error('trigger fail'); })
-        .end();
+        .tap(() => { throw new Error('trigger fail'); });
     }, /trigger fail/);
 
     assert.equal(await utils.exists(targetDir), false);
@@ -186,8 +179,7 @@ describe('test/process.test.js', () => {
         .wait('stdout', /long run/)
         .tap(() => {
           throw new Error('fork trigger break');
-        })
-        .end();
+        });
     }, /fork trigger break/);
 
     await assert.rejects(async () => {
@@ -197,8 +189,7 @@ describe('test/process.test.js', () => {
         .wait('stdout', /long run/)
         .tap(() => {
           throw new Error('spawn trigger break');
-        })
-        .end();
+        });
     }, /spawn trigger break/);
   });
 });

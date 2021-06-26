@@ -1,7 +1,7 @@
 
 import path from 'path';
 import request from 'supertest';
-import runner from '../lib/runner.js';
+import runner, { KEYS } from '../lib/runner.js';
 import * as utils from './test-utils.js';
 
 describe('test/example.test.js', () => {
@@ -14,8 +14,8 @@ describe('test/example.test.js', () => {
     await runner()
       .cwd(tmpDir, { init: true })
       .spawn('npm init')
-      .stdin(/name:/, 'example\n') // wait for stdout, then respond
-      .stdin(/version:/, new Array(9).fill('\n')) // don't care about others, just enter
+      .stdin(/name:/, 'example') // wait for stdout, then respond
+      .stdin(/version:/, new Array(9).fill(KEYS.ENTER)) // don't care about others, just enter
       .stdout(/"name": "example"/) // validate stdout
       .file('package.json', { name: 'example', version: '1.0.0' }); // validate file content, relative to cwd
   });

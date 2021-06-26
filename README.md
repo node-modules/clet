@@ -14,42 +14,46 @@ Command Line E2E Testing.
 
 ```js
 import { runner, KEYS } from 'clet';
+import request from 'supertest';
 
 describe('command-line end-to-end testing', () => {
 
   it('should works with boilerplate', async () => {
     await runner()
-      .cwd(targetDir)
-      .mkdir(targetDir)
+      .cwd(tmpDir, { init: true })
       .spawn('npm init')
-      .stdin(/name:/, 'example')  // wait for stdout, then respond
+      .stdin(/name:/, 'example') // wait for stdout, then respond
       .stdin(/version:/, new Array(9).fill(KEYS.ENTER)) // don't care about others, just enter
-      .stdout(/"name": "example"/)  // validate stdout
-      .file('package.json', { name: 'example', version: '1.0.0' })  // validate file content
-      .code(0) // validate exitCode;
+      .stdout(/"name": "example"/) // validate stdout
+      .file('package.json', { name: 'example', version: '1.0.0' }); // validate file content, relative to cwd
   });
 
   it('should works with command-line apps', async () => {
+    const baseDir = path.resolve(fixtures, 'example');
     await runner()
-      .cwd(fixtures)
+      .cwd(baseDir)
       .fork('bin/cli.js', [ '--name=test' ], { execArgv: [ '--no-deprecation' ] })
       .stdout('this is example bin')
-      .stdout(/argv: \["--name=\w+"\]/)
-      .stdout(/execArgv: \["--no-deprecation"\]/)
-      .stderr(/this is a warning/)
-      .code(0);
+      .stdout(`cwd=${baseDir}`)
+      .stdout(/argv=\["--name=\w+"\]/)
+      .stdout(/execArgv=\["--no-deprecation"\]/)
+      .stderr(/this is a warning/);
   });
 
   it('should works with long-run apps', async () => {
+    const baseDir = path.resolve(fixtures, 'server');
     await runner()
-      .cwd(fixtures)
-      .fork('server.js')
-      .wait('stdout', /server started/) // wait for stdout, then resume validator chains
-      .request('http://localhost:3000', { path: '/?name=tz' }, async ({ ctx, text }) => {
-        const result = await text();
-        ctx.assert.equal(result, 'hi, tz');
+      .cwd(baseDir)
+      .fork('bin/cli.js')
+      .wait('stdout', /server started/)
+      .expect(async () => {
+        return request('http://localhost:3000')
+          .get('/')
+          .query({ name: 'tz' })
+          .expect(200)
+          .expect('hi, tz');
       })
-      .kill() // long-run server will not auto exit, so kill it manually after test;
+      .kill(); // long-run server will not auto exit, so kill it manually after test
   });
 });
 
@@ -110,20 +114,42 @@ Change the current working directory.
 > Notice: it will affect `fork()` script relative path, `file()`, `mkdir()` etc.
 
 ```js
-runner()
-  .cwd(fixtures)
-  .fork('./example.js')
+it('support cwd()', async () => {
+  await runner()
+    .cwd(targetDir)
+    .fork(cliPath);
+});
 ```
+
+Support options:
+
+- `init`: will delete and create directory before test.
+- `clean`: will delete directory after test, default to `true` if `init` is true.
+
+> Use `trash` instead of `fs.rm` due to the consideration of preventing misoperation.
+
+```js
+it('support cwd() with opts', async () => {
+  await runner()
+    .cwd(targetDir, { init: true, clean: false })
+    .fork(cliPath)
+    .notFile('should-delete.md')
+    .file('test.md', /# test/);
+});
+```
+
 ### env(key, value)
 
 Set environment variables.
 
-> Notice:  if you don't want to extend the environment variables, set `opts.extendEnv` to false.
+> Notice: if you don't want to extend the environment variables, set `opts.extendEnv` to false.
 
 ```js
-runner()
-  .env('DEBUG', 'CLI')
-  .fork('./example.js', [], { extendEnv: false })
+it('support env', async () => {
+  await runner()
+    .env('DEBUG', 'CLI')
+    .fork('./example.js', [], { extendEnv: false });
+});
 ```
 
 ### timeout(ms)
@@ -131,9 +157,11 @@ runner()
 Set a timeout, will kill SIGTERM then SIGKILL.
 
 ```js
-runner()
-  .timeout(5000)
-  .fork('./example.js')
+it('support timeout', async () => {
+  await runner()
+    .timeout(5000)
+    .fork('./example.js');
+});
 ```
 
 ### wait(type, expected)
@@ -301,11 +329,44 @@ it('should support expect()', async () => {
 
 ## Operation
 
-### log
+### log(key)
 
-### tap
+Print log for debugging, support formator and dot path.
 
-### sleep
+```js
+it('should support log()', async () => {
+  await runner()
+    .spawn('node -v')
+    .log('result: %j', 'result')
+    .log('result.stdout')
+    .stdout(/v\d+\.\d+\.\d+/);
+});
+```
+
+### tap(fn)
+
+Tap a method to chain sequence.
+
+```js
+it('should support tap()', async () => {
+  await runner()
+    .spawn('node -v')
+    .tap(async ({ result, assert}) => {
+      assert(result.stdout, /v\d+\.\d+\.\d+/);
+    });
+});
+```
+
+### sleep(ms)
+
+```js
+it('should support sleep()', async () => {
+  await runner()
+    .fork(cliPath)
+    .sleep(2000)
+    .log('result.stdout');
+});
+```
 
 ### shell
 
