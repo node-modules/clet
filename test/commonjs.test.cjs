@@ -1,15 +1,25 @@
 const assert = require('assert');
+const path = require('path');
 
-// FIXME: not work --- "testMatch": ["**/test/*.test.{js,ts,cjs}"]
 describe('test/commonjs.test.cjs', () => {
   let runner;
+  const fixtures = path.resolve('test/fixtures');
+
   beforeAll(async () => {
     runner = (await import('../lib/runner')).default;
-  });
-
-  it('should support commonjs', async () => {
     assert(runner);
     console.log('this is commonjs');
+  });
+
+  it('should support fork', async () => {
+    await runner()
+      .fork(`${fixtures}/version.js`)
+      .log('result.stdout')
+      .stdout(/\d+\.\d+\.\d+/)
+      .end();
+  });
+
+  it('should support spawn', async () => {
     await runner()
       .spawn('npm -v')
       .log('result.stdout')
