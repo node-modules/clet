@@ -151,7 +151,7 @@ describe('test/assert.test.js', () => {
       }, /Expected file\(.*not-exist.md\) not to match.*but file not exists/);
     });
 
-    it('should check content', async () => {
+    it('should check not content', async () => {
       await assert.doesNotMatchFile(`${fixtures}/test.md`, 'abc');
       await assert.doesNotMatchFile(`${fixtures}/test.md`, /abcccc/);
       await assert.doesNotMatchFile(`${fixtures}/test.json`, { name: 'test', config: { a: 1 } });

@@ -8,78 +8,71 @@ describe('test/file.test.js', () => {
   const tmpDir = utils.getTempDir();
   const cliPath = path.resolve(fixtures, 'file.js');
 
-  beforeEach(() => utils.initDir(tmpDir));
-
-  it('should support file()', async () => {
-    await runner()
-      .cwd(tmpDir)
-      .fork(cliPath)
-
-      // check exists
-      .file('./test.json') // support relative path
-      .file(`${tmpDir}/test.md`)
-
-      // check content
-      .file(`${tmpDir}/test.md`, 'this is a README')
-      .file(`${tmpDir}/test.md`, /this is a README/)
-      .file(`${tmpDir}/test.json`, { name: 'test', config: { port: 8080 } })
-      .end();
-
-    await assert.rejects(async () => {
+  describe('file()', () => {
+    it('should check exists', async () => {
       await runner()
-        .cwd(tmpDir)
+        .cwd(tmpDir, { init: true })
         .fork(cliPath)
 
         // check exists
-        .file(`${tmpDir}/not-exist.md`)
-        .end();
-    }, /not-exist.md to be exists/);
+        .file('./test.json') // support relative path
+        .file(`${tmpDir}/test.md`);
 
-    await assert.rejects(async () => {
+      await assert.rejects(async () => {
+        await runner()
+          .cwd(tmpDir, { init: true })
+          .fork(cliPath)
+          .file(`${tmpDir}/not-exist.md`);
+      }, /not-exist.md to be exists/);
+    });
+
+    it('should check content', async () => {
       await runner()
-        .cwd(tmpDir)
+        .cwd(tmpDir, { init: true })
         .fork(cliPath)
+        .file(`${tmpDir}/test.md`, 'this is a README')
+        .file(`${tmpDir}/test.md`, /this is a README/)
+        .file(`${tmpDir}/test.json`, { name: 'test', config: { port: 8080 } });
 
-        // check includes
-        .file(`${tmpDir}/test.md`, 'abc')
-        .end();
-    }, /file.*test\.md.*this is.*should includes 'abc'/);
+      await assert.rejects(async () => {
+        await runner()
+          .cwd(tmpDir, { init: true })
+          .fork(cliPath)
+          .file(`${tmpDir}/test.md`, 'abc');
+      }, /file.*test\.md.*this is.*should includes 'abc'/);
+    });
   });
 
-  it('should support notFile()', async () => {
-    await runner()
-      .cwd(tmpDir)
-      .fork(cliPath)
-
-      // check not exists
-      .notFile('./abc')
-      .notFile(`${tmpDir}/a/b/c/d.md`)
-
-      // check content
-      .notFile(`${tmpDir}/test.md`, 'abc')
-      .notFile(`${tmpDir}/test.md`, /abcccc/)
-      .notFile(`${tmpDir}/test.json`, { name: 'test', config: { a: 1 } })
-      .end();
-
-
-    await assert.rejects(async () => {
+  describe('notFile()', () => {
+    it('should check not exists', async () => {
       await runner()
-        .cwd(tmpDir)
+        .cwd(tmpDir, { init: true })
         .fork(cliPath)
+        .notFile('./abc')
+        .notFile(`${tmpDir}/a/b/c/d.md`);
 
-        // check exists
-        .notFile(`${tmpDir}/not-exist.md`, 'abc')
-        .end();
-    }, /Expected file\(.*not-exist.md\) not to match.*but file not exists/);
+      await assert.rejects(async () => {
+        await runner()
+          .cwd(tmpDir, { init: true })
+          .fork(cliPath)
+          .notFile(`${tmpDir}/not-exist.md`, 'abc');
+      }, /Expected file\(.*not-exist.md\) not to match.*but file not exists/);
+    });
 
-    await assert.rejects(async () => {
+    it('should check not content', async () => {
       await runner()
-        .cwd(tmpDir)
+        .cwd(tmpDir, { init: true })
         .fork(cliPath)
+        .notFile(`${tmpDir}/test.md`, 'abc')
+        .notFile(`${tmpDir}/test.md`, /abcccc/)
+        .notFile(`${tmpDir}/test.json`, { name: 'test', config: { a: 1 } });
 
-        // check includes
-        .notFile(`${tmpDir}/test.md`, 'this is a README')
-        .end();
-    }, /file.*test\.md.*this is.*should not includes 'this is a README'/);
+      await assert.rejects(async () => {
+        await runner()
+          .cwd(tmpDir, { init: true })
+          .fork(cliPath)
+          .notFile(`${tmpDir}/test.md`, 'this is a README');
+      }, /file.*test\.md.*this is.*should not includes 'this is a README'/);
+    });
   });
 });
