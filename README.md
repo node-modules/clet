@@ -415,17 +415,20 @@ MIT
   - [ ] API
   - [ ] Docs
     - toc link
-  - [ ] refactor plugin system
-  - [ ] assert error stack (need test)
-  - [ ] stub api
-  - [ ] fn.length, next is optional?
+  - [ ] assert error stack (need test, clean built-in)
   - [ ] private method to replace _fn
-  - [ ] logger level, test, env
+  - [ ] logger
+    - level
+    - unit test
+    - env enable
+    - error log in front of log??
   - [ ] http api, wrap get/post, and body, query, contentType
   - [ ] wait stdout with new content
   - [ ] preferBin
   - [ ] d.ts
   - [ ] logo
+  - [ ] refactor plugin system
+  - [ ] stub api
 - Tool
   - [ ] esm-first
   - [ ] prettier

@@ -33,7 +33,7 @@ describe('test/runner.test.js', () => {
     await runner()
       .cwd(fixtures)
       .log('command-line test start')
-      .spawn('node -v')
+      .fork('logger.js')
       .stdout(/v\d+\.\d+\.\d+/)
       .log('command-line test end');
   });
