@@ -8,7 +8,9 @@
 
 Command Line E2E Testing.
 
-> Aiming to make end-to-end testing for command-line apps as simple as possible. It provides powerfull and simple APIs.
+> Aiming to make end-to-end testing for command-line apps as simple as possible.
+>
+> It provides powerfull and simple APIs.
 
 
 ## How it looks
@@ -19,6 +21,7 @@ import request from 'supertest';
 
 describe('command-line end-to-end testing', () => {
 
+  // test your boilerplate with prompts
   it('should works with boilerplate', async () => {
     await runner()
       .cwd(tmpDir, { init: true })
@@ -29,6 +32,7 @@ describe('command-line end-to-end testing', () => {
       .file('package.json', { name: 'example', version: '1.0.0' }); // validate file content, relative to cwd
   });
 
+  // test your commander
   it('should works with command-line apps', async () => {
     const baseDir = path.resolve(fixtures, 'example');
     await runner()
@@ -41,6 +45,7 @@ describe('command-line end-to-end testing', () => {
       .stderr(/this is a warning/);
   });
 
+  // test your long-run apps such as http server or build tools
   it('should works with long-run apps', async () => {
     const baseDir = path.resolve(fixtures, 'server');
     await runner()
@@ -409,6 +414,7 @@ MIT
 - RFC
   - [ ] API
   - [ ] Docs
+    - toc link
   - [ ] refactor plugin system
   - [ ] assert error stack (need test)
   - [ ] stub api
@@ -417,6 +423,9 @@ MIT
   - [ ] logger level, test, env
   - [ ] http api, wrap get/post, and body, query, contentType
   - [ ] wait stdout with new content
+  - [ ] preferBin
+  - [ ] d.ts
+  - [ ] logo
 - Tool
   - [ ] esm-first
   - [ ] prettier
