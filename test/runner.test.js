@@ -1,6 +1,6 @@
 import path from 'path';
 import { strict as assert } from 'assert';
-import runner from '../lib/runner.js';
+import { runner } from '../lib/runner.js';
 import * as utils from './test-utils.js';
 
 describe('test/runner.test.js', () => {

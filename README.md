@@ -217,7 +217,7 @@ Detect a prompt, then respond to it.
 You could use `KEYS.UP` / `KEYS.DOWN` to respond to choices prompt.
 
 ```js
-import runner, { KEYS } from '../lib/runner.js';
+import { runner, KEYS } from '../lib/runner.js';
 
 it('should support stdin respond', async () => {
   await runner()
@@ -419,7 +419,7 @@ it('should support sleep()', async () => {
 LifeCycle: `prepare -> middleware pre -> prompt -> run -> wait for ready/unready/end/timeout -> assertion -> wait for exit -> middleware post -> cleanup(kill) -> end`
 
 ```js
-import runner from 'clet';
+import { runner } from 'clet';
 
 runner(opts)
   .use(async next => await next())

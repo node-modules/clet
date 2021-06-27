@@ -1,5 +1,5 @@
 import { strict as assert } from 'assert';
-import runner from '../lib/runner.js';
+import { runner } from '../lib/runner.js';
 
 describe('test/plugin.test.js', () => {
   it('should support options.plugins', async () => {

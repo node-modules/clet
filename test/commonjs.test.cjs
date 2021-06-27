@@ -6,7 +6,7 @@ describe('test/commonjs.test.cjs', () => {
   const fixtures = path.resolve('test/fixtures');
 
   beforeAll(async () => {
-    runner = (await import('../lib/runner')).default;
+    runner = (await import('../lib/runner')).runner;
     assert(runner);
     console.log('this is commonjs');
   });

@@ -1,5 +1,5 @@
 import { resolve } from 'path';
-import runner from '../lib/runner.js';
+import { runner } from '../lib/runner.js';
 import * as utils from './test-utils.js';
 
 describe('test/operation.test.js', () => {
