@@ -17,9 +17,7 @@ describe('test/plugin.test.js', () => {
 
     const ctx = await runner(opts)
       .spawn('node', [ '-v' ])
-      .cache('a', 'b')
-      .end();
-
+      .cache('a', 'b');
 
     assert.equal(ctx.cache.a, 'b');
   });
@@ -34,8 +32,7 @@ describe('test/plugin.test.js', () => {
         };
       })
       .spawn('node', [ '-v' ])
-      .cache('a', 'b')
-      .end();
+      .cache('a', 'b');
 
     assert.equal(ctx.cache.a, 'b');
   });
@@ -54,8 +51,7 @@ describe('test/plugin.test.js', () => {
       })
       .spawn('node', [ '-v' ])
       .a(1, 2)
-      .b(1)
-      .end();
+      .b(1);
 
     assert.equal(ctx.a, '1,2');
     assert(ctx.b, '1');

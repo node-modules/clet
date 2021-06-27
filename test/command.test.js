@@ -10,16 +10,14 @@ describe('test/command.test.js', () => {
         .cwd(fixtures)
         .fork('./bin/cli.js')
         .stdout(/version=v\d+\.\d+\.\d+/)
-        .stdout(`cwd=${fixtures}`)
-        .end();
+        .stdout(`cwd=${fixtures}`);
     });
 
     it('should fork with args', async () => {
       await runner()
         .cwd(fixtures)
         .fork('./bin/cli.js', [ '--name=tz' ])
-        .stdout(/argv=.*--name=tz/)
-        .end();
+        .stdout(/argv=.*--name=tz/);
     });
 
     it('should fork with opts', async () => {
@@ -27,8 +25,7 @@ describe('test/command.test.js', () => {
         .cwd(fixtures)
         .fork('./bin/cli.js', { nodeOptions: [ '--no-deprecation' ] })
         .stdout(/argv=\[]/)
-        .stdout(/execArgv=\["--no-deprecation"]/)
-        .end();
+        .stdout(/execArgv=\["--no-deprecation"]/);
     });
 
     it('should fork with args + env', async () => {
@@ -36,8 +33,7 @@ describe('test/command.test.js', () => {
         .cwd(fixtures)
         .fork('./bin/cli.js', [ '--name=tz' ], { execArgv: [ '--no-deprecation' ] })
         .stdout(/argv=.*--name=tz/)
-        .stdout(/execArgv=\["--no-deprecation"]/)
-        .end();
+        .stdout(/execArgv=\["--no-deprecation"]/);
     });
 
     it('should fork with env merge', async () => {
@@ -47,8 +43,7 @@ describe('test/command.test.js', () => {
         .fork('./bin/cli.js', { env: { logEnv: 'PATH,a,b', b: 2 } })
         .stdout(/env.a=1/)
         .stdout(/env.b=2/)
-        .stdout(/env.PATH=/)
-        .end();
+        .stdout(/env.PATH=/);
     });
   });
 
@@ -57,16 +52,14 @@ describe('test/command.test.js', () => {
       await runner()
         .cwd(fixtures)
         .spawn('node -v')
-        .stdout(/^v\d+\.\d+\.\d+/)
-        .end();
+        .stdout(/^v\d+\.\d+\.\d+/);
     });
     it('should spawn with args', async () => {
       await runner()
         .cwd(fixtures)
         .spawn('node', [ './bin/cli.js' ])
         .stdout(/version=v\d+\.\d+\.\d+/)
-        .stdout(`cwd=${fixtures}`)
-        .end();
+        .stdout(`cwd=${fixtures}`);
     });
 
     it('should spawn without separated args', async () => {
@@ -77,8 +70,7 @@ describe('test/command.test.js', () => {
         .stdout(/version=v\d+\.\d+\.\d+/)
         .stdout(/env.a=1/)
         .stdout(/env.b=2/)
-        .stdout(/env.PATH=/)
-        .end();
+        .stdout(/env.PATH=/);
     });
 
     it('should spawn with opts', async () => {
@@ -89,8 +81,7 @@ describe('test/command.test.js', () => {
         .stdout(/version=v\d+\.\d+\.\d+/)
         .stdout(/env.a=1/)
         .stdout(/env.b=2/)
-        .stdout(/env.PATH=/)
-        .end();
+        .stdout(/env.PATH=/);
     });
   });
 });

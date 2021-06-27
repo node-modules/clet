@@ -15,15 +15,13 @@ describe('test/commonjs.test.cjs', () => {
     await runner()
       .fork(`${fixtures}/version.js`)
       .log('result.stdout')
-      .stdout(/\d+\.\d+\.\d+/)
-      .end();
+      .stdout(/\d+\.\d+\.\d+/);
   });
 
   it('should support spawn', async () => {
     await runner()
       .spawn('npm -v')
       .log('result.stdout')
-      .stdout(/\d+\.\d+\.\d+/)
-      .end();
+      .stdout(/\d+\.\d+\.\d+/);
   });
 });

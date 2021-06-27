@@ -18,8 +18,7 @@ describe('test/process.test.js', () => {
       .expect(ctx => {
         const { assert, result } = ctx;
         assert.match(result.stdout, /v\d+\.\d+\.\d+/);
-      })
-      .end();
+      });
   });
 
   it('should support spawn', async () => {
@@ -31,8 +30,7 @@ describe('test/process.test.js', () => {
       .notStdout(/^abc/)
       .notStderr('xxxx')
       .notStderr(/^abc/)
-      .code(0)
-      .end();
+      .code(0);
   });
 
   it('should support stdout()', async () => {
@@ -42,8 +40,7 @@ describe('test/process.test.js', () => {
       .stdout(/version: v\d+\.\d+\.\d+/)
       .stdout('argv:')
       .notStdout('xxxx')
-      .notStdout(/^abc/)
-      .end();
+      .notStdout(/^abc/);
   });
 
   it('should support stderr()', async () => {
@@ -53,24 +50,21 @@ describe('test/process.test.js', () => {
       .stderr(/an error/)
       .stderr('this is an error')
       .notStderr('xxxx')
-      .notStderr(/^abc/)
-      .end();
+      .notStderr(/^abc/);
   });
 
   it('should support code(0)', async () => {
     await runner()
       .cwd(fixtures)
       .fork('process.js')
-      .code(0)
-      .end();
+      .code(0);
   });
 
   it('should support code(1)', async () => {
     await runner()
       .cwd(fixtures)
       .fork('process.js', [ '--fail' ])
-      .code(1)
-      .end();
+      .code(1);
   });
 
   it('should double check code()', async () => {
@@ -78,16 +72,14 @@ describe('test/process.test.js', () => {
       .cwd(fixtures)
       .fork('process.js', [ '--delay' ])
       .wait('stdout', /delay for a while/)
-      .code(0)
-      .end();
+      .code(0);
   });
 
   it('should support code(fn)', async () => {
     await runner()
       .cwd(fixtures)
       .spawn('node --no-exists-argv')
-      .code(n => n < 0)
-      .end();
+      .code(n => n < 0);
   });
 
   it('should throw if not calling code() when proc fail', async () => {
@@ -167,8 +159,7 @@ describe('test/process.test.js', () => {
       .wait('stdout', /long run/)
       .kill()
       // .stdout(/recieve SIGTERM/)
-      .notStdout(/exit long-run/)
-      .end();
+      .notStdout(/exit long-run/);
   });
 
   it('should ensure proc is kill if assert fail', async () => {

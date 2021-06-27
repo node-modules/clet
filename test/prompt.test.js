@@ -14,9 +14,7 @@ describe('test/prompt.test.js', () => {
       .stdin(/Email:/, 'tz@eggjs.com')
       .stdout(/Name:/)
       .stdout(/Email:/)
-      .stdout(/Author: tz <tz@eggjs.com>/)
-      .code(0)
-      .end();
+      .stdout(/Author: tz <tz@eggjs.com>/);
   });
 
   it('should work with prompt', async () => {
@@ -27,9 +25,7 @@ describe('test/prompt.test.js', () => {
       .stdin(/Email:/, 'tz@eggjs.com')
       .stdin(/Gender:/, [ KEYS.DOWN + KEYS.DOWN ])
       .stdout(/Author: tz <tz@eggjs.com>/)
-      .stdout(/Gender: unknown/)
-      .code(0)
-      .end();
+      .stdout(/Gender: unknown/);
   });
 
   it('should work with EOL', async () => {
@@ -40,9 +36,7 @@ describe('test/prompt.test.js', () => {
       .stdin(/Email:/, 'tz@eggjs.com\n')
       .stdin(/Gender:/, [ KEYS.DOWN + KEYS.DOWN + KEYS.ENTER ])
       .stdout(/Author: tz <tz@eggjs.com>/)
-      .stdout(/Gender: unknown/)
-      .code(0)
-      .end();
+      .stdout(/Gender: unknown/);
   });
 
   it('should support multi respond', async () => {
@@ -51,9 +45,7 @@ describe('test/prompt.test.js', () => {
       .fork('./prompt.js')
       .stdin(/Name:/, [ 'tz', 'tz@eggjs.com', '' ])
       .stdout(/Author: tz <tz@eggjs.com>/)
-      .stdout(/Gender: boy/)
-      .code(0)
-      .end();
+      .stdout(/Gender: boy/);
   });
 
 

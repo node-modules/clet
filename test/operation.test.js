@@ -19,8 +19,7 @@ describe('test/operation.test.js', () => {
       .mkdir('a/b')
       .file(targetPath)
       .spawn('ls -l')
-      .mkdir('a/b/c')
-      .end();
+      .mkdir('a/b/c');
 
     // check
     utils.assertFile(targetPath);
@@ -36,8 +35,7 @@ describe('test/operation.test.js', () => {
       .shell('npm init -y')
       .file(targetPath)
       .spawn('ls')
-      .mkdir('a/b/c')
-      .end();
+      .mkdir('a/b/c');
 
     // check
     utils.assertFile(targetPath);

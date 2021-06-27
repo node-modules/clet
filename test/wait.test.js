@@ -35,8 +35,7 @@ describe('test/wait.test.js', () => {
       .timeEnd(cost => assert(cost < 500))
       .wait('stdout', /started/)
       .timeEnd(cost => assert(cost > 500))
-      .kill()
-      .end();
+      .kill();
   });
 
   it('should wait stderr', async () => {
@@ -48,8 +47,7 @@ describe('test/wait.test.js', () => {
       .timeEnd(cost => assert(cost < 500))
       .wait('stderr', /be careful/)
       .timeEnd(cost => assert(cost > 500))
-      .kill()
-      .end();
+      .kill();
   });
 
   it('should wait message with object', async () => {
@@ -61,8 +59,7 @@ describe('test/wait.test.js', () => {
       .timeEnd(cost => assert(cost < 500))
       .wait('message', { action: 'egg-ready' })
       .timeEnd(cost => assert(cost > 500))
-      .kill()
-      .end();
+      .kill();
   });
 
   it('should wait message with regex', async () => {
@@ -74,8 +71,7 @@ describe('test/wait.test.js', () => {
       .timeEnd(cost => assert(cost < 500))
       .wait('message', /egg-ready/)
       .timeEnd(cost => assert(cost > 500))
-      .kill()
-      .end();
+      .kill();
   });
 
   it('should wait message with fn', async () => {
@@ -87,8 +83,7 @@ describe('test/wait.test.js', () => {
       .timeEnd(cost => assert(cost < 500))
       .wait('message', data => data && data.action === 'egg-ready')
       .timeEnd(cost => assert(cost > 500))
-      .kill()
-      .end();
+      .kill();
   });
 
   it('should wait close', async () => {
@@ -96,8 +91,7 @@ describe('test/wait.test.js', () => {
       .cwd(fixtures)
       .fork(cliPath)
       .wait('close')
-      .code(0)
-      .end();
+      .code(0);
   });
 
   it('should wait close as default', async () => {
@@ -105,8 +99,7 @@ describe('test/wait.test.js', () => {
       .cwd(fixtures)
       .fork(cliPath)
       .wait()
-      .code(0)
-      .end();
+      .code(0);
   });
 
   it('should wait end if message is not emit', async () => {
@@ -114,15 +107,13 @@ describe('test/wait.test.js', () => {
       .cwd(fixtures)
       .fork(cliPath)
       .wait('message', /not-exist-event/)
-      .code(0)
-      .end();
+      .code(0);
   });
 
   it('should auto wait end without calling .wait()', async () => {
     await runner()
       .cwd(fixtures)
       .fork(cliPath)
-      .code(0)
-      .end();
+      .code(0);
   });
 });

@@ -18,8 +18,7 @@ describe('test/middleware.test.js', () => {
       .spawn('node -p "3"')
       .tap(ctx => {
         tmp.push(ctx.result.stdout.replace(/\r?\n/, ''));
-      })
-      .end();
+      });
 
     // check
     assert.equal(tmp.join(''), '12345');
@@ -43,8 +42,7 @@ describe('test/middleware.test.js', () => {
         tmp.push('2');
         await next();
         tmp.push('4');
-      })
-      .end();
+      });
 
     // check
     assert.equal(tmp.join(''), '12345');

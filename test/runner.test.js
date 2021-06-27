@@ -23,8 +23,7 @@ describe('test/runner.test.js', () => {
   it('should work without end()', async () => {
     const ctx = await runner()
       .cwd(fixtures)
-      .spawn('node -v')
-      .code(0);
+      .spawn('node -v');
 
     // ensure chain return instance context
     assert.equal(ctx.instance.constructor.name, 'TestRunner');
@@ -36,8 +35,7 @@ describe('test/runner.test.js', () => {
       .log('command-line test start')
       .spawn('node -v')
       .stdout(/v\d+\.\d+\.\d+/)
-      .log('command-line test end')
-      .end();
+      .log('command-line test end');
   });
 
   it('should export context', async () => {
@@ -50,7 +48,6 @@ describe('test/runner.test.js', () => {
         ctx.assert(ctx.env.a === 'b');
         ctx.assert(ctx.proc);
         ctx.assert(ctx.result);
-      })
-      .end();
+      });
   });
 });
