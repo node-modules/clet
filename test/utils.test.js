@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
+import { strict as assert } from 'assert';
 import * as utils from '../lib/utils.js';
-const { assert } = utils;
 
 describe('test/utils.test.js', () => {
   it('isParent', () => {

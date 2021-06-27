@@ -1,5 +1,5 @@
+import { strict as assert } from 'assert';
 import runner from '../lib/runner.js';
-import * as utils from './test-utils.js';
 
 describe('test/plugin.test.js', () => {
   it('should support options.plugins', async () => {
@@ -21,7 +21,7 @@ describe('test/plugin.test.js', () => {
       .end();
 
 
-    utils.assert.equal(ctx.cache.a, 'b');
+    assert.equal(ctx.cache.a, 'b');
   });
 
   it('should register(fn)', async () => {
@@ -37,7 +37,7 @@ describe('test/plugin.test.js', () => {
       .cache('a', 'b')
       .end();
 
-    utils.assert.equal(ctx.cache.a, 'b');
+    assert.equal(ctx.cache.a, 'b');
   });
 
   it('should register(obj)', async () => {
@@ -57,7 +57,7 @@ describe('test/plugin.test.js', () => {
       .b(1)
       .end();
 
-    utils.assert.equal(ctx.a, '1,2');
-    utils.assert(ctx.b, '1');
+    assert.equal(ctx.a, '1,2');
+    assert(ctx.b, '1');
   });
 });

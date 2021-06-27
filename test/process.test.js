@@ -1,7 +1,7 @@
 import path from 'path';
+import { strict as assert } from 'assert';
 import runner from '../lib/runner.js';
 import * as utils from './test-utils.js';
-const { assert } = utils;
 
 describe('test/process.test.js', () => {
   const fixtures = path.resolve('test/fixtures');

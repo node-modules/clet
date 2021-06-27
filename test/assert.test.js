@@ -1,6 +1,6 @@
 
 import path from 'path';
-import { assert, matchRule, doesNotMatchRule } from '../lib/utils.js';
+import { assert, matchRule, doesNotMatchRule } from '../lib/assert.js';
 
 describe('test/assert.test.js', () => {
   const pkgInfo = {
