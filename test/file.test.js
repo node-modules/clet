@@ -71,7 +71,7 @@ describe('test/file.test.js', () => {
         // check exists
         .notFile(`${tmpDir}/not-exist.md`, 'abc')
         .end();
-    }, /not-exist.md to be exists/);
+    }, /Expected file\(.*not-exist.md\) not to match.*but file not exists/);
 
     await assert.rejects(async () => {
       await runner()

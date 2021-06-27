@@ -47,6 +47,7 @@ describe('command-line end-to-end testing', () => {
       .fork('bin/cli.js')
       .wait('stdout', /server started/)
       .expect(async () => {
+        // using supertest
         return request('http://localhost:3000')
           .get('/')
           .query({ name: 'tz' })

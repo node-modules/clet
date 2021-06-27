@@ -148,7 +148,7 @@ describe('test/assert.test.js', () => {
 
       await assert.rejects(async () => {
         await assert.doesNotMatchFile(`${fixtures}/not-exist.md`, 'abc');
-      }, /not-exist.md to be exists/);
+      }, /Expected file\(.*not-exist.md\) not to match.*but file not exists/);
     });
 
     it('should check content', async () => {
