@@ -1,17 +1,31 @@
 {
-  "name": "ctx",
+  "name": "clet",
   "version": "0.0.0",
-  "description": "another cli test utils",
+  "description": "Command Line E2E Testing",
+  "type": "module",
+  "main": "./lib/runner.js",
+  "exports": "./lib/runner.js",
   "author": "TZ <atian25@qq.com> (https://github.com/atian25)",
-  "homepage": "https://github.com/node-modules/ctu",
-  "repository": "git@github.com:node-modules/ctu.git",
-  "dependencies": {},
+  "homepage": "https://github.com/node-modules/clet",
+  "repository": "git@github.com:node-modules/clet.git",
+  "dependencies": {
+    "dirname-filename-esm": "^1.1.1",
+    "dot-prop": "^6.0.1",
+    "execa": "^5.1.1",
+    "lodash.ismatch": "^4.4.0",
+    "p-event": "^4.2.0",
+    "strip-ansi": "^7.0.0",
+    "throwback": "^4.1.0",
+    "trash": "^7.2.0"
+  },
   "devDependencies": {
-    "autod": "^3",
-    "egg-bin": "^4",
+    "cross-env": "^7.0.3",
     "egg-ci": "^1",
+    "enquirer": "^2.3.6",
     "eslint": "^7",
-    "eslint-config-egg": "^9"
+    "eslint-config-egg": "^9",
+    "jest": "^27.0.4",
+    "supertest": "^6.1.3"
   },
   "files": [
     "bin",
@@ -19,18 +33,33 @@
     "index.js"
   ],
   "scripts": {
-    "start": "node index.js",
     "lint": "eslint .",
-    "test": "npm run lint -- --fix && egg-bin pkgfiles && npm run test-local",
-    "test-local": "egg-bin test",
-    "cov": "egg-bin cov",
-    "ci": "npm run lint && egg-bin pkgfiles --check && npm run cov",
-    "pkgfiles": "egg-bin pkgfiles",
-    "autod": "autod"
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest",
+    "cov": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --coverage",
+    "ci": "npm run lint && npm run cov"
   },
   "ci": {
-    "version": "14",
+    "version": "14, 16",
     "type": "github"
+  },
+  "jest": {
+    "transform": {},
+    "testTimeout": 5000,
+    "globalSetup": "./test/jest-global-setup.js",
+    "setupFilesAfterEnv": [
+      "./test/jest-test-setup.js"
+    ],
+    "moduleFileExtensions": [
+      "cjs",
+      "mjs",
+      "js",
+      "ts",
+      "json",
+      "node"
+    ],
+    "testMatch": [
+      "**/test/*.test.{js,ts,cjs}"
+    ]
   },
   "eslintIgnore": [
     "coverage",

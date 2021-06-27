@@ -1,0 +1,7 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "bin": "./bin/cli.js",
+  "exports": "./index.js",
+  "type": "module"
+}

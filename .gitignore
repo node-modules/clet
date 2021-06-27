@@ -8,3 +8,7 @@ run/
 *.swp
 *-lock.json
 .vscode/history
+.tmp
+.vscode
+.tempCodeRunnerFile.js
+/snippet/
