@@ -9,7 +9,6 @@
   "homepage": "https://github.com/node-modules/clet",
   "repository": "git@github.com:node-modules/clet.git",
   "dependencies": {
-    "consola": "^2.15.3",
     "dirname-filename-esm": "^1.1.1",
     "dot-prop": "^6.0.1",
     "execa": "^5.1.1",
