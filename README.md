@@ -394,8 +394,6 @@ it('should support sleep()', async () => {
 
 ## License
 
-## Usage
-
 
 ## TODO
 
@@ -403,16 +401,12 @@ it('should support sleep()', async () => {
   - [ ] API
   - [ ] Docs
   - [ ] refactor plugin system
-  - [ ] assert error stack
+  - [ ] assert error stack (need test)
   - [ ] stub api
   - [ ] fn.length, next is optional?
-  - [ ] tmpdir - mkdir + next + rm
   - [ ] private method to replace _fn
   - [ ] pipe stdout when debug, and indent
-  - [ ] middleware mkdir
   - [ ] http api, wrap get/post, and body, query, contentType
-  - [ ] stdin key mapping and auto add \n
-  - [ ] validate stdin rest and throw
   - [ ] wait stdout with new content
 - Tool
   - [ ] esm-first

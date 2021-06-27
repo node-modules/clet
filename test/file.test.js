@@ -17,7 +17,9 @@ describe('test/file.test.js', () => {
         // check exists
         .file('./test.json') // support relative path
         .file(`${tmpDir}/test.md`);
+    });
 
+    it('should check exists fail', async () => {
       await assert.rejects(async () => {
         await runner()
           .cwd(tmpDir, { init: true })
@@ -33,7 +35,9 @@ describe('test/file.test.js', () => {
         .file(`${tmpDir}/test.md`, 'this is a README')
         .file(`${tmpDir}/test.md`, /this is a README/)
         .file(`${tmpDir}/test.json`, { name: 'test', config: { port: 8080 } });
+    });
 
+    it('should check content fail', async () => {
       await assert.rejects(async () => {
         await runner()
           .cwd(tmpDir, { init: true })
@@ -51,6 +55,9 @@ describe('test/file.test.js', () => {
         .notFile('./abc')
         .notFile(`${tmpDir}/a/b/c/d.md`);
 
+    });
+
+    it('should check not exists fail', async () => {
       await assert.rejects(async () => {
         await runner()
           .cwd(tmpDir, { init: true })
@@ -66,7 +73,9 @@ describe('test/file.test.js', () => {
         .notFile(`${tmpDir}/test.md`, 'abc')
         .notFile(`${tmpDir}/test.md`, /abcccc/)
         .notFile(`${tmpDir}/test.json`, { name: 'test', config: { a: 1 } });
+    });
 
+    it('should check not content fail', async () => {
       await assert.rejects(async () => {
         await runner()
           .cwd(tmpDir, { init: true })
