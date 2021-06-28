@@ -29,15 +29,6 @@ describe('test/runner.test.js', () => {
     assert.equal(ctx.instance.constructor.name, 'TestRunner');
   });
 
-  it('should logger', async () => {
-    await runner()
-      .cwd(fixtures)
-      .log('command-line test start')
-      .fork('logger.js')
-      .stdout(/v\d+\.\d+\.\d+/)
-      .log('command-line test end');
-  });
-
   it('should export context', async () => {
     await runner()
       .cwd(fixtures)

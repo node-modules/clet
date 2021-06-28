@@ -58,7 +58,7 @@
       "node"
     ],
     "testMatch": [
-      "**/test/*.test.{js,ts,cjs}"
+      "**/test/**/*.test.{js,ts,cjs}"
     ]
   },
   "eslintIgnore": [
