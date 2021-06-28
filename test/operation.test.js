@@ -6,8 +6,6 @@ describe('test/operation.test.js', () => {
   // const fixtures = path.resolve('test/fixtures');
   const tmpDir = utils.getTempDir();
 
-  beforeEach(() => utils.initDir(tmpDir));
-
   it.todo('operation');
 
   it.skip('should support mkdir', async () => {
@@ -26,19 +24,14 @@ describe('test/operation.test.js', () => {
     utils.assertFile(resolve(targetPath, 'c'));
   });
 
-  it.skip('should support shell', async () => {
-    const targetPath = resolve(tmpDir, 'package.json');
-    utils.assertFile.fail(targetPath);
+  it('should support shell', async () => {
+    const tmpDir = utils.getTempDir('shell');
 
     await runner()
-      .cwd(tmpDir)
+      .cwd(tmpDir, { init: true })
+      .notFile('package.json')
       .shell('npm init -y')
-      .file(targetPath)
-      .spawn('ls')
-      .mkdir('a/b/c');
-
-    // check
-    utils.assertFile(targetPath);
-    utils.assertFile(resolve(targetPath, 'c'));
+      .file('package.json', { name: 'shell' })
+      .spawn('npm -v');
   });
 });

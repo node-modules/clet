@@ -72,7 +72,7 @@ describe('command-line end-to-end testing', () => {
 npm i --save clet
 ```
 
-## API
+## Command
 
 ### fork(cmd, args, opts)
 
@@ -387,7 +387,6 @@ it('should support sleep()', async () => {
 
 ### writeFile
 
-### http
 
 ## Context
 
@@ -395,15 +394,16 @@ it('should support sleep()', async () => {
 
 ### logger
 
+## Debugging
+
 ### debug(level)
 
-### on(event, fn)
-
-## Unstable API
+## Extendable
 
 ### use
 
 ### register
+
 
 ## License
 
