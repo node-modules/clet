@@ -8,9 +8,10 @@
 
 Command Line E2E Testing.
 
-> Aiming to make end-to-end testing for command-line apps as simple as possible.
->
-> It provides powerfull and simple APIs.
+Aiming to make end-to-end testing for command-line apps as simple as possible.
+
+- Powerfull and Simply chainable APIs.
+- Interactive with prompts.
 
 
 ## How it looks
@@ -440,49 +441,152 @@ it('should support writeFile', async () => {
 
 ## Context
 
+```js
+/**
+ * @typedef Context
+ *
+ * @property {Object} result - child process execute result
+ * @property {String} result.stdout - child process stdout
+ * @property {String} result.stderr - child process stderr
+ * @property {Number} result.code - child process exit code
+ *
+ * @property {execa.ExecaChildProcess} proc - child process instance
+ * @property {TestRunner} instance - runner instance
+ * @property {String} cwd - child process current workspace directory
+ *
+ * @property {Object} assert - assert helper
+ * @property {Object} utils -  utils helper
+ * @property {Object} logger - built-in logger
+ */
+```
+
 ### assert
 
-### logger
+Extend Node.js built-in `assert` with some powerfull assertions.
 
-## Debugging
+```js
+/**
+ * assert the `actual` is match `expected`
+ *  - when `expected` is regexp, detect by `RegExp.test`
+ *  - when `expected` is json, detect by `lodash.ismatch`
+ *  - when `expected` is string, detect by `String.includes`
+ *
+ * @param {String|Object} actual - actual string
+ * @param {String|RegExp|Object} expected - rule to validate
+ */
+function matchRule(actual, expected) {}
+
+/**
+ * assert the `actual` is not match `expected`
+ *  - when `expected` is regexp, detect by `RegExp.test`
+ *  - when `expected` is json, detect by `lodash.ismatch`
+ *  - when `expected` is string, detect by `String.includes`
+ *
+ * @param {String|Object} actual - actual string
+ * @param {String|RegExp|Object} expected - rule to validate
+ */
+function doesNotMatchRule(actual, expected) {}
+
+/**
+ * validate file
+ *
+ *  - `matchFile('/path/to/file')`: check whether file exists
+ *  - `matchFile('/path/to/file', /\w+/)`: check whether file match regexp
+ *  - `matchFile('/path/to/file', 'usage')`: check whether file includes specified string
+ *  - `matchFile('/path/to/file', { version: '1.0.0' })`: checke whether file content partial includes specified JSON
+ *
+ * @param {String} filePath - target path to validate, could be relative path
+ * @param {String|RegExp|Object} [expected] - rule to validate
+ * @throws {AssertionError}
+ */
+async function matchFile(filePath, expected) {}
+
+/**
+ * validate file with opposite rule
+ *
+ *  - `doesNotMatchFile('/path/to/file')`: check whether file don't exists
+ *  - `doesNotMatchFile('/path/to/file', /\w+/)`: check whether file don't match regex
+ *  - `doesNotMatchFile('/path/to/file', 'usage')`: check whether file don't includes specified string
+ *  - `doesNotMatchFile('/path/to/file', { version: '1.0.0' })`: checke whether file content don't partial includes specified JSON
+ *
+ * @param {String} filePath - target path to validate, could be relative path
+ * @param {String|RegExp|Object} [expected] - rule to validate
+ * @throws {AssertionError}
+ */
+async function doesNotMatchFile(filePath, expected) {}
+```
 
 ### debug(level)
 
+Set level of logger.
+
+```js
+import { runner, LogLevel } from 'clet';
+
+it('should debug(level)', async () => {
+  await runner()
+    .debug(LogLevel.DEBUG)
+    // .debug('DEBUG')
+    .spawn('npm -v');
+});
+```
+
+---
+
 ## Extendable
 
-### use
+### use(fn)
 
-### register
+Middleware, always run before child process chains.
 
+```js
+// middleware.pre -> before -> fork -> running -> after -> end -> middleware.post -> cleanup
+
+it('should support middleware', async () => {
+  await runner()
+    .use(async (ctx, next) => {
+      // pre
+      await utils.rm(dir);
+      await utils.mkdir(dir);
+
+      await next();
+
+      // post
+      await utils.rm(dir);
+    })
+    .spawn('npm -v');
+});
+```
+
+### register(Function|Object)
+
+Register your custom APIs.
+
+```js
+it('should register(fn)', async () => {
+  await runner()
+    .register(({ ctx }) => {
+      ctx.cache = {};
+      cache = function(key, value) {
+        this.ctx.cache[key] = value;
+        return this;
+      };
+    })
+    .cache('a', 'b')
+    .tap(ctx => {
+      console.log(ctx.cache);
+    })
+    .spawn('node', [ '-v' ]);
+});
+```
+
+## Known Issues
+
+**Help Wanted**
+
+- when answer prompt with `inquirer` or `enquirer`, stdout will recieve duplicate output.
+- when print child error log with `.error()`, the log order maybe in disorder.
 
 ## License
 
 MIT
-
-## TODO
-
-- RFC
-  - [ ] API
-  - [ ] Docs
-    - toc link
-  - [ ] assert error stack (need test, clean built-in)
-  - [ ] private method to replace _fn
-  - [ ] logger
-    - level
-    - unit test
-    - env enable
-    - time
-    - error log in front of log??
-  - [ ] http api, wrap get/post, and body, query, contentType
-  - [ ] wait stdout with new content
-  - [ ] preferBin
-  - [ ] d.ts
-  - [ ] logo
-  - [ ] refactor plugin system
-  - [ ] stub api
-- Tool
-  - [x] esm-first
-  - [ ] prettier
-  - [ ] semver-release
-  - [x] jest
-
