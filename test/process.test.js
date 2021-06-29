@@ -1,5 +1,6 @@
 import path from 'path';
 import { strict as assert } from 'assert';
+import fs from 'fs';
 import { runner } from '../lib/runner.js';
 import * as utils from './test-utils.js';
 
@@ -104,7 +105,8 @@ describe('test/process.test.js', () => {
   it('should auto create cwd', async () => {
     const cliPath = path.resolve(fixtures, 'file.js');
     const targetDir = utils.getTempDir('../cwd-test');
-    await utils.writeFile(path.join(targetDir, 'should-delete.md'), 'foo');
+    await fs.promises.mkdir(targetDir, { recursive: true });
+    await fs.promises.writeFile(path.join(targetDir, 'should-delete.md'), 'foo');
 
     // clean: false
     await runner()
@@ -113,7 +115,7 @@ describe('test/process.test.js', () => {
       .notFile('should-delete.md')
       .file('test.md', /# test/);
 
-    assert.equal(await utils.exists(targetDir), true);
+    assert.equal(fs.existsSync(targetDir), true);
 
     // clean: true
     await runner()
@@ -121,7 +123,7 @@ describe('test/process.test.js', () => {
       .fork(cliPath)
       .file('test.md', /# test/);
 
-    assert.equal(await utils.exists(targetDir), false);
+    assert.equal(fs.existsSync(targetDir), false);
   });
 
   it('should throw if auto create cwd will damage', async () => {
@@ -149,7 +151,7 @@ describe('test/process.test.js', () => {
         .tap(() => { throw new Error('trigger fail'); });
     }, /trigger fail/);
 
-    assert.equal(await utils.exists(targetDir), false);
+    assert.equal(fs.existsSync(targetDir), false);
   });
 
   it('should kill', async () => {
