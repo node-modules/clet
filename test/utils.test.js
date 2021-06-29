@@ -5,6 +5,23 @@ import * as utils from '../lib/utils.js';
 import * as testUtils from './test-utils.js';
 
 describe('test/utils.test.js', () => {
+  const tmpDir = testUtils.getTempDir();
+  beforeEach(() => testUtils.initDir(tmpDir));
+
+  it('types', () => {
+    assert(utils.types.isString('foo'));
+    assert(utils.types.isObject({}));
+    assert(utils.types.isFunction(() => {}));
+  });
+
+  it('validate', () => {
+    assert(utils.validate('foo', /fo+/));
+    assert(utils.validate('foo', 'o'));
+    assert(utils.validate({ name: 'test', config: { port: 8080 } }, { config: { port: 8080 } }));
+    assert(utils.validate('foo', x => x.startsWith('f')));
+    assert(utils.validate('foo', [ /fo+/, 'o' ]));
+  });
+
   it('isParent', () => {
     const cwd = process.cwd();
     const file = path.join(cwd, 'index.js');
@@ -14,14 +31,27 @@ describe('test/utils.test.js', () => {
   });
 
   it('mkdirp and rm', async () => {
-    const tmpDir = testUtils.getTempDir('./a');
+    const targetDir = path.resolve(tmpDir, './a');
 
-    assert(!fs.existsSync(tmpDir));
-    await utils.mkdir(tmpDir);
-    assert(fs.existsSync(tmpDir));
+    assert(!fs.existsSync(targetDir));
+    await utils.mkdir(targetDir);
+    assert(fs.existsSync(targetDir));
 
-    await utils.rm(tmpDir);
-    assert(!fs.existsSync(tmpDir));
+    await utils.rm(targetDir);
+    assert(!fs.existsSync(targetDir));
+  });
+
+  it('writeFile', async () => {
+    await utils.writeFile(`${tmpDir}/test.md`, 'this is a test');
+    assert(fs.readFileSync(`${tmpDir}/test.md`, 'utf-8') === 'this is a test');
+
+    await utils.writeFile(`${tmpDir}/test.json`, { name: 'test' });
+    assert(fs.readFileSync(`${tmpDir}/test.json`, 'utf-8').match(/"name": "test"/));
+  });
+
+  it('exists', async () => {
+    assert(await utils.exists('package.json'));
+    assert(!await utils.exists('not-exists-file'));
   });
 
   it('resolve meta', async () => {
@@ -35,14 +65,9 @@ describe('test/utils.test.js', () => {
     assert(fs.existsSync(p));
   });
 
-  it.skip('sleep', async () => {
+  it('sleep', async () => {
     const start = Date.now();
     await utils.sleep(1000);
     assert(Date.now() - start >= 1000);
-  });
-
-  it('filterAndJoin', () => {
-    assert(utils.filterAndJoin([ 1, undefined, 2, null, 3 ]), '1 2 3');
-    assert(utils.filterAndJoin([ undefined, 1, 2, null, 3 ], ','), '1,2,3');
   });
 });
