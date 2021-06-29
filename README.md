@@ -1,4 +1,4 @@
-# CLET
+# CLET - Command Line E2E Testing
 
 [![NPM Version](https://img.shields.io/npm/v/clet.svg?style=flat-square)](https://npmjs.org/package/clet)
 [![NPM Quality](http://npm.packagequality.com/shield/clet.svg?style=flat-square)](http://packagequality.com/#?package=clet)
@@ -6,65 +6,75 @@
 [![CI](https://github.com/node-modules/clet/actions/workflows/nodejs.yml/badge.svg)](https://github.com/node-modules/clet/actions/workflows/nodejs.yml)
 [![Coverage](https://img.shields.io/codecov/c/github/node-modules/clet.svg?style=flat-square)](https://codecov.io/gh/node-modules/clet)
 
-Command Line E2E Testing.
+**CLET** = **C**ommand **L**ine **E**2E **T**esting.
 
-Aiming to make end-to-end testing for command-line apps as simple as possible.
+**Aiming to make end-to-end testing for command-line apps as simple as possible.**
 
 - Powerfull and Simply chainable APIs.
 - Interactive with prompts.
+- Modern && ESM first.
+
+Inspired by [coffee](https://github.com/node-modules/coffee) / [nixt](https://github.com/vesln/nixt).
 
 
 ## How it looks
 
+### Boilerplate && Prompts
+
 ```js
 import { runner, KEYS } from 'clet';
+
+it('should works with boilerplate', async () => {
+  await runner()
+    .cwd('/path/to/dir', { init: true })
+    .spawn('npm init')
+    .stdin(/name:/, 'example') // wait for stdout, then respond
+    .stdin(/version:/, new Array(9).fill(KEYS.ENTER)) // don't care about others, just enter
+    .stdout(/"name": "example"/) // validate stdout
+    .file('package.json', { name: 'example', version: '1.0.0' }); // validate file content
+});
+```
+
+### Command Line Apps
+
+```js
+import { runner } from 'clet';
+
+it('should works with command-line apps', async () => {
+  const baseDir = path.resolve(fixtures, 'example');
+  await runner()
+    .cwd(baseDir)
+    .fork('bin/cli.js', [ '--name=test' ], { execArgv: [ '--no-deprecation' ] })
+    .stdout('this is example bin')
+    .stdout(`cwd=${baseDir}`)
+    .stdout(/argv=\["--name=\w+"\]/)
+    .stdout(/execArgv=\["--no-deprecation"\]/)
+    .stderr(/this is a warning/);
+});
+```
+
+### Build tools && Long-run server
+
+```js
+import { runner } from 'clet';
 import request from 'supertest';
 
-describe('command-line end-to-end testing', () => {
-
-  // test your boilerplate with prompts
-  it('should works with boilerplate', async () => {
-    await runner()
-      .cwd('/path/to/dir', { init: true })
-      .spawn('npm init')
-      .stdin(/name:/, 'example') // wait for stdout, then respond
-      .stdin(/version:/, new Array(9).fill(KEYS.ENTER)) // don't care about others, just enter
-      .stdout(/"name": "example"/) // validate stdout
-      .file('package.json', { name: 'example', version: '1.0.0' }); // validate file content, relative to cwd
-  });
-
-  // test your commander
-  it('should works with command-line apps', async () => {
-    const baseDir = path.resolve(fixtures, 'example');
-    await runner()
-      .cwd(baseDir)
-      .fork('bin/cli.js', [ '--name=test' ], { execArgv: [ '--no-deprecation' ] })
-      .stdout('this is example bin')
-      .stdout(`cwd=${baseDir}`)
-      .stdout(/argv=\["--name=\w+"\]/)
-      .stdout(/execArgv=\["--no-deprecation"\]/)
-      .stderr(/this is a warning/);
-  });
-
-  // test your long-run apps such as http server or build tools
-  it('should works with long-run apps', async () => {
-    const baseDir = path.resolve(fixtures, 'server');
-    await runner()
-      .cwd(baseDir)
-      .fork('bin/cli.js')
-      .wait('stdout', /server started/)
-      .expect(async () => {
-        // using supertest
-        return request('http://localhost:3000')
-          .get('/')
-          .query({ name: 'tz' })
-          .expect(200)
-          .expect('hi, tz');
-      })
-      .kill(); // long-run server will not auto exit, so kill it manually after test
-  });
+it('should works with long-run apps', async () => {
+  const baseDir = path.resolve(fixtures, 'server');
+  await runner()
+    .cwd(baseDir)
+    .fork('bin/cli.js')
+    .wait('stdout', /server started/)
+    .expect(async () => {
+      // using supertest
+      return request('http://localhost:3000')
+        .get('/')
+        .query({ name: 'tz' })
+        .expect(200)
+        .expect('hi, tz');
+    })
+    .kill(); // long-run server will not auto exit, so kill it manually after test
 });
-
 ```
 
 ## Installation
