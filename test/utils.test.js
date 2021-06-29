@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { strict as assert } from 'assert';
 import * as utils from '../lib/utils.js';
+import * as testUtils from './test-utils.js';
 
 describe('test/utils.test.js', () => {
   it('isParent', () => {
@@ -13,7 +14,7 @@ describe('test/utils.test.js', () => {
   });
 
   it('mkdirp and rm', async () => {
-    const tmpDir = utils.resolve(import.meta, '.tmp/utils/a');
+    const tmpDir = testUtils.getTempDir('./a');
 
     assert(!fs.existsSync(tmpDir));
     await utils.mkdir(tmpDir);

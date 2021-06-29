@@ -1,37 +1,35 @@
-import { resolve } from 'path';
 import { runner } from '../lib/runner.js';
 import * as utils from './test-utils.js';
 
 describe('test/operation.test.js', () => {
-  // const fixtures = path.resolve('test/fixtures');
   const tmpDir = utils.getTempDir();
-
-  it.todo('operation');
-
-  it.skip('should support mkdir', async () => {
-    const targetPath = resolve(tmpDir, 'a/b');
-    utils.assertFile.fail(targetPath);
-
+  it('should support mkdir/rm', async () => {
     await runner()
-      .cwd(tmpDir)
+      .cwd(tmpDir, { init: true })
       .mkdir('a/b')
-      .file(targetPath)
-      .spawn('ls -l')
-      .mkdir('a/b/c');
+      .file('a/b')
+      .rm('a/b')
+      .file('a')
+      .notFile('a/b')
+      .spawn('npm -v');
+  });
 
-    // check
-    utils.assertFile(targetPath);
-    utils.assertFile(resolve(targetPath, 'c'));
+  it('should support writeFile', async () => {
+    await runner()
+      .cwd(tmpDir, { init: true })
+      .writeFile('test.json', { name: 'writeFile' })
+      .writeFile('test.md', 'this is a test')
+      .file('test.json', /"name": "writeFile"/)
+      .file('test.md', /this is a test/)
+      .spawn('npm -v');
   });
 
   it('should support shell', async () => {
-    const tmpDir = utils.getTempDir('shell');
-
     await runner()
       .cwd(tmpDir, { init: true })
-      .notFile('package.json')
-      .shell('npm init -y')
-      .file('package.json', { name: 'shell' })
-      .spawn('npm -v');
+      .spawn('npm init -y')
+      .file('package.json', { name: 'operation', version: '1.0.0' })
+      .shell('npm version minor --no-git-tag-version')
+      .file('package.json', { version: '1.1.0' });
   });
 });

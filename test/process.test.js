@@ -108,7 +108,7 @@ describe('test/process.test.js', () => {
 
     // clean: false
     await runner()
-      .cwd(targetDir, { init: true, clean: false })
+      .cwd(targetDir, { init: true })
       .fork(cliPath)
       .notFile('should-delete.md')
       .file('test.md', /# test/);
@@ -117,7 +117,7 @@ describe('test/process.test.js', () => {
 
     // clean: true
     await runner()
-      .cwd(targetDir, { init: true })
+      .cwd(targetDir, { init: true, clean: true })
       .fork(cliPath)
       .file('test.md', /# test/);
 
@@ -130,20 +130,20 @@ describe('test/process.test.js', () => {
 
     await assert.rejects(async () => {
       await runner()
-        .cwd(fixtures, { init: true })
+        .cwd(fixtures, { init: true, clean: true })
         .fork(cliPath);
     }, /rm.*too dangerous/);
 
     await assert.rejects(async () => {
       await runner()
-        .cwd(path.dirname(cliPath), { init: true })
+        .cwd(path.dirname(cliPath), { init: true, clean: true })
         .fork(cliPath);
     }, /rm.*too dangerous/);
 
     // rm event fail
     await assert.rejects(async () => {
       await runner()
-        .cwd(targetDir, { init: true })
+        .cwd(targetDir, { init: true, clean: true })
         .fork(cliPath)
         .file('test.md', /# test/)
         .tap(() => { throw new Error('trigger fail'); });

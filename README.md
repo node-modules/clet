@@ -24,7 +24,7 @@ describe('command-line end-to-end testing', () => {
   // test your boilerplate with prompts
   it('should works with boilerplate', async () => {
     await runner()
-      .cwd(tmpDir, { init: true })
+      .cwd('/path/to/dir', { init: true })
       .spawn('npm init')
       .stdin(/name:/, 'example') // wait for stdout, then respond
       .stdin(/version:/, new Array(9).fill(KEYS.ENTER)) // don't care about others, just enter
@@ -107,7 +107,6 @@ Execute a shell script as a child process.
 ```js
 it('should support spawn', async () => {
   await runner()
-    .cwd(tmpDir)
     .spawn('node -v')
     .stdout(/v\d+\.\d+\.\d+/)
     .code(0);
@@ -131,14 +130,14 @@ it('support cwd()', async () => {
 Support options:
 
 - `init`: will delete and create directory before test.
-- `clean`: will delete directory after test, default to `true` if `init` is true.
+- `clean`: will delete directory after test.
 
 > Use `trash` instead of `fs.rm` due to the consideration of preventing misoperation.
 
 ```js
 it('support cwd() with opts', async () => {
   await runner()
-    .cwd(targetDir, { init: true, clean: false })
+    .cwd(targetDir, { init: true, clean: true })
     .fork(cliPath)
     .notFile('should-delete.md')
     .file('test.md', /# test/);
@@ -305,8 +304,8 @@ Validate file.
 ```js
 it('should support file()', async () => {
   await runner()
-    .cwd(tmpDir)
-    .fork('npm init -y')
+    .cwd('/path/to/dir', { init: true })
+    .spawn('npm init -y')
     .file('package.json')
     .file('package.json', /"name":/)
     .file('package.json', { name: 'example', config: { port: 8080 } });
@@ -381,12 +380,63 @@ it('should support sleep()', async () => {
 
 ### shell
 
+Run a shell, useful for `npm install` after boilerplate init.
+
+```js
+it('should support shell', async () => {
+  await runner()
+    .cwd('/path/to/dir', { init: true })
+    .spawn('npm init -y')
+    .file('package.json', { name: 'shell', version: '1.0.0' })
+    .shell('npm version minor --no-git-tag-version')
+    .file('package.json', { version: '1.1.0' });
+});
+```
+
 ### mkdir
+
+Act like `mkdir -p`.
+
+```js
+it('should support mkdir', async () => {
+  await runner()
+    .cwd(tmpDir, { init: true })
+    .mkdir('a/b')
+    .file('a/b')
+    .spawn('npm -v');
+});
+```
 
 ### rm
 
+Move dir/file to trash.
+
+```js
+it('should support rm', async () => {
+  await runner()
+    .cwd(tmpDir, { init: true })
+    .mkdir('a/b')
+    .rm('a/b')
+    .notFile('a/b')
+    .spawn('npm -v');
+});
+```
+
 ### writeFile
 
+Write content to file, support JSON and PlainText.
+
+```js
+it('should support writeFile', async () => {
+  await runner()
+    .cwd(tmpDir, { init: true })
+    .writeFile('test.json', { name: 'writeFile' })
+    .writeFile('test.md', 'this is a test')
+    .file('test.json', /"name": "writeFile"/)
+    .file('test.md', /this is a test/)
+    .spawn('npm -v');
+});
+```
 
 ## Context
 
@@ -431,7 +481,7 @@ MIT
   - [ ] refactor plugin system
   - [ ] stub api
 - Tool
-  - [ ] esm-first
+  - [x] esm-first
   - [ ] prettier
   - [ ] semver-release
   - [x] jest
