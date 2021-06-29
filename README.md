@@ -11,8 +11,8 @@
 **Aiming to make end-to-end testing for command-line apps as simple as possible.**
 
 - Powerfull and Simply chainable APIs.
-- Interactive with prompts.
-- Modern && ESM first.
+- Easy to interactive with prompts.
+- Modern, ESM first, also support commonjs.
 
 Inspired by [coffee](https://github.com/node-modules/coffee) / [nixt](https://github.com/vesln/nixt).
 
@@ -26,12 +26,14 @@ import { runner, KEYS } from 'clet';
 
 it('should works with boilerplate', async () => {
   await runner()
-    .cwd('/path/to/dir', { init: true })
+    .cwd(tmpDir, { init: true })
     .spawn('npm init')
     .stdin(/name:/, 'example') // wait for stdout, then respond
     .stdin(/version:/, new Array(9).fill(KEYS.ENTER)) // don't care about others, just enter
     .stdout(/"name": "example"/) // validate stdout
-    .file('package.json', { name: 'example', version: '1.0.0' }); // validate file content
+    .file('package.json', { name: 'example', version: '1.0.0' }) // validate file content
+    .shell('npm i')
+    .shell('npm test');
 });
 ```
 
@@ -74,6 +76,25 @@ it('should works with long-run apps', async () => {
         .expect('hi, tz');
     })
     .kill(); // long-run server will not auto exit, so kill it manually after test
+});
+```
+
+### Work with CommonJS
+
+```js
+describe('test/commonjs.test.cjs', () => {
+  let runner;
+
+  beforeAll(async () => {
+    runner = (await import('clet')).runner;
+  });
+
+  it('should support spawn', async () => {
+    await runner()
+      .spawn('npm -v')
+      .log('result.stdout')
+      .stdout(/\d+\.\d+\.\d+/);
+  });
 });
 ```
 
@@ -124,7 +145,7 @@ it('should support spawn', async () => {
 });
 ```
 
-### cwd(dir)
+### cwd(dir, opts)
 
 Change the current working directory.
 
@@ -171,7 +192,7 @@ it('support env', async () => {
 
 ### timeout(ms)
 
-Set a timeout, will kill SIGTERM then SIGKILL.
+Set a timeout, will kill `SIGTERM` then `SIGKILL`.
 
 ```js
 it('support timeout', async () => {
@@ -233,7 +254,7 @@ Detect a prompt, then respond to it.
 You could use `KEYS.UP` / `KEYS.DOWN` to respond to choices prompt.
 
 ```js
-import { runner, KEYS } from '../lib/runner.js';
+import { runner, KEYS } from 'clet';
 
 it('should support stdin respond', async () => {
   await runner()
@@ -289,11 +310,11 @@ Opposite of `stderr()`
 
 ### code(n)
 
-Validate process exit code.
+Validate child process exit code.
 
-will auto check whether proc is exit unexpected by default, so only use this if you want to validate fail exitCode.
+will auto check whether child process is exit unexpected by default, so only use this if you want to validate fail exitCode.
 
-> Notice: when proc is kill, exit code maybe undefined if you don't hook signal events.
+> Notice: when process is kill, exit code maybe undefined if you don't hook signal events.
 
 ```js
 it('should support code()', async () => {
@@ -315,7 +336,7 @@ Validate file.
 ```js
 it('should support file()', async () => {
   await runner()
-    .cwd('/path/to/dir', { init: true })
+    .cwd(tmpDir, { init: true })
     .spawn('npm init -y')
     .file('package.json')
     .file('package.json', /"name":/)
@@ -389,17 +410,17 @@ it('should support sleep()', async () => {
 });
 ```
 
-### shell
+### shell(cmd, args, opts)
 
 Run a shell, useful for `npm install` after boilerplate init.
 
 ```js
 it('should support shell', async () => {
   await runner()
-    .cwd('/path/to/dir', { init: true })
+    .cwd(tmpDir, { init: true })
     .spawn('npm init -y')
     .file('package.json', { name: 'shell', version: '1.0.0' })
-    .shell('npm version minor --no-git-tag-version')
+    .shell('npm version minor --no-git-tag-version', {})
     .file('package.json', { version: '1.1.0' });
 });
 ```
