@@ -32,10 +32,20 @@ describe('test/runner.test.js', () => {
   it('should logger', async () => {
     await runner()
       .cwd(fixtures)
-      .log('command-line test start')
-      .spawn('node -v')
+      .log('logger test start')
+      .fork('logger.js')
       .stdout(/v\d+\.\d+\.\d+/)
-      .log('command-line test end');
+      .log('logger test end');
+  });
+
+  it.skip('should logger only error', async () => {
+    await runner()
+      .cwd(fixtures)
+      .debug('WARN')
+      .log('logger test start')
+      .fork('logger.js')
+      .stdout(/v\d+\.\d+\.\d+/)
+      .log('logger test end');
   });
 
   it('should export context', async () => {
