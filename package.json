@@ -1,6 +1,6 @@
 {
   "name": "clet",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Command Line E2E Testing",
   "type": "module",
   "main": "./lib/runner.js",
