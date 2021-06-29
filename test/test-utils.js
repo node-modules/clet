@@ -1,15 +1,8 @@
 import path from 'path';
-import { types } from 'util';
-import { dirname } from 'dirname-filename-esm';
 import { promises as fs } from 'fs';
 export { strict as assert } from 'assert';
 
-export * from '../lib/utils.js';
-
-export function resolve(meta, ...args) {
-  const p = types.isObject(meta) ? dirname(meta) : meta;
-  return path.resolve(p, ...args);
-}
+// export * from '../lib/utils.js';
 
 export function sleep(ms) {
   return new Promise(resolve => {

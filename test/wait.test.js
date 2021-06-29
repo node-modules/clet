@@ -9,7 +9,7 @@ describe('test/wait.test.js', () => {
     time(label = 'default') {
       return this.tap(() => {
         this.ctx.timeMapping = this.ctx.timeMapping || {};
-        this.ctx.timeMapping[ label ] = Date.now();
+        this.ctx.timeMapping[label] = Date.now();
       });
     },
     timeEnd(label, fn) {
@@ -18,7 +18,7 @@ describe('test/wait.test.js', () => {
         label = 'default';
       }
       return this.tap(() => {
-        const start = this.ctx.timeMapping[ label ];
+        const start = this.ctx.timeMapping[label];
         const now = Date.now();
         const cost = now - start;
         fn(cost, start, now);

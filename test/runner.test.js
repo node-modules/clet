@@ -38,7 +38,8 @@ describe('test/runner.test.js', () => {
       .log('logger test end');
   });
 
-  it.skip('should logger only error', async () => {
+  it('should logger only error', async () => {
+    // TODO: validate
     await runner()
       .cwd(fixtures)
       .debug('WARN')
@@ -46,6 +47,14 @@ describe('test/runner.test.js', () => {
       .fork('logger.js')
       .stdout(/v\d+\.\d+\.\d+/)
       .log('logger test end');
+  });
+
+  it('should support catch()', async () => {
+    await runner()
+      .spawn('node --no-exist-args')
+      .catch(err => {
+        assert.match(err.message, /bad option: --no-exist-args/);
+      });
   });
 
   it('should export context', async () => {
