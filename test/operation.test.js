@@ -42,7 +42,9 @@ describe('test/operation.test.js', () => {
       .spawn('npm init -y')
       .file('package.json', { name: 'operation', version: '1.0.0' })
       .shell('npm version minor --no-git-tag-version')
-      .file('package.json', { version: '1.1.0' });
+      .file('package.json', { version: '1.1.0' })
+      .shell('npm test', { reject: false })
+      .sleep(100);
   });
 
   it('should support log()', async () => {

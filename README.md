@@ -373,7 +373,7 @@ it('should support expect()', async () => {
 
 ### log(key)
 
-Print log for debugging, support formator and dot path.
+Print log for debugging, support formattor and dot path.
 
 ```js
 it('should support log()', async () => {
