@@ -24,7 +24,7 @@ export function getTempDir(...p) {
   const testDir = path.join(process.cwd(), 'test');
   const relativePath = testPath.substring(testDir.length + 1, testPath.lastIndexOf('.test.js'));
   const tmpDir = relativePath.split(path.sep).join('-');
-  const tmpDirFullPath = path.join(testDir, '.tmp', tmpDir, ...p);
+  const tmpDirFullPath = path.join(testDir, '../.tmp', tmpDir, ...p);
   return tmpDirFullPath;
 }
 

@@ -29,6 +29,25 @@ describe('test/runner.test.js', () => {
     assert.equal(ctx.instance.constructor.name, 'TestRunner');
   });
 
+  it('should logger', async () => {
+    await runner()
+      .cwd(fixtures)
+      .log('logger test start')
+      .fork('logger.js')
+      .stdout(/v\d+\.\d+\.\d+/)
+      .log('logger test end');
+  });
+
+  it.skip('should logger only error', async () => {
+    await runner()
+      .cwd(fixtures)
+      .debug('WARN')
+      .log('logger test start')
+      .fork('logger.js')
+      .stdout(/v\d+\.\d+\.\d+/)
+      .log('logger test end');
+  });
+
   it('should export context', async () => {
     await runner()
       .cwd(fixtures)
