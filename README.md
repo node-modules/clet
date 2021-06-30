@@ -85,7 +85,7 @@ it('should works with long-run apps', async () => {
 ```js
 describe('test/commonjs.test.cjs', () => {
   it('should support spawn', async () => {
-    const { runner } = await import('../lib/runner');
+    const { runner } = await import('clet');
     await runner()
       .spawn('npm -v')
       .log('result.stdout')
