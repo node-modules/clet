@@ -5,12 +5,8 @@ import { runner, KEYS } from '../lib/runner.js';
 import * as utils from './test-utils.js';
 
 describe('test/example.test.js', () => {
-  const fixtures = path.resolve('test/fixtures');
-  const tmpDir = utils.getTempDir();
-
-  beforeEach(() => utils.initDir(tmpDir));
-
   it('should works with boilerplate', async () => {
+    const tmpDir = utils.getTempDir();
     await runner()
       .cwd(tmpDir, { init: true })
       .spawn('npm init')
@@ -21,7 +17,7 @@ describe('test/example.test.js', () => {
   });
 
   it('should works with command-line apps', async () => {
-    const baseDir = path.resolve(fixtures, 'example');
+    const baseDir = path.resolve('test/fixtures/example');
     await runner()
       .cwd(baseDir)
       .fork('bin/cli.js', [ '--name=test' ], { execArgv: [ '--no-deprecation' ] })
@@ -33,9 +29,8 @@ describe('test/example.test.js', () => {
   });
 
   it('should works with long-run apps', async () => {
-    const baseDir = path.resolve(fixtures, 'server');
     await runner()
-      .cwd(baseDir)
+      .cwd('test/fixtures/server')
       .fork('bin/cli.js')
       .wait('stdout', /server started/)
       .expect(async () => {
