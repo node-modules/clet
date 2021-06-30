@@ -11,7 +11,7 @@
 
 **Aiming to make end-to-end testing for command-line apps as simple as possible.**
 
-- Powerful, simplified and chainable APIs.
+- Powerful, Simplified and Chainable APIs.
 - Easy to interactive with prompts.
 - Modern, ESM first, also support commonjs.
 
@@ -27,14 +27,15 @@ import { runner, KEYS } from 'clet';
 
 it('should works with boilerplate', async () => {
   await runner()
-    .cwd(tmpDir, { init: true })
-    .spawn('npm init')
+    .cwd(tmpDir, { init: true }) // auto create and clean
+    .spawn('npm init') // target command line
     .stdin(/name:/, 'example') // wait for stdout, then respond
     .stdin(/version:/, new Array(9).fill(KEYS.ENTER)) // don't care about others, just enter
     .stdout(/"name": "example"/) // validate stdout
+    .notStderr(/npm ERR/) // validate not match stderr
     .file('package.json', { name: 'example', version: '1.0.0' }) // validate file content
-    .shell('npm i')
-    .shell('npm test');
+    // .shell('npm i')
+    // .shell('npm test', { reject: false });
 });
 ```
 
@@ -44,7 +45,7 @@ it('should works with boilerplate', async () => {
 import { runner } from 'clet';
 
 it('should works with command-line apps', async () => {
-  const baseDir = path.resolve(fixtures, 'example');
+  const baseDir = path.resolve('test/fixtures/example');
   await runner()
     .cwd(baseDir)
     .fork('bin/cli.js', [ '--name=test' ], { execArgv: [ '--no-deprecation' ] })
@@ -63,9 +64,8 @@ import { runner } from 'clet';
 import request from 'supertest';
 
 it('should works with long-run apps', async () => {
-  const baseDir = path.resolve(fixtures, 'server');
   await runner()
-    .cwd(baseDir)
+    .cwd('test/fixtures/server')
     .fork('bin/cli.js')
     .wait('stdout', /server started/)
     .expect(async () => {
@@ -97,7 +97,7 @@ describe('test/commonjs.test.cjs', () => {
 ## Installation
 
 ```bash
-npm i --save clet
+$ npm i --save clet
 ```
 
 ## Command
@@ -114,8 +114,7 @@ it('should fork', async () => {
     .stdout('this is example bin')
     .stdout(/argv=\["--name=\w+"\]/)
     .stdout(/execArgv=\["--no-deprecation"\]/)
-    .stderr(/this is a warning/)
-    .code(0);
+    .stderr(/this is a warning/);
 });
 ```
 
@@ -136,8 +135,7 @@ Execute a shell script as a child process.
 it('should support spawn', async () => {
   await runner()
     .spawn('node -v')
-    .stdout(/v\d+\.\d+\.\d+/)
-    .code(0);
+    .stdout(/v\d+\.\d+\.\d+/);
 });
 ```
 
