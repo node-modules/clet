@@ -1,3 +1,5 @@
+![CLET - Command Line E2E Testing](https://socialify.git.ci/node-modules/clet/image?description=1&descriptionEditable=_______________%20Command%20Line%20E2E%20Testing%20_______________%20%20%20%20%20%20%20%20%20%20%20%20%20%20%F0%9F%92%AA%20Powerful%20%2B%20%F0%9F%9A%80%20Simply%20%2B%20%F0%9F%8E%A2%20Modern%20&font=Source%20Code%20Pro&language=1&owner=1&theme=Dark)
+
 # CLET - Command Line E2E Testing
 
 [![NPM Version](https://img.shields.io/npm/v/clet.svg?style=flat-square)](https://npmjs.org/package/clet)
@@ -6,11 +8,11 @@
 [![CI](https://github.com/node-modules/clet/actions/workflows/nodejs.yml/badge.svg)](https://github.com/node-modules/clet/actions/workflows/nodejs.yml)
 [![Coverage](https://img.shields.io/codecov/c/github/node-modules/clet.svg?style=flat-square)](https://codecov.io/gh/node-modules/clet)
 
-**CLET** = **C**ommand **L**ine **E**2E **T**esting.
+
 
 **Aiming to make end-to-end testing for command-line apps as simple as possible.**
 
-- Powerfull and Simply chainable APIs.
+- Powerful and Simply chainable APIs.
 - Easy to interactive with prompts.
 - Modern, ESM first, also support commonjs.
 

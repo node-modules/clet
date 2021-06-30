@@ -4,12 +4,6 @@ export { strict as assert } from 'assert';
 
 // export * from '../lib/utils.js';
 
-export function sleep(ms) {
-  return new Promise(resolve => {
-    setTimeout(resolve, ms);
-  });
-}
-
 // calc tmp dir by jest test file name
 export function getTempDir(...p) {
   // `expect` is auto inject by @jest/globals

@@ -42,6 +42,7 @@ describe('test/runner.test.js', () => {
     // TODO: validate
     await runner()
       .cwd(fixtures)
+      .debug()
       .debug('WARN')
       .log('logger test start')
       .fork('logger.js')

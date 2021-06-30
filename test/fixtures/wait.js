@@ -1,6 +1,10 @@
 #!/usr/bin/env node
 
-import { sleep } from '../test-utils.js';
+function sleep(ms) {
+  return new Promise(resolve => {
+    setTimeout(resolve, ms);
+  });
+}
 
 async function run() {
   console.log('starting...');
