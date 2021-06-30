@@ -32,9 +32,9 @@ describe('test/wait.test.js', () => {
       .cwd(fixtures)
       .time()
       .fork(cliPath)
-      .timeEnd(cost => assert(cost < 500))
+      .timeEnd(cost => assert(cost < 500, `Expected ${cost} < 500`))
       .wait('stdout', /started/)
-      .timeEnd(cost => assert(cost > 500))
+      .timeEnd(cost => assert(cost > 500, `Expected ${cost} > 500`))
       .kill();
   });
 
@@ -44,9 +44,9 @@ describe('test/wait.test.js', () => {
       .cwd(fixtures)
       .time()
       .fork(cliPath)
-      .timeEnd(cost => assert(cost < 500))
+      .timeEnd(cost => assert(cost < 500, `Expected ${cost} < 500`))
       .wait('stderr', /be careful/)
-      .timeEnd(cost => assert(cost > 500))
+      .timeEnd(cost => assert(cost > 500, `Expected ${cost} > 500`))
       .kill();
   });
 
