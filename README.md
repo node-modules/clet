@@ -27,15 +27,13 @@ import { runner, KEYS } from 'clet';
 
 it('should works with boilerplate', async () => {
   await runner()
-    .cwd(tmpDir, { init: true }) // auto create and clean
-    .spawn('npm init') // target command line
+    .cwd(tmpDir, { init: true })
+    .spawn('npm init')
     .stdin(/name:/, 'example') // wait for stdout, then respond
-    .stdin(/version:/, new Array(9).fill(KEYS.ENTER)) // don't care about others, just enter
+    .stdin(/version:/, new Array(9).fill(KEYS.ENTER))
     .stdout(/"name": "example"/) // validate stdout
-    .notStderr(/npm ERR/) // validate not match stderr
-    .file('package.json', { name: 'example', version: '1.0.0' }) // validate file content
-    // .shell('npm i')
-    // .shell('npm test', { reject: false });
+    .notStderr(/npm ERR/)
+    .file('package.json', { name: 'example', version: '1.0.0' }) // validate file
 });
 ```
 
@@ -52,7 +50,6 @@ it('should works with command-line apps', async () => {
     .stdout('this is example bin')
     .stdout(`cwd=${baseDir}`)
     .stdout(/argv=\["--name=\w+"\]/)
-    .stdout(/execArgv=\["--no-deprecation"\]/)
     .stderr(/this is a warning/);
 });
 ```
@@ -263,6 +260,21 @@ it('should support stdin respond', async () => {
 });
 ```
 
+> Tips: If you don't care about others, just enter with:
+
+```js
+it('should works with boilerplate', async () => {
+  await runner()
+    .cwd(tmpDir, { init: true })
+    .spawn('npm init')
+    .stdin(/name:/, 'example')
+    .stdin(/version:/, new Array(9).fill(KEYS.ENTER)) // don't care about others, just enter
+    .stdout(/"name": "example"/)
+    .notStderr(/npm ERR/)
+    .file('package.json', { name: 'example', version: '1.0.0' })
+});
+```
+
 ---
 
 ## Validator
@@ -414,7 +426,7 @@ it('should support shell', async () => {
     .cwd(tmpDir, { init: true })
     .spawn('npm init -y')
     .file('package.json', { name: 'shell', version: '1.0.0' })
-    .shell('npm version minor --no-git-tag-version', {})
+    .shell('npm version minor --no-git-tag-version', { reject: false })
     .file('package.json', { version: '1.1.0' });
 });
 ```
