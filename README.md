@@ -356,7 +356,7 @@ The opposite of `file()`.
 
 ### expect(fn)
 
-Validate with a custom function, using assert method `ctx.assert`.
+Validate with a custom function.
 
 ```js
 it('should support expect()', async () => {
