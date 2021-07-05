@@ -219,7 +219,7 @@ it('should wait', async () => {
 
 ### kill()
 
-Kill the child process. It's useful for manually ending long-run server after validate.
+Kill the child process. It's useful for manually ending long-run apps after validation.
 
 > Notice: when kill, exit code may be undefined if the command doesn't hook on signal event.
 
