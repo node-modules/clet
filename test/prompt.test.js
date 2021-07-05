@@ -59,9 +59,7 @@ describe('test/prompt.test.js', () => {
         .stdin(/Email:/, 'tz@eggjs.com\n')
         .stdin(/Gender:/, '\n')
         .stdin(/Unknown:/, 'still wait\n')
-        .stdout(/Author: tz <tz@eggjs.com>/)
-        .code(1)
-        .end();
+        .stdout(/Author: tz <tz@eggjs.com>/);
     }, /wait for prompt, but proccess is terminate/);
   });
 });

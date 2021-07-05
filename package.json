@@ -20,6 +20,7 @@
     "trash": "^7.2.0"
   },
   "devDependencies": {
+    "common-jest-preset": "^1.0.0",
     "cross-env": "^7.0.3",
     "egg-ci": "^1",
     "enquirer": "^2.3.6",
@@ -44,23 +45,12 @@
     "type": "github"
   },
   "jest": {
+    "preset": "common-jest-preset",
     "transform": {},
     "testTimeout": 5000,
     "globalSetup": "./test/jest-global-setup.js",
     "setupFilesAfterEnv": [
-      "./test/jest-test-setup.js"
-    ],
-    "moduleFileExtensions": [
-      "cjs",
-      "mjs",
-      "js",
-      "ts",
-      "json",
-      "node"
-    ],
-    "testMatch": [
-      "!**/test/.tmp/**",
-      "**/test/**/*.test.{js,ts,cjs}"
+      "<rootDir>/node_modules/common-jest-preset/setup-jest.js"
     ]
   },
   "eslintIgnore": [
