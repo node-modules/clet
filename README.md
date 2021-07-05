@@ -525,8 +525,8 @@ function doesNotMatchRule(actual, expected) {}
  *
  *  - `matchFile('/path/to/file')`: check whether the file exists
  *  - `matchFile('/path/to/file', /\w+/)`: check whether the file content matches regexp
- *  - `matchFile('/path/to/file', 'usage')`: check whether the file content includes specified string
- *  - `matchFile('/path/to/file', { version: '1.0.0' })`: checke whether the file content partially includes specified JSON
+ *  - `matchFile('/path/to/file', 'usage')`: check whether the file content includes the specified string
+ *  - `matchFile('/path/to/file', { version: '1.0.0' })`: checke whether the file content partially includes the specified JSON
  *
  * @param {String} filePath - target path to validate, could be relative path
  * @param {String|RegExp|Object} [expected] - rule to validate
@@ -539,8 +539,8 @@ async function matchFile(filePath, expected) {}
  *
  *  - `doesNotMatchFile('/path/to/file')`: check whether the file exists
  *  - `doesNotMatchFile('/path/to/file', /\w+/)`: check whether the file content does not match regex
- *  - `doesNotMatchFile('/path/to/file', 'usage')`: check whether the file content does not include speci
- *  - `doesNotMatchFile('/path/to/file', { version: '1.0.0' })`: checke whether the file content does not partially include specified JSON
+ *  - `doesNotMatchFile('/path/to/file', 'usage')`: check whether the file content does not include the specified string
+ *  - `doesNotMatchFile('/path/to/file', { version: '1.0.0' })`: checke whether the file content does not partially include the specified JSON
  *
  * @param {String} filePath - target path to validate, could be relative path
  * @param {String|RegExp|Object} [expected] - rule to validate
