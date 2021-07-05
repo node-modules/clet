@@ -44,6 +44,7 @@ describe('test/operation.test.js', () => {
       .shell('npm version minor --no-git-tag-version')
       .file('package.json', { version: '1.1.0' })
       .shell('npm test', { reject: false })
+      .shell('node --no-exists', { reject: false })
       .sleep(100);
   });
 
