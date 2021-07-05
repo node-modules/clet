@@ -237,7 +237,7 @@ it('should kill() manually after test server', async () => {
 
 Responde to a prompt input.
 
-- `expected`: {String|RegExp} - test `stdout` with regexp or an exact string.
+- `expected`: {String|RegExp} - test if `stdout` includes a string or matches regexp.
 - `respond`: {String|Array} - content to respond. CLET would write each with a delay if an array is set.
 
 You could use `KEYS.UP` / `KEYS.DOWN` to respond to a prompt that has multiple choices.
@@ -292,7 +292,7 @@ it('should support stdout()', async () => {
 
 ### notStdout(unexpected)
 
-The opposite of `stdout()`
+The opposite of `stdout()`.
 
 ### stderr(expected)
 
@@ -310,7 +310,7 @@ it('should support stderr()', async () => {
 
 ### notStderr(unexpected)
 
-The opposite of `stderr()`
+The opposite of `stderr()`.
 
 ### code(n)
 
@@ -373,9 +373,9 @@ it('should support expect()', async () => {
 
 ## Operation
 
-### log(key)
+### log(format, ...keys)
 
-Print log for debugging. `log(key)` supports formattor and dot path.
+Print log for debugging. `key` supports dot path such as `result.stdout`.
 
 ```js
 it('should support log()', async () => {
@@ -427,7 +427,7 @@ it('should support shell', async () => {
 });
 ```
 
-### mkdir
+### mkdir(path)
 
 Act like `mkdir -p`.
 
@@ -441,9 +441,9 @@ it('should support mkdir', async () => {
 });
 ```
 
-### rm
+### rm(path)
 
-Delete a file or a folder. It doesn't throw if the file or the folder doesn't exist.
+Move a file or a folder to trash (instead of permanently delete it). It doesn't throw if the file or the folder doesn't exist.
 
 ```js
 it('should support rm', async () => {
@@ -456,7 +456,7 @@ it('should support rm', async () => {
 });
 ```
 
-### writeFile
+### writeFile(filePath, content)
 
 Write content to a file, support JSON and PlainText.
 
@@ -510,7 +510,7 @@ Extend Node.js built-in `assert` with some powerful assertions.
 function matchRule(actual, expected) {}
 
 /**
- * assert `actual` doesn't match `expected`
+ * assert `actual` does not match `expected`
  *  - when `expected` is regexp, assert by `RegExp.test`
  *  - when `expected` is json, assert by `lodash.isMatch`
  *  - when `expected` is string, assert by `String.includes`
@@ -524,8 +524,8 @@ function doesNotMatchRule(actual, expected) {}
  * validate file
  *
  *  - `matchFile('/path/to/file')`: check whether the file exists
- *  - `matchFile('/path/to/file', /\w+/)`: check whether the file matches regexp
- *  - `matchFile('/path/to/file', 'usage')`: check whether the file includes specified string
+ *  - `matchFile('/path/to/file', /\w+/)`: check whether the file content matches regexp
+ *  - `matchFile('/path/to/file', 'usage')`: check whether the file content includes specified string
  *  - `matchFile('/path/to/file', { version: '1.0.0' })`: checke whether the file content partially includes specified JSON
  *
  * @param {String} filePath - target path to validate, could be relative path
@@ -538,9 +538,9 @@ async function matchFile(filePath, expected) {}
  * validate file with opposite rule
  *
  *  - `doesNotMatchFile('/path/to/file')`: check whether the file exists
- *  - `doesNotMatchFile('/path/to/file', /\w+/)`: check whether the file doesn't match regex
- *  - `doesNotMatchFile('/path/to/file', 'usage')`: check whether the file doesn't include specified string
- *  - `doesNotMatchFile('/path/to/file', { version: '1.0.0' })`: checke whether the file content doesn't partially include specified JSON
+ *  - `doesNotMatchFile('/path/to/file', /\w+/)`: check whether the file content does not match regex
+ *  - `doesNotMatchFile('/path/to/file', 'usage')`: check whether the file content does not include speci
+ *  - `doesNotMatchFile('/path/to/file', { version: '1.0.0' })`: checke whether the file content does not partially include specified JSON
  *
  * @param {String} filePath - target path to validate, could be relative path
  * @param {String|RegExp|Object} [expected] - rule to validate
