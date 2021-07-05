@@ -5,7 +5,7 @@
 [![NPM Version](https://img.shields.io/npm/v/clet.svg?style=flat-square)](https://npmjs.org/package/clet)
 [![NPM Download](https://img.shields.io/npm/dm/clet.svg?style=flat-square)](https://npmjs.org/package/clet)
 [![NPM Quality](http://npm.packagequality.com/shield/clet.svg?style=flat-square)](http://packagequality.com/#?package=clet)
-[![GitHub Actions CI](https://img.shields.io/github/workflow/status/node-modules/clet/Node.js%20CI?label=CI&style=flat-square)](https://github.com/node-modules/clet/actions/workflows/nodejs.yml)
+[![GitHub Actions CI](https://github.com/node-modules/clet/actions/workflows/ci.yml/badge.svg)](https://github.com/node-modules/clet/actions/workflows/ci.yml)
 [![Coverage](https://img.shields.io/codecov/c/github/node-modules/clet.svg?style=flat-square)](https://codecov.io/gh/node-modules/clet)
 
 
