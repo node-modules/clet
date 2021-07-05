@@ -195,7 +195,7 @@ it('support timeout', async () => {
 
 ### wait(type, expected)
 
-Use `wait` to wait for your expectations to pass. It's useful for tesing long-run http server apps.
+Wait for your expectations to pass. It's useful for testing long-run apps such as build tools or http servers.
 
 - `type`: {String} - support `message` / `stdout` / `stderr` / `close`
 - `expected`: {String|RegExp|Object|Function}
