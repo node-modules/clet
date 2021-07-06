@@ -9,18 +9,18 @@
 [![Coverage](https://img.shields.io/codecov/c/github/node-modules/clet.svg?style=flat-square)](https://codecov.io/gh/node-modules/clet)
 
 
-**Aiming to make end-to-end testing for command-line apps as simple as possible.**
+**CLET aims to make end-to-end testing for command-line apps as simple as possible.**
 
-- Powerful, Simplified and Chainable APIs.
-- Easy to interactive with prompts.
-- Modern, ESM first, also support commonjs.
+- Powerful, stop writing util functions yourself.
+- Simplified, every API is chainable.
+- Modern, ESM first, but not leaving commonjs behind.
 
-Inspired by [coffee](https://github.com/node-modules/coffee) / [nixt](https://github.com/vesln/nixt).
+Inspired by [coffee](https://github.com/node-modules/coffee) and [nixt](https://github.com/vesln/nixt).
 
 
 ## How it looks
 
-### Boilerplate && Prompts
+### Boilerplate && prompts
 
 ```js
 import { runner, KEYS } from 'clet';
@@ -37,7 +37,7 @@ it('should works with boilerplate', async () => {
 });
 ```
 
-### Command Line Apps
+### Command line apps
 
 ```js
 import { runner } from 'clet';
@@ -54,7 +54,7 @@ it('should works with command-line apps', async () => {
 });
 ```
 
-### Build tools && Long-run server
+### Build tools && Long-run servers
 
 ```js
 import { runner } from 'clet';
@@ -140,7 +140,7 @@ it('should support spawn', async () => {
 
 Change the current working directory.
 
-> Notice: it will affect `fork()` script relative path, `file()`, `mkdir()` etc.
+> Notice: it affects the relative path in `fork()`, `file()`, `mkdir()`, etc.
 
 ```js
 it('support cwd()', async () => {
@@ -152,10 +152,10 @@ it('support cwd()', async () => {
 
 Support options:
 
-- `init`: will delete and create directory before test.
-- `clean`: will delete directory after test.
+- `init`: delete and create the directory before tests.
+- `clean`: delete the directory after tests.
 
-> Use `trash` instead of `fs.rm` due to the consideration of preventing misoperation.
+> Use `trash` instead of `fs.rm` to prevent misoperation.
 
 ```js
 it('support cwd() with opts', async () => {
@@ -183,7 +183,7 @@ it('support env', async () => {
 
 ### timeout(ms)
 
-Set a timeout, will kill `SIGTERM` then `SIGKILL`.
+Set a timeout. Your application would receive `SIGTERM` and `SIGKILL` in sequent order.
 
 ```js
 it('support timeout', async () => {
@@ -195,14 +195,14 @@ it('support timeout', async () => {
 
 ### wait(type, expected)
 
-Wait for some condition, then resume the chain, useful for tesing long-run http server apps.
+Wait for your expectations to pass. It's useful for testing long-run apps such as build tools or http servers.
 
 - `type`: {String} - support `message` / `stdout` / `stderr` / `close`
 - `expected`: {String|RegExp|Object|Function}
-  - {String}: check whether includes specified string
-  - {RegExp}: check whether match regexp
-  - {Object}: check whether partial includes specified JSON
-  - {Function}: check whether with specified function
+  - {String}: check whether the specified string is included
+  - {RegExp}: check whether it matches the specified regexp
+  - {Object}: check whether it partially includes the specified JSON
+  - {Function}: check whether it passes the specified function
 
 > Notice: don't forgot to `wait('end')` or `kill()` later.
 
@@ -219,11 +219,9 @@ it('should wait', async () => {
 
 ### kill()
 
-Kill the child process.
+Kill the child process. It's useful for manually ending long-run apps after validation.
 
-useful for manually end long-run server after validate.
-
-> Notice: when kill, exit code maybe undefined if the command don't hook signal event.
+> Notice: when kill, exit code may be undefined if the command doesn't hook on signal event.
 
 ```js
 it('should kill() manually after test server', async () => {
@@ -237,12 +235,12 @@ it('should kill() manually after test server', async () => {
 
 ### stdin(expected, respond)
 
-Detect a prompt, then respond to it.
+Responde to a prompt input.
 
-- `expected`: {String|RegExp} - test `stdout` with regexp match or string includes.
-- `respond`: {String|Array} - respond content, if set to array then write each with a delay
+- `expected`: {String|RegExp} - test if `stdout` includes a string or matches regexp.
+- `respond`: {String|Array} - content to respond. CLET would write each with a delay if an array is set.
 
-You could use `KEYS.UP` / `KEYS.DOWN` to respond to choices prompt.
+You could use `KEYS.UP` / `KEYS.DOWN` to respond to a prompt that has multiple choices.
 
 ```js
 import { runner, KEYS } from 'clet';
@@ -260,7 +258,7 @@ it('should support stdin respond', async () => {
 });
 ```
 
-> Tips: If you don't care about others, just enter with:
+> Tips: type ENTER repeatedly if needed
 
 ```js
 it('should works with boilerplate', async () => {
@@ -294,7 +292,7 @@ it('should support stdout()', async () => {
 
 ### notStdout(unexpected)
 
-Opposite of `stdout()`
+The opposite of `stdout()`.
 
 ### stderr(expected)
 
@@ -312,15 +310,15 @@ it('should support stderr()', async () => {
 
 ### notStderr(unexpected)
 
-Opposite of `stderr()`
+The opposite of `stderr()`.
 
 ### code(n)
 
 Validate child process exit code.
 
-will auto check whether child process is exit unexpected by default, so only use this if you want to validate fail exitCode.
+No need to explicitly check if the process exits successfully, use `code(n)` only if you want to check other exit codes.
 
-> Notice: when process is kill, exit code maybe undefined if you don't hook signal events.
+> Notice: when a process is killed, exit code may be undefined if you don't hook on signal events.
 
 ```js
 it('should support code()', async () => {
@@ -332,12 +330,12 @@ it('should support code()', async () => {
 
 ### file(filePath, expected)
 
-Validate file.
+Validate the file.
 
-- `file(filePath)`: check whether file is exists
-- `file(filePath, 'some string')`: check whether file content includes specified string
-- `file(filePath, /some regexp/)`: checke whether file content match regexp
-- `file(filePath, {})`: checke whether file content partial includes specified JSON
+- `file(filePath)`: check whether the file exists
+- `file(filePath, 'some string')`: check whether the file content includes the specified string
+- `file(filePath, /some regexp/)`: checke whether the file content matches regexp
+- `file(filePath, {})`: check whether the file content partially includes the specified JSON
 
 ```js
 it('should support file()', async () => {
@@ -352,15 +350,13 @@ it('should support file()', async () => {
 
 ### notFile(filePath, unexpected)
 
-Opposite of `file()`
+The opposite of `file()`.
 
-> Notice: `.notFile('not-exist.md', 'abc')` will throw due to file is not exists.
+> Notice: `.notFile('not-exist.md', 'abc')` will throw because the file is not existing.
 
 ### expect(fn)
 
-Validate with custom function.
-
-Provide useful assert method `ctx.assert`.
+Validate with a custom function.
 
 ```js
 it('should support expect()', async () => {
@@ -377,9 +373,9 @@ it('should support expect()', async () => {
 
 ## Operation
 
-### log(key)
+### log(format, ...keys)
 
-Print log for debugging, support formattor and dot path.
+Print log for debugging. `key` supports dot path such as `result.stdout`.
 
 ```js
 it('should support log()', async () => {
@@ -393,7 +389,7 @@ it('should support log()', async () => {
 
 ### tap(fn)
 
-Tap a method to chain sequence.
+Tap a method to the chain sequence.
 
 ```js
 it('should support tap()', async () => {
@@ -418,7 +414,7 @@ it('should support sleep()', async () => {
 
 ### shell(cmd, args, opts)
 
-Run a shell, useful for `npm install` after boilerplate init.
+Run a shell script. For example, run `npm install` after boilerplate init.
 
 ```js
 it('should support shell', async () => {
@@ -431,7 +427,7 @@ it('should support shell', async () => {
 });
 ```
 
-### mkdir
+### mkdir(path)
 
 Act like `mkdir -p`.
 
@@ -445,9 +441,9 @@ it('should support mkdir', async () => {
 });
 ```
 
-### rm
+### rm(path)
 
-Move dir/file to trash.
+Move a file or a folder to trash (instead of permanently delete it). It doesn't throw if the file or the folder doesn't exist.
 
 ```js
 it('should support rm', async () => {
@@ -460,9 +456,9 @@ it('should support rm', async () => {
 });
 ```
 
-### writeFile
+### writeFile(filePath, content)
 
-Write content to file, support JSON and PlainText.
+Write content to a file, support JSON and PlainText.
 
 ```js
 it('should support writeFile', async () => {
@@ -499,14 +495,14 @@ it('should support writeFile', async () => {
 
 ### assert
 
-Extend Node.js built-in `assert` with some powerfull assertions.
+Extend Node.js built-in `assert` with some powerful assertions.
 
 ```js
 /**
- * assert the `actual` is match `expected`
- *  - when `expected` is regexp, detect by `RegExp.test`
- *  - when `expected` is json, detect by `lodash.ismatch`
- *  - when `expected` is string, detect by `String.includes`
+ * assert `actual` matches `expected`
+ *  - when `expected` is regexp, assert by `RegExp.test`
+ *  - when `expected` is json, assert by `lodash.isMatch`
+ *  - when `expected` is string, assert by `String.includes`
  *
  * @param {String|Object} actual - actual string
  * @param {String|RegExp|Object} expected - rule to validate
@@ -514,10 +510,10 @@ Extend Node.js built-in `assert` with some powerfull assertions.
 function matchRule(actual, expected) {}
 
 /**
- * assert the `actual` is not match `expected`
- *  - when `expected` is regexp, detect by `RegExp.test`
- *  - when `expected` is json, detect by `lodash.ismatch`
- *  - when `expected` is string, detect by `String.includes`
+ * assert `actual` does not match `expected`
+ *  - when `expected` is regexp, assert by `RegExp.test`
+ *  - when `expected` is json, assert by `lodash.isMatch`
+ *  - when `expected` is string, assert by `String.includes`
  *
  * @param {String|Object} actual - actual string
  * @param {String|RegExp|Object} expected - rule to validate
@@ -527,10 +523,10 @@ function doesNotMatchRule(actual, expected) {}
 /**
  * validate file
  *
- *  - `matchFile('/path/to/file')`: check whether file exists
- *  - `matchFile('/path/to/file', /\w+/)`: check whether file match regexp
- *  - `matchFile('/path/to/file', 'usage')`: check whether file includes specified string
- *  - `matchFile('/path/to/file', { version: '1.0.0' })`: checke whether file content partial includes specified JSON
+ *  - `matchFile('/path/to/file')`: check whether the file exists
+ *  - `matchFile('/path/to/file', /\w+/)`: check whether the file content matches regexp
+ *  - `matchFile('/path/to/file', 'usage')`: check whether the file content includes the specified string
+ *  - `matchFile('/path/to/file', { version: '1.0.0' })`: checke whether the file content partially includes the specified JSON
  *
  * @param {String} filePath - target path to validate, could be relative path
  * @param {String|RegExp|Object} [expected] - rule to validate
@@ -541,10 +537,10 @@ async function matchFile(filePath, expected) {}
 /**
  * validate file with opposite rule
  *
- *  - `doesNotMatchFile('/path/to/file')`: check whether file don't exists
- *  - `doesNotMatchFile('/path/to/file', /\w+/)`: check whether file don't match regex
- *  - `doesNotMatchFile('/path/to/file', 'usage')`: check whether file don't includes specified string
- *  - `doesNotMatchFile('/path/to/file', { version: '1.0.0' })`: checke whether file content don't partial includes specified JSON
+ *  - `doesNotMatchFile('/path/to/file')`: check whether the file exists
+ *  - `doesNotMatchFile('/path/to/file', /\w+/)`: check whether the file content does not match regex
+ *  - `doesNotMatchFile('/path/to/file', 'usage')`: check whether the file content does not include the specified string
+ *  - `doesNotMatchFile('/path/to/file', { version: '1.0.0' })`: checke whether the file content does not partially include the specified JSON
  *
  * @param {String} filePath - target path to validate, could be relative path
  * @param {String|RegExp|Object} [expected] - rule to validate
