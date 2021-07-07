@@ -11,33 +11,109 @@ import { assert } from './assert.js';
 import { Logger, LogLevel } from './logger.js';
 import * as validatorPlugin from './validator.js';
 import * as operationPlugin from './operation.js';
+import { ValidateExpected } from './utils.js';
+
+export enum ChainType {
+  AFTER = 'after',
+  BEFORE = 'before',
+  RUNNING = 'running',
+  END = 'end',
+}
+
+export enum WaitType {
+  message = 'message',
+  stdout = 'stdout',
+  stderr = 'stderr',
+  close = 'close',
+}
+
+export interface TestRunnerContext {
+  instance: TestRunner;
+  logger: Logger;
+  assert: typeof assert;
+  utils: typeof utils;
+  cmd?: string;
+  cmdType?: 'fork' | 'spawn';
+  cmdArgs?: string[];
+  lastPromptIndex?: number;
+  cmdOpts: {
+    reject: boolean;
+    cwd: string;
+    env: Record<string, string>;
+    preferLocal: boolean;
+    timeout?: number;
+  },
+  cwd: string;
+  env: Record<string, string>;
+  proc?: execa.ExecaChildProcess;
+  res?: execa.ExecaReturnValue;
+  result: {
+    stdout: string;
+    stderr: string;
+    code?: number;
+    stopped?: boolean;
+  },
+}
+
+export type FunctionPlugin = (runner: TestRunner) => void;
+export type ObjectPlugin = Record<string, any>;
+export type Plugin = FunctionPlugin | ObjectPlugin;
+export type TestRunnerMiddleware = (ctx: TestRunnerContext, next: any) => Promise<void>;
+export type TestRunnerChainFunction = (this: TestRunner, ctx: TestRunnerContext) => Promise<void>;
+
+export interface TestRunnerChain {
+  before: TestRunnerChainFunction[],
+  running: TestRunnerChainFunction[],
+  after: TestRunnerChainFunction[],
+  end: TestRunnerChainFunction[],
+}
+
+export class RunnerError extends Error {
+  readonly cause: Error;
+
+  constructor(msg: string, cause: Error) {
+    super(msg);
+    this.cause = cause;
+  }
+}
 
 class TestRunner extends EventEmitter {
+  private readonly chains: TestRunnerChain;
+  private proc?: execa.ExecaChildProcess;
+  protected expectedExitCode?: number | ((number) => void);
+
+  readonly options: {
+    autoWait: boolean;
+    plugins: [];
+  };
+  readonly assert = assert;
+  readonly utils = utils;
+  readonly logger: Logger;
+  readonly childLogger: Logger;
+  readonly middlewares: TestRunnerMiddleware[];
+  readonly ctx: TestRunnerContext;
+
   constructor(opts) {
     super();
     this.options = {
       autoWait: true,
       ...opts,
     };
-
-    this.assert = assert;
-    this.utils = utils;
-    this.logger = new Logger({ tag: 'CLET' });
+    this.logger = new Logger('CLET');
     this.childLogger = this.logger.child('PROC', { indent: 4, showTag: false });
 
     // middleware.pre -> before -> fork -> running -> after -> end -> middleware.post -> cleanup
     this.middlewares = [];
-    this._chains = {
+    this.chains = {
       before: [],
       running: [],
       after: [],
       end: [],
     };
-    this._expectedExitCode = undefined;
+    this.expectedExitCode = undefined;
 
     this.proc = undefined;
 
-    /** @type {Context} */
     this.ctx = this._initContext();
 
     this.register(validatorPlugin);
@@ -68,7 +144,7 @@ class TestRunner extends EventEmitter {
    * @return {Context} context object
    * @private
    */
-  _initContext() {
+  _initContext(): TestRunnerContext {
     const ctx = {
       instance: this,
       logger: this.logger,
@@ -90,9 +166,15 @@ class TestRunner extends EventEmitter {
         // extendEnv: true,
       },
 
-      get cwd() { return ctx.cmdOpts.cwd; },
-      get env() { return ctx.cmdOpts.env; },
-      get proc() { return ctx.instance.proc; },
+      get cwd() {
+        return ctx.cmdOpts.cwd;
+      },
+      get env() {
+        return ctx.cmdOpts.env;
+      },
+      get proc() {
+        return ctx.instance.proc;
+      },
 
       result: {
         stdout: '',
@@ -111,10 +193,10 @@ class TestRunner extends EventEmitter {
   }
 
   // TODO: refactor plugin system, add init lifecyle
-  register(plugins) {
+  register(plugins?: Plugin | Plugin[]) {
     if (!plugins) return this;
     if (!Array.isArray(plugins)) plugins = [ plugins ];
-    for (const fn of plugins) {
+    for (const fn of plugins as Plugin[]) {
       if (typeof fn === 'function') {
         fn(this);
       } else {
@@ -126,7 +208,7 @@ class TestRunner extends EventEmitter {
     return this;
   }
 
-  use(fn) {
+  use(fn: TestRunnerMiddleware) {
     this.middlewares.push(fn);
     return this;
   }
@@ -141,9 +223,9 @@ class TestRunner extends EventEmitter {
    * @return {TestRunner} instance for chain
    * @protected
    */
-  _addChain(fn, type) {
-    if (!type) type = this.ctx.cmd ? 'after' : 'before';
-    const chains = this._chains[type];
+  protected addChain(fn: TestRunnerChainFunction, type?: ChainType): this {
+    if (!type) type = this.ctx.cmd ? ChainType.AFTER : ChainType.BEFORE;
+    const chains = this.chains[type];
     assert(chains, `unexpected chain type ${type}`);
     chains.push(fn);
     return this;
@@ -155,8 +237,8 @@ class TestRunner extends EventEmitter {
    * @param {ChainType} type - which chain to run
    * @private
    */
-  async _runChain(type) {
-    const chains = this._chains[type];
+  async runChain(type: ChainType) {
+    const chains = this.chains[type];
     assert(chains, `unexpected chain type ${type}`);
     for (const fn of chains) {
       this.logger.debug('run %s chain fn:', type, fn.name);
@@ -165,14 +247,12 @@ class TestRunner extends EventEmitter {
   }
 
   // Perform the test, optional, when you await and `end()` could be omit.
-  end() {
+  async end(): Promise<TestRunnerContext> {
     // clean up
     this.middlewares.unshift(async function cleanup(ctx, next) {
       try {
         await next();
         ctx.logger.info('✔ Test pass.\n');
-        // ensure it will return context
-        return ctx;
       } catch (err) {
         ctx.logger.error('⚠ Test failed.\n');
         throw err;
@@ -188,15 +268,15 @@ class TestRunner extends EventEmitter {
 
     // run chains
     const fn = compose(this.middlewares);
-    return fn(this.ctx, async () => {
+    await fn(this.ctx, async () => {
       // before running
-      await this._runChain('before');
+      await this.runChain(ChainType.BEFORE);
 
       // run command
-      await this._execCommand();
+      await this.execCommand();
 
       // running
-      await this._runChain('running');
+      await this.runChain(ChainType.RUNNING);
 
       // auto wait proc to exit, then assert, use for not-long-run command
       // othersize, need to call `.wait()` manually
@@ -205,23 +285,22 @@ class TestRunner extends EventEmitter {
       }
 
       // after running
-      await this._runChain('after');
+      await this.runChain(ChainType.AFTER);
 
       // ensure proc is exit if user forgot to call `wait('end')` after wait other event
       await this.proc;
 
       // after exit
-      await this._runChain('end');
+      await this.runChain(ChainType.END);
 
       // if developer don't call `.code()`, will rethrow proc error in order to avoid omissions
-      if (this._expectedExitCode === undefined) {
+      if (this.expectedExitCode === undefined) {
         // `killed` is true only if call `kill()/cancel()` manually
-        const { failed, isCanceled, killed } = this.ctx.res;
+        const { failed, isCanceled, killed } = this.ctx.res!;
         if (failed && !isCanceled && !killed) throw this.ctx.res;
       }
-
-      return this.ctx;
     });
+    return this.ctx;
   }
 
   // suger method for `await runner().end()` -> `await runner()`
@@ -243,23 +322,30 @@ class TestRunner extends EventEmitter {
    * @return {TestRunner} instance for chain
    */
   fork(cmd, args, opts) {
-    return this._registerCommand('fork', cmd, args, opts);
+    return this.registerCommand('fork', cmd, args, opts);
   }
 
   /**
-    * execute a shell script as a child process.
-    *
-    * @param {String} cmd - cmd string
-    * @param {Array} [args] - cmd args
-    * @param {execa.NodeOptions} [opts] - cmd options
-    * @return {TestRunner} runner instance
-    */
+   * execute a shell script as a child process.
+   *
+   * @param {String} cmd - cmd string
+   * @param {Array} [args] - cmd args
+   * @param {execa.NodeOptions} [opts] - cmd options
+   * @return {TestRunner} runner instance
+   */
   spawn(cmd, args, opts) {
     assert(cmd, 'cmd is required');
-    return this._registerCommand('spawn', cmd, args, opts);
+    return this.registerCommand('spawn', cmd, args, opts);
   }
 
-  _registerCommand(cmdType, cmd, cmdArgs, cmdOpts = {}) {
+  private registerCommand(cmdType: 'fork' | 'spawn', cmd: string, cmdArgs: Array<string> | undefined, cmdOpts: {
+    reject?: boolean;
+    cwd?: string;
+    env?: Record<string, string>;
+    preferLocal?: boolean;
+    nodeOptions?: string[];
+    execArgv?: string[];
+  } = {}): this {
     assert(cmd, 'cmd is required');
     assert(!this.ctx.cmd, 'cmd had registered');
 
@@ -283,7 +369,7 @@ class TestRunner extends EventEmitter {
     return this;
   }
 
-  async _execCommand() {
+  private async execCommand() {
     const { cmd, cmdType, cmdArgs = [], cmdOpts } = this.ctx;
     assert(cmd, 'cmd is required');
     assert(await utils.exists(cmdOpts.cwd), `cwd ${cmdOpts.cwd} is not exists`);
@@ -291,7 +377,7 @@ class TestRunner extends EventEmitter {
     if (cmdType === 'fork') {
       // TODO: check cmd is exists
       this.logger.info('Fork `%s` %j', cmd, cmdOpts);
-      this.proc = execa.node(cmd, cmdArgs, cmdOpts);
+      this.proc = execa.node(cmd!, cmdArgs, cmdOpts);
     } else {
       const cmdString = [ cmd, ...cmdArgs ].join(' ');
       this.logger.info('Spawn `%s` %j', cmdString, cmdOpts);
@@ -306,14 +392,14 @@ class TestRunner extends EventEmitter {
       result.code = res.exitCode;
       result.stopped = true;
       if (res.failed && !res.isCanceled && !res.killed) {
-        const msg = res.originalMessage ? `Command failed with: ${res.originalMessage}` : res.shortMessage;
-        this.logger.warn(msg);
+        // const msg = res.originalMessage ? `Command failed with: ${res.originalMessage}` : res.shortMessage;
+        // this.logger.warn(msg);
+        // TODO ttt
+        console.log('!!!: ', res);
       }
     });
 
-    this.proc.stdin.setEncoding('utf8');
-
-    this.proc.stdout.on('data', data => {
+    this.proc!.stdout!.on('data', data => {
       const origin = stripFinalNewline(data.toString());
       const content = stripAnsi(origin);
       this.ctx.result.stdout += content;
@@ -322,7 +408,7 @@ class TestRunner extends EventEmitter {
       this.childLogger.info(origin);
     });
 
-    this.proc.stderr.on('data', data => {
+    this.proc!.stderr!.on('data', data => {
       const origin = stripFinalNewline(data.toString());
       const content = stripAnsi(origin);
       this.ctx.result.stderr += content;
@@ -361,7 +447,7 @@ class TestRunner extends EventEmitter {
    *  - {Function}: check whether with specified function
    * @return {TestRunner} instance for chain
    */
-  wait(type, expected) {
+  wait(type: WaitType, expected: ValidateExpected): this {
     this.options.autoWait = false;
 
     // watch immediately but await later in chains
@@ -394,7 +480,7 @@ class TestRunner extends EventEmitter {
     }
 
     // await later in chains
-    return this._addChain(async function wait() {
+    return this.addChain(async function wait() {
       try {
         await promise;
       } catch (err) {
@@ -412,42 +498,40 @@ class TestRunner extends EventEmitter {
    * @param {String|Array} respond - respond content, if set to array then write each with a delay.
    * @return {TestRunner} instance for chain
    */
-  stdin(expected, respond) {
+  stdin(expected: string | RegExp, respond: string | Array<string>): this {
     assert(expected, '`expected is required');
     assert(respond, '`respond is required');
 
-    this._addChain(async function stdin(ctx) {
+    this.addChain(async function stdin(this: TestRunner, ctx) {
       // check stdout
-      const isPrompt = utils.validate(ctx.result.stdout.substring(ctx._lastPromptIndex), expected);
+      const isPrompt = utils.validate(ctx.result.stdout.substring(ctx.lastPromptIndex!), expected);
       if (!isPrompt) {
         try {
           await pEvent(ctx.instance, 'stdout', {
             rejectionEvents: [ 'close' ],
             filter: () => {
-              return utils.validate(ctx.result.stdout.substring(ctx._lastPromptIndex), expected);
+              return utils.validate(ctx.result.stdout.substring(ctx.lastPromptIndex!), expected);
             },
           });
         } catch (err) {
           const msg = 'wait for prompt, but proccess is terminate with error';
           this.logger.error(msg);
-          const error = new Error(msg);
-          error.cause = err;
-          throw error;
+          throw new RunnerError(msg, err);
         }
       }
 
       // remember last index
-      ctx._lastPromptIndex = ctx.result.stdout.length;
+      ctx.lastPromptIndex = ctx.result.stdout.length;
 
       // respond to stdin
       if (!Array.isArray(respond)) respond = [ respond ];
       for (const str of respond) {
         // FIXME: when stdin.write, stdout will recieve duplicate output
         // auto add \n
-        ctx.proc.stdin.write(str.replace(/\r?\n$/, '') + EOL);
+        ctx.proc!.stdin!.write(str.replace(/\r?\n$/, '') + EOL);
         await utils.sleep(100); // wait a second
       }
-    }, 'running');
+    }, ChainType.RUNNING);
     return this;
   }
 
@@ -460,7 +544,10 @@ class TestRunner extends EventEmitter {
    * @param {Boolean} [opts.clean] - whether rm dir after test
    * @return {TestRunner} instance for chain
    */
-  cwd(dir, opts = {}) {
+  cwd(dir, opts: {
+    init?: boolean;
+    clean?: boolean;
+  } = {}): this {
     this.ctx.cmdOpts.cwd = dir;
 
     // auto init
@@ -471,7 +558,7 @@ class TestRunner extends EventEmitter {
         const { cmd, cmdType } = ctx;
         assert(cmd, 'cmd is required');
         assert(!utils.isParent(dir, process.cwd()), `rm ${dir} is too dangerous`);
-        assert(cmdType === 'spawn' || (cmdType === 'fork' && !utils.isParent(dir, cmd)), `rm ${dir} is too dangerous`);
+        assert(cmdType === 'spawn' || (cmdType === 'fork' && !utils.isParent(dir, cmd!)), `rm ${dir} is too dangerous`);
 
         await utils.rm(dir);
         await utils.mkdir(dir);
@@ -492,7 +579,7 @@ class TestRunner extends EventEmitter {
    * @param {String} value - env value
    * @return {TestRunner} instance for chain
    */
-  env(key, value) {
+  env(key, value): this {
     this.ctx.cmdOpts.env[key] = value;
     return this;
   }
@@ -503,7 +590,7 @@ class TestRunner extends EventEmitter {
    * @param {Number} ms - milliseconds
    * @return {TestRunner} instance for chain
    */
-  timeout(ms) {
+  timeout(ms): this {
     this.ctx.cmdOpts.timeout = ms;
     return this;
   }
@@ -518,15 +605,15 @@ class TestRunner extends EventEmitter {
    * @see https://github.com/sindresorhus/execa#killsignal-options
    * @return {TestRunner} instance for chain
    */
-  kill() {
-    return this._addChain(async function kill(ctx) {
-      ctx.proc.cancel();
+  kill(): this {
+    return this.addChain(async function kill(ctx) {
+      ctx.proc!.cancel();
       await ctx.proc;
     });
   }
 }
 
-export * from './constant.js';
+export * from './constants';
 export { TestRunner, LogLevel };
 
 /**
@@ -534,4 +621,6 @@ export { TestRunner, LogLevel };
  * @param {Object} opts - options
  * @return {TestRunner} runner instance
  */
-export function runner(opts) { return new TestRunner(opts); }
+export function runner(opts) {
+  return new TestRunner(opts);
+}

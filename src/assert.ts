@@ -1,15 +1,19 @@
 
 import { promises as fs } from 'fs';
 import isMatch from 'lodash.ismatch';
-import { strict as assert } from 'assert';
+import { strict as strictAssert } from 'assert';
 import { types, exists } from './utils';
 
-assert.matchRule = matchRule;
-assert.doesNotMatchRule = doesNotMatchRule;
-assert.matchFile = matchFile;
-assert.doesNotMatchFile = doesNotMatchFile;
+const assert = Object.create(strictAssert, {
+  matchRule: { value: matchRule, },
+  doesNotMatchRule: { value: doesNotMatchRule, },
+  matchFile: { value: matchFile, },
+  doesNotMatchFile: { value: doesNotMatchFile, },
+});
 
 export { assert };
+
+export type Expected = string | RegExp | object;
 
 /**
  * assert the `actual` is match `expected`
@@ -20,7 +24,7 @@ export { assert };
  * @param {String|Object} actual - actual string
  * @param {String|RegExp|Object} expected - rule to validate
  */
-export function matchRule(actual, expected) {
+export function matchRule(actual: string | object, expected: Expected) {
   if (types.isRegExp(expected)) {
     assert.match(actual.toString(), expected);
   } else if (types.isObject(expected)) {
@@ -36,7 +40,7 @@ export function matchRule(actual, expected) {
         stackStartFn: matchRule,
       });
     }
-  } else if (actual === undefined || !actual.includes(expected)) {
+  } else if (actual === undefined || !(actual as string).includes(expected)) {
     throw new assert.AssertionError({
       operator: 'should includes',
       actual,
@@ -55,7 +59,7 @@ export function matchRule(actual, expected) {
  * @param {String|Object} actual - actual string
  * @param {String|RegExp|Object} expected - rule to validate
  */
-export function doesNotMatchRule(actual, expected) {
+export function doesNotMatchRule(actual: string | object, expected: Expected) {
   if (types.isRegExp(expected)) {
     assert.doesNotMatch(actual.toString(), expected);
   } else if (types.isObject(expected)) {
@@ -71,7 +75,7 @@ export function doesNotMatchRule(actual, expected) {
         stackStartFn: doesNotMatchRule,
       });
     }
-  } else if (actual === undefined || actual.includes(expected)) {
+  } else if (actual === undefined || (actual as string).includes(expected)) {
     throw new assert.AssertionError({
       operator: 'should not includes',
       actual,
@@ -93,7 +97,7 @@ export function doesNotMatchRule(actual, expected) {
  * @param {String|RegExp|Object} [expected] - rule to validate
  * @throws {AssertionError}
  */
-export async function matchFile(filePath, expected) {
+export async function matchFile(filePath: string, expected: Expected): Promise<void> {
   // check whether file exists
   const isExists = await exists(filePath);
   assert(isExists, `Expected ${filePath} to be exists`);
@@ -122,7 +126,7 @@ export async function matchFile(filePath, expected) {
  * @param {String|RegExp|Object} [expected] - rule to validate
  * @throws {AssertionError}
  */
-export async function doesNotMatchFile(filePath, expected) {
+export async function doesNotMatchFile(filePath: string, expected: Expected): Promise<void> {
   // check whether file exists
   const isExists = await exists(filePath);
   if (!expected) {

@@ -1,0 +1,7 @@
+{
+  "preset": "ts-jest",
+  "testEnvironment": "node",
+  "transform": {},
+  "testTimeout": 5000,
+  "globalSetup": "./test/jest-global-setup.js"
+}

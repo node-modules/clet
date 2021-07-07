@@ -4,6 +4,7 @@ import path from 'path';
 import stripFinalNewline from 'strip-final-newline';
 import * as utils from './utils.js';
 import { assert } from './assert.js';
+import type { TestRunner, TestRunnerChainFunction } from './runner';
 
 /**
  * tap a method to chain sequence.
@@ -11,8 +12,8 @@ import { assert } from './assert.js';
  * @param {Function} fn - function
  * @return {TestRunner} instance for chain
  */
-export function tap(fn) {
-  return this._addChain(fn);
+export function tap(this: TestRunner, fn: TestRunnerChainFunction) {
+  return this.addChain(fn);
 }
 
 /**
@@ -22,8 +23,8 @@ export function tap(fn) {
  * @param  {...string} [keys] - contens
  * @return {TestRunner} instance for chain
  */
-export function log(format, ...keys) {
-  this._addChain(function log(ctx) {
+export function log(this: TestRunner, format, ...keys) {
+  this.addChain(async function log(ctx) {
     if (keys.length === 0) {
       this.logger.info(dotProp.get(ctx, format) || format);
     } else {
@@ -39,11 +40,13 @@ export function log(format, ...keys) {
  * @param {Number} ms - millisecond
  * @return {TestRunner} instance for chain
  */
-export function sleep(ms) {
+export function sleep(this: TestRunner, ms: number) {
   assert(ms, '`ms` is required');
-  return this.tap(function sleep() {
-    return utils.sleep(ms);
-  });
+  return Reflect.apply(tap, this, [
+    function sleep() {
+      return utils.sleep(ms);
+    },
+  ]);
 }
 
 /**
@@ -52,11 +55,13 @@ export function sleep(ms) {
  * @param {String} dir - dir path, support relative path to `cwd`
  * @return {TestRunner} instance for chain
  */
-export function mkdir(dir) {
+export function mkdir(this: TestRunner, dir: string) {
   assert(dir, '`dir` is required');
-  return this.tap(async function mkdir(ctx) {
-    await utils.mkdir(path.resolve(ctx.cmdOpts.cwd, dir));
-  });
+  return Reflect.apply(tap, this, [
+    async function mkdir(ctx) {
+      await utils.mkdir(path.resolve(ctx.cmdOpts.cwd, dir));
+    },
+  ]);
 }
 
 /**
@@ -65,11 +70,13 @@ export function mkdir(dir) {
  * @param {String} dir - dir path, support relative path to `cwd`
  * @return {TestRunner} instance for chain
  */
-export function rm(dir) {
+export function rm(this: TestRunner, dir) {
   assert(dir, '`dir is required');
-  return this.tap(async function rm(ctx) {
-    await utils.rm(path.resolve(ctx.cmdOpts.cwd, dir));
-  });
+  return Reflect.apply(tap, this, [
+    async function rm(ctx) {
+      await utils.rm(path.resolve(ctx.cmdOpts.cwd, dir));
+    },
+  ]);
 }
 
 /**
@@ -79,12 +86,14 @@ export function rm(dir) {
  * @param {String|Object} content - content to write, if pass object, will `JSON.stringify`
  * @return {TestRunner} instance for chain
  */
-export function writeFile(filePath, content) {
+export function writeFile(this: TestRunner, filePath: string, content: string | object) {
   assert(filePath, '`filePath` is required');
-  return this.tap(async function writeFile(ctx) {
-    filePath = path.resolve(ctx.cmdOpts.cwd, filePath);
-    return await utils.writeFile(filePath, content);
-  });
+  return Reflect.apply(tap, this, [
+    async function writeFile(ctx) {
+      filePath = path.resolve(ctx.cmdOpts.cwd, filePath);
+      return await utils.writeFile(filePath, content);
+    },
+  ]);
 }
 
 /**
@@ -95,7 +104,9 @@ export function writeFile(filePath, content) {
  * @param {execa.NodeOptions} [opts] - cmd options
  * @return {TestRunner} instance for chain
  */
-export function shell(cmd, args = [], opts = {}) {
+export function shell(this: TestRunner, cmd: string, args: any[] = [], opts: {
+  cwd?: string;
+} = {}) {
   assert(cmd, '`cmd` is required');
 
   // exec(cmd, opts)
@@ -104,21 +115,23 @@ export function shell(cmd, args = [], opts = {}) {
     args = [];
   }
 
-  return this.tap(async function shell(ctx) {
-    const command = [ cmd, ...args ].join(' ');
-    opts.cwd = opts.cwd || ctx.cmdOpts.cwd;
+  return Reflect.apply(tap, this, [
+    async function shell(ctx) {
+      const command = [ cmd, ...args ].join(' ');
+      opts.cwd = opts.cwd || ctx.cmdOpts.cwd;
 
-    const proc = execa.command(command, opts);
-    const logger = ctx.logger.child('Shell', { showTag: false });
+      const proc = execa.command(command, opts);
+      const logger = ctx.logger.child('Shell', { showTag: false });
 
-    proc.stdout.on('data', data => {
-      logger.info(stripFinalNewline(data.toString()));
-    });
+      proc.stdout!.on('data', data => {
+        logger.info(stripFinalNewline(data.toString()));
+      });
 
-    proc.stderr.on('data', data => {
-      logger.info(stripFinalNewline(data.toString()));
-    });
+      proc.stderr!.on('data', data => {
+        logger.info(stripFinalNewline(data.toString()));
+      });
 
-    await proc;
-  });
+      await proc;
+    },
+  ]);
 }
