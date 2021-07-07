@@ -11,7 +11,9 @@ describe('test/utils.test.js', () => {
   it('types', () => {
     assert(utils.types.isString('foo'));
     assert(utils.types.isObject({}));
-    assert(utils.types.isFunction(() => {}));
+    assert(utils.types.isFunction(() => {
+      // ...
+    }));
   });
 
   it('validate', () => {

@@ -5,10 +5,10 @@ import { strict as strictAssert } from 'assert';
 import { types, exists } from './utils';
 
 const assert = Object.create(strictAssert, {
-  matchRule: { value: matchRule, },
-  doesNotMatchRule: { value: doesNotMatchRule, },
-  matchFile: { value: matchFile, },
-  doesNotMatchFile: { value: doesNotMatchFile, },
+  matchRule: { value: matchRule },
+  doesNotMatchRule: { value: doesNotMatchRule },
+  matchFile: { value: matchFile },
+  doesNotMatchFile: { value: doesNotMatchFile },
 });
 
 export { assert };

@@ -20,7 +20,7 @@ interface LoggerOptions {
   showTime?: boolean;
 }
 
-export class Logger{
+export class Logger {
   readonly options: {
     tag: string[];
     level: LogLevel;
@@ -30,7 +30,7 @@ export class Logger{
   };
   readonly childMaps: Record<string, Logger>;
 
-  constructor(tag: string = '', opts: LoggerOptions = {}) {
+  constructor(tag = '', opts: LoggerOptions = {}) {
     if (typeof tag === 'string') {
       opts.tag = opts.tag || tag || '';
     } else {

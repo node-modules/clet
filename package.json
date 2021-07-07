@@ -42,6 +42,7 @@
   ],
   "scripts": {
     "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest",
     "cov": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --coverage",
     "ci": "npm run lint && npm run cov",
