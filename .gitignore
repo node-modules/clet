@@ -12,4 +12,4 @@ run/
 .vscode
 .tempCodeRunnerFile.js
 /snippet/
-dist
+lib

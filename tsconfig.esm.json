@@ -1,7 +1,7 @@
 {
   "extends": "@eggjs/tsconfig",
   "compilerOptions": {
-    "outDir": "./dist/esm",
+    "outDir": "./lib/esm",
     "module": "ES2020",
     "moduleResolution": "Node"
   }

@@ -104,9 +104,7 @@ export function writeFile(this: TestRunner, filePath: string, content: string | 
  * @param {execa.NodeOptions} [opts] - cmd options
  * @return {TestRunner} instance for chain
  */
-export function shell(this: TestRunner, cmd: string, args: any[] = [], opts: {
-  cwd?: string;
-} = {}) {
+export function shell(this: TestRunner, cmd: string, args: any[] = [], opts: execa.Options = {}) {
   assert(cmd, '`cmd` is required');
 
   // exec(cmd, opts)
@@ -118,7 +116,7 @@ export function shell(this: TestRunner, cmd: string, args: any[] = [], opts: {
   return Reflect.apply(tap, this, [
     async function shell(ctx) {
       const command = [ cmd, ...args ].join(' ');
-      opts.cwd = opts.cwd || ctx.cmdOpts.cwd;
+      (opts as any).cwd = opts.cwd || ctx.cmdOpts.cwd;
 
       const proc = execa.command(command, opts);
       const logger = ctx.logger.child('Shell', { showTag: false });

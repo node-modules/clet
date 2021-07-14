@@ -114,7 +114,7 @@ class TestRunner extends EventEmitter {
 
     this.proc = undefined;
 
-    this.ctx = this._initContext();
+    this.ctx = this.initContext();
 
     this.register(validatorPlugin);
     this.register(operationPlugin);
@@ -144,7 +144,7 @@ class TestRunner extends EventEmitter {
    * @return {Context} context object
    * @private
    */
-  _initContext(): TestRunnerContext {
+  private initContext(): TestRunnerContext {
     const ctx = {
       instance: this,
       logger: this.logger,

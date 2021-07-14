@@ -4,10 +4,10 @@
   "description": "Command Line E2E Testing",
   "type": "module",
   "exports": {
-    "import": "./dist/esm/runner.js",
-    "require": "./dist/esm/runner.cjs"
+    "import": "./lib/esm/runner.js",
+    "require": "./lib/cjs/runner.cjs"
   },
-  "typings": "./dist/esm/runner.d.ts",
+  "typings": "./lib/esm/runner.d.ts",
   "author": "TZ <atian25@qq.com> (https://github.com/atian25)",
   "homepage": "https://github.com/node-modules/clet",
   "repository": "git@github.com:node-modules/clet.git",
@@ -50,7 +50,7 @@
     "tsc:clean": "tsc -b --clean",
     "tsc:esm": "tsc -p ./tsconfig.esm.json",
     "tsc:cjs": "tsc -p ./tsconfig.cjs.json && npm run cjs",
-    "cjs": "for f in dist/cjs/*.js; do mv -- \"$f\" \"${f%.txt}.cjs\"; done",
+    "cjs": "for f in lib/cjs/*.js; do mv -- \"$f\" \"${f%}.cjs\"; done",
     "prepublishOnly": "npm run tsc:clean && npm run tsc:esm && npm run tsc:cjs"
   },
   "ci": {
@@ -59,7 +59,7 @@
   },
   "eslintIgnore": [
     "coverage",
-    "dist"
+    "lib"
   ],
   "license": "MIT"
 }
