@@ -6,7 +6,7 @@ describe('test/commonjs.test.cjs', () => {
   let runner;
 
   beforeAll(async () => {
-    runner = (await import('../lib/runner.js')).runner;
+    runner = (await import('../lib/esm/runner.js')).runner;
   });
 
   it('should support import', async () => {

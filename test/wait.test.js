@@ -1,6 +1,6 @@
 import path from 'path';
 import { strict as assert } from 'assert';
-import { runner } from '../lib/runner.js';
+import { runner } from '../lib/esm/runner.js';
 
 describe('test/wait.test.js', () => {
   const fixtures = path.resolve('test/fixtures');

@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { strict as assert } from 'assert';
-import * as utils from '../lib/utils.js';
+import * as utils from '../lib/esm/runner.js';
 import * as testUtils from './test-utils.js';
 
 describe('test/utils.test.js', () => {

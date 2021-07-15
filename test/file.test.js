@@ -1,5 +1,5 @@
 import path from 'path';
-import { runner } from '../lib/runner.js';
+import { runner } from '../lib/esm/runner.js';
 import * as utils from './test-utils.js';
 import { strict as assert } from 'assert';
 

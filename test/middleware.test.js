@@ -1,4 +1,4 @@
-import { runner } from '../lib/runner.js';
+import { runner } from '../lib/esm/runner.js';
 import { strict as assert } from 'assert';
 
 describe('test/middleware.test.js', () => {

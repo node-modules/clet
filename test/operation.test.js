@@ -1,5 +1,5 @@
 import { jest, expect } from '@jest/globals';
-import { runner } from '../lib/runner.js';
+import { runner } from '../lib/esm/runner.js';
 import * as utils from './test-utils.js';
 
 describe('test/operation.test.js', () => {

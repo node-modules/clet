@@ -1,7 +1,6 @@
-
 import path from 'path';
 import request from 'supertest';
-import { runner, KEYS } from '../lib/runner.js';
+import { runner, KEYS } from '../lib/esm/runner.js';
 import * as utils from './test-utils.js';
 
 describe('test/example.test.js', () => {

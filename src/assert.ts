@@ -1,15 +1,19 @@
-
 import { promises as fs } from 'fs';
 import isMatch from 'lodash.ismatch';
 import { strict as strictAssert } from 'assert';
 import { types, exists } from './utils';
 
-const assert = Object.create(strictAssert, {
-  matchRule: { value: matchRule },
-  doesNotMatchRule: { value: doesNotMatchRule },
-  matchFile: { value: matchFile },
-  doesNotMatchFile: { value: doesNotMatchFile },
-});
+const assert: typeof strictAssert & {
+  matchRule: typeof matchRule,
+  doesNotMatchRule: typeof doesNotMatchRule,
+  matchFile: typeof matchFile,
+  doesNotMatchFile: typeof doesNotMatchFile,
+} = strictAssert as any;
+
+assert.matchRule = matchRule;
+assert.doesNotMatchRule = doesNotMatchRule;
+assert.matchFile = matchFile;
+assert.doesNotMatchFile = doesNotMatchFile;
 
 export { assert };
 

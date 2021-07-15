@@ -1,6 +1,5 @@
-
 import { jest, expect } from '@jest/globals';
-import { Logger, LogLevel } from '../lib/logger.js';
+import { Logger, LogLevel } from '../lib/esm/runner.js';
 
 describe('test/logger.test.js', () => {
   beforeEach(() => {
@@ -27,7 +26,7 @@ describe('test/logger.test.js', () => {
   });
 
   it('should logger verbose', () => {
-    const logger = new Logger({ level: LogLevel.Verbose });
+    const logger = new Logger({ level: LogLevel.VERBOSE });
     logger.error('error log');
     logger.warn('warn log');
     logger.info('info log');

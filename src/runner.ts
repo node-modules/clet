@@ -8,7 +8,7 @@ import { compose } from 'throwback';
 
 import * as utils from './utils.js';
 import { assert } from './assert.js';
-import { Logger, LogLevel } from './logger.js';
+import { Logger } from './logger.js';
 import * as validatorPlugin from './validator.js';
 import * as operationPlugin from './operation.js';
 import { ValidateExpected } from './utils.js';
@@ -86,7 +86,7 @@ class TestRunner extends EventEmitter {
     autoWait: boolean;
     plugins: [];
   };
-  readonly assert = assert;
+  readonly assert: typeof assert = assert;
   readonly utils = utils;
   readonly logger: Logger;
   readonly childLogger: Logger;
@@ -392,10 +392,9 @@ class TestRunner extends EventEmitter {
       result.code = res.exitCode;
       result.stopped = true;
       if (res.failed && !res.isCanceled && !res.killed) {
-        // const msg = res.originalMessage ? `Command failed with: ${res.originalMessage}` : res.shortMessage;
-        // this.logger.warn(msg);
-        // TODO ttt
-        console.log('!!!: ', res);
+        const errorRes = (res as unknown as execa.ExecaSyncError);
+        const msg = errorRes.originalMessage ? `Command failed with: ${errorRes.originalMessage}` : errorRes.shortMessage;
+        this.logger.warn(msg);
       }
     });
 
@@ -614,7 +613,10 @@ class TestRunner extends EventEmitter {
 }
 
 export * from './constants';
-export { TestRunner, LogLevel };
+export * from './assert';
+export * from './logger';
+export * from './utils';
+export { TestRunner };
 
 /**
  * create a runner

@@ -1,4 +1,4 @@
-import { runner } from '../lib/runner.js';
+import { runner } from '../lib/esm/runner.js';
 import path from 'path';
 
 describe('test/command.test.js', () => {
