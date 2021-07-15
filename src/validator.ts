@@ -1,7 +1,7 @@
 import path from 'path';
 import { assert, Expected } from './assert.js';
 import * as utils from './utils.js';
-import type { TestRunner, TestRunnerChainFunction } from './runner';
+import type { Runner, TestRunnerChainFunction } from './runner';
 import { ChainType } from './runner';
 
 /**
@@ -10,7 +10,7 @@ import { ChainType } from './runner';
  * @param {Function<Context>} fn - async ctx => ctx.assert(ctx.result.stdout.includes('hi'));
  * @throws {AssertionError}
  */
-export function expect(this: TestRunner, fn: TestRunnerChainFunction) {
+export function expect(this: Runner, fn: TestRunnerChainFunction) {
   const buildError = new Error('only for stack');
   return this.addChain(async ctx => {
     try {
@@ -61,7 +61,7 @@ function mergeError(buildError, runError) {
  * @param {String|RegExp|Object} [expected] - rule to validate
  * @throws {AssertionError}
  */
-export function file(this: TestRunner, filePath: string, expected: Expected) {
+export function file(this: Runner, filePath: string, expected: Expected) {
   assert(filePath, '`filePath` is required');
   return Reflect.apply(expect, this, [
     async function file({ cwd, assert }) {
@@ -83,7 +83,7 @@ export function file(this: TestRunner, filePath: string, expected: Expected) {
  * @param {String|RegExp|Object} [expected] - rule to validate
  * @throws {AssertionError}
  */
-export function notFile(this: TestRunner, filePath: string, expected: Expected) {
+export function notFile(this: Runner, filePath: string, expected: Expected) {
   assert(filePath, '`filePath` is required');
   return Reflect.apply(expect, this, [
     async function notFile({ cwd, assert }) {
@@ -102,7 +102,7 @@ export function notFile(this: TestRunner, filePath: string, expected: Expected) 
  * @param {String|RegExp} expected - rule to validate
  * @throws {AssertionError}
  */
-export function stdout(this: TestRunner, expected: Expected) {
+export function stdout(this: Runner, expected: Expected) {
   assert(expected, '`expected` is required');
   return Reflect.apply(expect, this, [
     async function stdout({ result, assert }) {
@@ -120,7 +120,7 @@ export function stdout(this: TestRunner, expected: Expected) {
  * @param {String|RegExp} unexpected - rule to validate
  * @throws {AssertionError}
  */
-export function notStdout(this: TestRunner, unexpected: Expected) {
+export function notStdout(this: Runner, unexpected: Expected) {
   assert(unexpected, '`unexpected` is required');
   return Reflect.apply(expect, this, [
     async function notStdout({ result, assert }) {
@@ -138,7 +138,7 @@ export function notStdout(this: TestRunner, unexpected: Expected) {
  * @param {String|RegExp} expected - rule to validate
  * @throws {AssertionError}
  */
-export function stderr(this: TestRunner, expected: Expected) {
+export function stderr(this: Runner, expected: Expected) {
   assert(expected, '`expected` is required');
   return Reflect.apply(expect, this, [
     async function stderr({ result, assert }) {
@@ -156,7 +156,7 @@ export function stderr(this: TestRunner, expected: Expected) {
  * @param {String|RegExp} unexpected - rule to validate
  * @throws {AssertionError}
  */
-export function notStderr(this: TestRunner, unexpected: Expected) {
+export function notStderr(this: Runner, unexpected: Expected) {
   assert(unexpected, '`unexpected` is required');
   return Reflect.apply(expect, this, [
     async function notStderr({ result, assert }) {
@@ -171,7 +171,7 @@ export function notStderr(this: TestRunner, unexpected: Expected) {
  * @param {Number|Function} n - value to compare
  * @throws {AssertionError}
  */
-export function code(this: TestRunner, n: number | ((number) => void)) {
+export function code(this: Runner, n: number | ((number) => void)) {
   this.expectedExitCode = n;
 
   const fn: (code: number) => void = utils.types.isFunction(n)

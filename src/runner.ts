@@ -28,7 +28,7 @@ export enum WaitType {
 }
 
 export interface TestRunnerContext {
-  instance: TestRunner;
+  instance: Runner;
   logger: Logger;
   assert: typeof assert;
   utils: typeof utils;
@@ -55,11 +55,11 @@ export interface TestRunnerContext {
   },
 }
 
-export type FunctionPlugin = (runner: TestRunner) => void;
+export type FunctionPlugin = (runner: Runner) => void;
 export type ObjectPlugin = Record<string, any>;
 export type Plugin = FunctionPlugin | ObjectPlugin;
 export type TestRunnerMiddleware = (ctx: TestRunnerContext, next: any) => Promise<void>;
-export type TestRunnerChainFunction = (this: TestRunner, ctx: TestRunnerContext) => Promise<void>;
+export type TestRunnerChainFunction = (this: Runner, ctx: TestRunnerContext) => Promise<void>;
 
 export interface TestRunnerChain {
   before: TestRunnerChainFunction[],
@@ -77,7 +77,7 @@ export class RunnerError extends Error {
   }
 }
 
-class TestRunner extends EventEmitter {
+class Runner extends EventEmitter {
   private readonly chains: TestRunnerChain;
   private proc?: execa.ExecaChildProcess;
   protected expectedExitCode?: number | ((number) => void);
@@ -130,7 +130,7 @@ class TestRunner extends EventEmitter {
    * @property {Number} result.code - child process exit code
    *
    * @property {execa.ExecaChildProcess} proc - child process instance
-   * @property {TestRunner} instance - runner instance
+   * @property {Runner} instance - runner instance
    * @property {String} cwd - child process current workspace directory
    *
    * @property {Object} assert - assert helper
@@ -220,7 +220,7 @@ class TestRunner extends EventEmitter {
    *
    * @param {Function} fn - chain function
    * @param {ChainType} [type] - which chain to add
-   * @return {TestRunner} instance for chain
+   * @return {Runner} instance for chain
    * @protected
    */
   protected addChain(fn: TestRunnerChainFunction, type?: ChainType): this {
@@ -319,7 +319,7 @@ class TestRunner extends EventEmitter {
    * @param {Array} [args] - cmd args
    * @param {execa.NodeOptions} [opts] - cmd options
    * @see https://github.com/sindresorhus/execa#options
-   * @return {TestRunner} instance for chain
+   * @return {Runner} instance for chain
    */
   fork(cmd, args, opts) {
     return this.registerCommand('fork', cmd, args, opts);
@@ -331,7 +331,7 @@ class TestRunner extends EventEmitter {
    * @param {String} cmd - cmd string
    * @param {Array} [args] - cmd args
    * @param {execa.NodeOptions} [opts] - cmd options
-   * @return {TestRunner} runner instance
+   * @return {Runner} runner instance
    */
   spawn(cmd, args, opts) {
     assert(cmd, 'cmd is required');
@@ -444,7 +444,7 @@ class TestRunner extends EventEmitter {
    *  - {RegExp}: check whether match regexp
    *  - {Object}: check whether partial includes specified JSON
    *  - {Function}: check whether with specified function
-   * @return {TestRunner} instance for chain
+   * @return {Runner} instance for chain
    */
   wait(type: WaitType, expected: ValidateExpected): this {
     this.options.autoWait = false;
@@ -495,13 +495,13 @@ class TestRunner extends EventEmitter {
    *
    * @param {String|RegExp} expected - test `stdout` with regexp match or string includes
    * @param {String|Array} respond - respond content, if set to array then write each with a delay.
-   * @return {TestRunner} instance for chain
+   * @return {Runner} instance for chain
    */
   stdin(expected: string | RegExp, respond: string | Array<string>): this {
     assert(expected, '`expected is required');
     assert(respond, '`respond is required');
 
-    this.addChain(async function stdin(this: TestRunner, ctx) {
+    this.addChain(async function stdin(this: Runner, ctx) {
       // check stdout
       const isPrompt = utils.validate(ctx.result.stdout.substring(ctx.lastPromptIndex!), expected);
       if (!isPrompt) {
@@ -541,7 +541,7 @@ class TestRunner extends EventEmitter {
    * @param {Object} [opts] - options
    * @param {Boolean} [opts.init] - whether rm and mkdir dir before test
    * @param {Boolean} [opts.clean] - whether rm dir after test
-   * @return {TestRunner} instance for chain
+   * @return {Runner} instance for chain
    */
   cwd(dir, opts: {
     init?: boolean;
@@ -576,7 +576,7 @@ class TestRunner extends EventEmitter {
    *
    * @param {String} key - env key
    * @param {String} value - env value
-   * @return {TestRunner} instance for chain
+   * @return {Runner} instance for chain
    */
   env(key, value): this {
     this.ctx.cmdOpts.env[key] = value;
@@ -587,7 +587,7 @@ class TestRunner extends EventEmitter {
    * set a timeout, will kill SIGTERM then SIGKILL.
    *
    * @param {Number} ms - milliseconds
-   * @return {TestRunner} instance for chain
+   * @return {Runner} instance for chain
    */
   timeout(ms): this {
     this.ctx.cmdOpts.timeout = ms;
@@ -602,7 +602,7 @@ class TestRunner extends EventEmitter {
    * when kill, exit code maybe undefined if user don't hook signal event.
    *
    * @see https://github.com/sindresorhus/execa#killsignal-options
-   * @return {TestRunner} instance for chain
+   * @return {Runner} instance for chain
    */
   kill(): this {
     return this.addChain(async function kill(ctx) {
@@ -616,13 +616,13 @@ export * from './constants';
 export * from './assert';
 export * from './logger';
 export * from './utils';
-export { TestRunner };
+export { Runner };
 
 /**
  * create a runner
  * @param {Object} opts - options
- * @return {TestRunner} runner instance
+ * @return {Runner} runner instance
  */
 export function runner(opts) {
-  return new TestRunner(opts);
+  return new Runner(opts);
 }

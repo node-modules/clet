@@ -484,7 +484,7 @@ it('should support writeFile', async () => {
  * @property {Number} result.code - child process exit code
  *
  * @property {execa.ExecaChildProcess} proc - child process instance
- * @property {TestRunner} instance - runner instance
+ * @property {Runner} instance - runner instance
  * @property {String} cwd - child process current workspace directory
  *
  * @property {Object} assert - assert helper

@@ -4,15 +4,15 @@ import path from 'path';
 import stripFinalNewline from 'strip-final-newline';
 import * as utils from './utils.js';
 import { assert } from './assert.js';
-import type { TestRunner, TestRunnerChainFunction } from './runner';
+import type { Runner, TestRunnerChainFunction } from './runner';
 
 /**
  * tap a method to chain sequence.
  *
  * @param {Function} fn - function
- * @return {TestRunner} instance for chain
+ * @return {Runner} instance for chain
  */
-export function tap(this: TestRunner, fn: TestRunnerChainFunction) {
+export function tap(this: Runner, fn: TestRunnerChainFunction) {
   return this.addChain(fn);
 }
 
@@ -21,9 +21,9 @@ export function tap(this: TestRunner, fn: TestRunnerChainFunction) {
  *
  * @param {String} format - format
  * @param  {...string} [keys] - contens
- * @return {TestRunner} instance for chain
+ * @return {Runner} instance for chain
  */
-export function log(this: TestRunner, format, ...keys) {
+export function log(this: Runner, format, ...keys) {
   this.addChain(async function log(ctx) {
     if (keys.length === 0) {
       this.logger.info(dotProp.get(ctx, format) || format);
@@ -38,9 +38,9 @@ export function log(this: TestRunner, format, ...keys) {
  * take a sleep
  *
  * @param {Number} ms - millisecond
- * @return {TestRunner} instance for chain
+ * @return {Runner} instance for chain
  */
-export function sleep(this: TestRunner, ms: number) {
+export function sleep(this: Runner, ms: number) {
   assert(ms, '`ms` is required');
   return Reflect.apply(tap, this, [
     function sleep() {
@@ -53,9 +53,9 @@ export function sleep(this: TestRunner, ms: number) {
  * mkdir -p
  *
  * @param {String} dir - dir path, support relative path to `cwd`
- * @return {TestRunner} instance for chain
+ * @return {Runner} instance for chain
  */
-export function mkdir(this: TestRunner, dir: string) {
+export function mkdir(this: Runner, dir: string) {
   assert(dir, '`dir` is required');
   return Reflect.apply(tap, this, [
     async function mkdir(ctx) {
@@ -68,9 +68,9 @@ export function mkdir(this: TestRunner, dir: string) {
  * move dir to trash
  *
  * @param {String} dir - dir path, support relative path to `cwd`
- * @return {TestRunner} instance for chain
+ * @return {Runner} instance for chain
  */
-export function rm(this: TestRunner, dir) {
+export function rm(this: Runner, dir) {
   assert(dir, '`dir is required');
   return Reflect.apply(tap, this, [
     async function rm(ctx) {
@@ -84,9 +84,9 @@ export function rm(this: TestRunner, dir) {
  *
  * @param {String} filePath - file path, support relative path to `cwd`
  * @param {String|Object} content - content to write, if pass object, will `JSON.stringify`
- * @return {TestRunner} instance for chain
+ * @return {Runner} instance for chain
  */
-export function writeFile(this: TestRunner, filePath: string, content: string | object) {
+export function writeFile(this: Runner, filePath: string, content: string | object) {
   assert(filePath, '`filePath` is required');
   return Reflect.apply(tap, this, [
     async function writeFile(ctx) {
@@ -102,9 +102,9 @@ export function writeFile(this: TestRunner, filePath: string, content: string | 
  * @param {String} cmd - cmd string
  * @param {Array} [args] - cmd args
  * @param {execa.NodeOptions} [opts] - cmd options
- * @return {TestRunner} instance for chain
+ * @return {Runner} instance for chain
  */
-export function shell(this: TestRunner, cmd: string, args: any[] = [], opts: execa.Options = {}) {
+export function shell(this: Runner, cmd: string, args: any[] = [], opts: execa.Options = {}) {
   assert(cmd, '`cmd` is required');
 
   // exec(cmd, opts)

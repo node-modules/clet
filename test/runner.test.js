@@ -17,7 +17,7 @@ describe('test/runner.test.js', () => {
       .end();
 
     // ensure chain return instance context
-    assert.equal(ctx.instance.constructor.name, 'TestRunner');
+    assert.equal(ctx.instance.constructor.name, 'Runner');
   });
 
   it('should work without end()', async () => {
@@ -26,7 +26,7 @@ describe('test/runner.test.js', () => {
       .spawn('node -v');
 
     // ensure chain return instance context
-    assert.equal(ctx.instance.constructor.name, 'TestRunner');
+    assert.equal(ctx.instance.constructor.name, 'Runner');
   });
 
   it('should logger', async () => {
