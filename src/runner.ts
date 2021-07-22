@@ -5,12 +5,12 @@ import stripAnsi from 'strip-ansi';
 import stripFinalNewline from 'strip-final-newline';
 import pEvent from 'p-event';
 import { compose } from 'throwback';
-
+import is from 'is-type-of';
 import * as utils from './utils.js';
 import { assert } from './assert.js';
 import { Logger } from './logger.js';
-import * as validatorPlugin from './validator.js';
-import * as operationPlugin from './operation.js';
+import { ValidatorPlugin } from './validator.js';
+import { OperationPlugin } from './operation.js';
 import { ValidateExpected } from './utils.js';
 
 export enum ChainType {
@@ -80,7 +80,7 @@ export class RunnerError extends Error {
 class Runner extends EventEmitter {
   private readonly chains: TestRunnerChain;
   private proc?: execa.ExecaChildProcess;
-  protected expectedExitCode?: number | ((number) => void);
+  expectedExitCode?: number | ((number) => void);
 
   readonly options: {
     autoWait: boolean;
@@ -116,8 +116,8 @@ class Runner extends EventEmitter {
 
     this.ctx = this.initContext();
 
-    this.register(validatorPlugin);
-    this.register(operationPlugin);
+    this.register(ValidatorPlugin);
+    this.register(OperationPlugin);
     this.register(this.options.plugins);
   }
 
@@ -197,7 +197,17 @@ class Runner extends EventEmitter {
     if (!plugins) return this;
     if (!Array.isArray(plugins)) plugins = [ plugins ];
     for (const fn of plugins as Plugin[]) {
-      if (typeof fn === 'function') {
+      if (is.class(fn)) {
+        // https://www.typescriptlang.org/docs/handbook/mixins.html#alternative-pattern
+        Object.getOwnPropertyNames(fn.prototype).forEach(name => {
+          Object.defineProperty(
+            Runner.prototype,
+            name,
+            Object.getOwnPropertyDescriptor(fn.prototype, name) ||
+            Object.create(null),
+          );
+        });
+      } else if (typeof fn === 'function') {
         fn(this);
       } else {
         for (const key of Object.keys(fn)) {
@@ -223,7 +233,7 @@ class Runner extends EventEmitter {
    * @return {Runner} instance for chain
    * @protected
    */
-  protected addChain(fn: TestRunnerChainFunction, type?: ChainType): this {
+  addChain(fn: TestRunnerChainFunction, type?: ChainType): this {
     if (!type) type = this.ctx.cmd ? ChainType.AFTER : ChainType.BEFORE;
     const chains = this.chains[type];
     assert(chains, `unexpected chain type ${type}`);
@@ -611,6 +621,8 @@ class Runner extends EventEmitter {
     });
   }
 }
+interface Runner extends OperationPlugin, ValidatorPlugin {}
+
 
 export * from './constants';
 export * from './assert';

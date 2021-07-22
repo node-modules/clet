@@ -1,6 +1,6 @@
 import path from 'path';
 import { strict as assert } from 'assert';
-import { runner } from '../lib/esm/runner.js';
+import { runner, Runner } from '../lib/esm/runner.js';
 import * as utils from './test-utils.js';
 
 describe('test/runner.test.js', () => {
@@ -17,7 +17,7 @@ describe('test/runner.test.js', () => {
       .end();
 
     // ensure chain return instance context
-    assert.equal(ctx.instance.constructor.name, 'Runner');
+    assert(ctx.instance instanceof Runner);
   });
 
   it('should work without end()', async () => {
@@ -26,7 +26,7 @@ describe('test/runner.test.js', () => {
       .spawn('node -v');
 
     // ensure chain return instance context
-    assert.equal(ctx.instance.constructor.name, 'Runner');
+    assert(ctx.instance instanceof Runner);
   });
 
   it('should logger', async () => {
