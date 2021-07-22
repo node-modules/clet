@@ -19,6 +19,18 @@ const types = {
   isFunction(v: any): v is Function {
     return typeof v === 'function';
   },
+  isClass(fn: any): boolean {
+    const toString = Function.prototype.toString;
+
+    function fnBody(fn) {
+      return toString.call(fn).replace(/^[^{]*{\s*/, '').replace(/\s*}[^}]*$/, '');
+    }
+
+    return (typeof fn === 'function' &&
+      (/^class(?:\s|{)/.test(toString.call(fn)) ||
+        (/^.*classCallCheck\(/.test(fnBody(fn)))) // babel.js
+    );
+  },
 };
 
 export { types, isMatch };

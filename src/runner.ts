@@ -5,7 +5,6 @@ import stripAnsi from 'strip-ansi';
 import stripFinalNewline from 'strip-final-newline';
 import pEvent from 'p-event';
 import { compose } from 'throwback';
-import is from 'is-type-of';
 import * as utils from './utils.js';
 import { assert } from './assert.js';
 import { Logger } from './logger.js';
@@ -197,7 +196,7 @@ class Runner extends EventEmitter {
     if (!plugins) return this;
     if (!Array.isArray(plugins)) plugins = [ plugins ];
     for (const fn of plugins as Plugin[]) {
-      if (is.class(fn)) {
+      if (utils.types.isClass(fn)) {
         // https://www.typescriptlang.org/docs/handbook/mixins.html#alternative-pattern
         Object.getOwnPropertyNames(fn.prototype).forEach(name => {
           Object.defineProperty(
