@@ -97,8 +97,8 @@ export function doesNotMatchRule(actual: string | object, expected: Expected) {
  *  - `matchFile('/path/to/file', 'usage')`: check whether file includes specified string
  *  - `matchFile('/path/to/file', { version: '1.0.0' })`: checke whether file content partial includes specified JSON
  *
- * @param {String} filePath - target path to validate, could be relative path
- * @param {String|RegExp|Object} [expected] - rule to validate
+ * @param {string} filePath - target path to validate, could be relative path
+ * @param {string|RegExp|Object} [expected] - rule to validate
  * @throws {AssertionError}
  */
 export async function matchFile(filePath: string, expected: Expected): Promise<void> {
@@ -126,7 +126,7 @@ export async function matchFile(filePath: string, expected: Expected): Promise<v
  *  - `doesNotMatchFile('/path/to/file', 'usage')`: check whether file don't includes specified string
  *  - `doesNotMatchFile('/path/to/file', { version: '1.0.0' })`: checke whether file content don't partial includes specified JSON
  *
- * @param {String} filePath - target path to validate, could be relative path
+ * @param {string} filePath - target path to validate, could be relative path
  * @param {String|RegExp|Object} [expected] - rule to validate
  * @throws {AssertionError}
  */

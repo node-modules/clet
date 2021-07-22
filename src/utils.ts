@@ -60,8 +60,8 @@ export function validate(input: string | object, expected: ValidateExpected): bo
 /**
  * Check whether is parent
  *
- * @param {String} parent - parent file path
- * @param {String} child - child file path
+ * @param {string} parent - parent file path
+ * @param {string} child - child file path
  * @return {Boolean} true if parent >= child
  */
 export function isParent(parent: string, child: string): boolean {
@@ -72,7 +72,7 @@ export function isParent(parent: string, child: string): boolean {
 /**
  * mkdirp -p
  *
- * @param {String} dir - dir path
+ * @param {string} dir - dir path
  * @param {Object} [opts] - see fsPromises.mkdirp
  */
 export async function mkdir(dir: string, opts?: {
@@ -106,7 +106,7 @@ export async function rm(p, opts: {
 /**
  * write file, will auto create parent dir
  *
- * @param {String} filePath - file path
+ * @param {string} filePath - file path
  * @param {String|Object} content - content to write, if pass object, will `JSON.stringify`
  * @param {Object} [opts] - see fsPromises.writeFile
  */
@@ -126,7 +126,7 @@ export async function writeFile(filePath: string, content: string | object, opts
 /**
  * check exists due to `fs.exists` is deprecated
  *
- * @param {String} filePath - file or directory
+ * @param {string} filePath - file or directory
  * @return {Boolean} exists or not
  */
 export async function exists(filePath: string): Promise<boolean> {
@@ -143,7 +143,7 @@ export async function exists(filePath: string): Promise<boolean> {
  *
  * @param {Object} meta - import.meta
  * @param  {...String} args - other paths
- * @return {String} file path
+ * @return {string} file path
  */
 export function resolve(meta: ImportMeta, ...args: string[]): string {
   const p = types.isObject(meta) ? dirname(meta) : meta;

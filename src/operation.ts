@@ -20,8 +20,8 @@ export class OperationPlugin {
   /**
    * print log for debugging, support formattor and dot path
    *
-   * @param {String} format - format
-   * @param  {...string} [keys] - contens
+   * @param {string} format - format
+   * @param  {...string} [keys] - contents
    * @return {Runner} instance for chain
    */
   log(format, ...keys) {
@@ -51,7 +51,7 @@ export class OperationPlugin {
   /**
    * mkdir -p
    *
-   * @param {String} dir - dir path, support relative path to `cwd`
+   * @param {string} dir - dir path, support relative path to `cwd`
    * @return {Runner} instance for chain
    */
   mkdir(dir: string) {
@@ -64,7 +64,7 @@ export class OperationPlugin {
   /**
    * move dir to trash
    *
-   * @param {String} dir - dir path, support relative path to `cwd`
+   * @param {string} dir - dir path, support relative path to `cwd`
    * @return {Runner} instance for chain
    */
   rm(dir) {
@@ -77,7 +77,7 @@ export class OperationPlugin {
   /**
    * write file, will auto create parent dir
    *
-   * @param {String} filePath - file path, support relative path to `cwd`
+   * @param {string} filePath - file path, support relative path to `cwd`
    * @param {String|Object} content - content to write, if pass object, will `JSON.stringify`
    * @return {Runner} instance for chain
    */
@@ -92,7 +92,7 @@ export class OperationPlugin {
   /**
    * run a shell
    *
-   * @param {String} cmd - cmd string
+   * @param {string} cmd - cmd string
    * @param {Array} [args] - cmd args
    * @param {execa.NodeOptions} [opts] - cmd options
    * @return {Runner} instance for chain

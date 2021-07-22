@@ -58,7 +58,7 @@ export class ValidatorPlugin {
    *  - `file('/path/to/file', 'usage')`: check whether file includes specified string
    *  - `file('/path/to/file', { version: '1.0.0' })`: checke whether file content partial includes specified JSON
    *
-   * @param {String} filePath - target path to validate, could be relative path
+   * @param {string} filePath - target path to validate, could be relative path
    * @param {String|RegExp|Object} [expected] - rule to validate
    * @throws {AssertionError}
    */
@@ -78,7 +78,7 @@ export class ValidatorPlugin {
    *  - `notFile('/path/to/file', 'usage')`: check whether file don't includes specified string
    *  - `notFile('/path/to/file', { version: '1.0.0' })`: checke whether file content don't partial includes specified JSON
    *
-   * @param {String} filePath - target path to validate, could be relative path
+   * @param {string} filePath - target path to validate, could be relative path
    * @param {String|RegExp|Object} [expected] - rule to validate
    * @throws {AssertionError}
    */

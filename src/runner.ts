@@ -124,13 +124,13 @@ class Runner extends EventEmitter {
    * @typedef Context
    *
    * @property {Object} result - child process execute result
-   * @property {String} result.stdout - child process stdout
-   * @property {String} result.stderr - child process stderr
+   * @property {string} result.stdout - child process stdout
+   * @property {string} result.stderr - child process stderr
    * @property {Number} result.code - child process exit code
    *
    * @property {execa.ExecaChildProcess} proc - child process instance
    * @property {Runner} instance - runner instance
-   * @property {String} cwd - child process current workspace directory
+   * @property {string} cwd - child process current workspace directory
    *
    * @property {Object} assert - assert helper
    * @property {Object} utils -  utils helper
@@ -324,7 +324,7 @@ class Runner extends EventEmitter {
   /**
    * execute a Node.js script as a child process.
    *
-   * @param {String} cmd - cmd string
+   * @param {string} cmd - cmd string
    * @param {Array} [args] - cmd args
    * @param {execa.NodeOptions} [opts] - cmd options
    * @see https://github.com/sindresorhus/execa#options
@@ -337,7 +337,7 @@ class Runner extends EventEmitter {
   /**
    * execute a shell script as a child process.
    *
-   * @param {String} cmd - cmd string
+   * @param {string} cmd - cmd string
    * @param {Array} [args] - cmd args
    * @param {execa.NodeOptions} [opts] - cmd options
    * @return {Runner} runner instance
@@ -447,9 +447,9 @@ class Runner extends EventEmitter {
   /**
    * wait for event then resume the chains
    *
-   * @param {String} type - message/stdout/stderr/close
+   * @param {string} type - message/stdout/stderr/close
    * @param {String|RegExp|Object|Function} expected - rule to validate
-   *  - {String}: check whether includes specified string
+   *  - {string}: check whether includes specified string
    *  - {RegExp}: check whether match regexp
    *  - {Object}: check whether partial includes specified JSON
    *  - {Function}: check whether with specified function
@@ -546,7 +546,7 @@ class Runner extends EventEmitter {
   /**
    * set working directory
    *
-   * @param {String} dir - working directory
+   * @param {string} dir - working directory
    * @param {Object} [opts] - options
    * @param {Boolean} [opts.init] - whether rm and mkdir dir before test
    * @param {Boolean} [opts.clean] - whether rm dir after test
@@ -583,8 +583,8 @@ class Runner extends EventEmitter {
   /**
    * set environment variables.
    *
-   * @param {String} key - env key
-   * @param {String} value - env value
+   * @param {string} key - env key
+   * @param {string} value - env value
    * @return {Runner} instance for chain
    */
   env(key, value): this {
