@@ -97,7 +97,7 @@ export class Logger {
     return console.debug(msg);
   }
 
-  format(message, args, options: {
+  format(message: any, args: any[], options: {
     showTime?: boolean;
     showTag?: boolean;
     tag?: string[];
