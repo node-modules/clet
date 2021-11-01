@@ -5,7 +5,7 @@
   "type": "module",
   "exports": {
     "import": "./lib/esm/runner.js",
-    "require": "./lib/cjs/runner.cjs"
+    "require": "./lib/cjs/runner.js"
   },
   "typings": "./lib/esm/runner.d.ts",
   "author": "TZ <atian25@qq.com> (https://github.com/atian25)",
@@ -32,12 +32,10 @@
     "eslint-config-egg": "^9",
     "jest": "^27.0.4",
     "supertest": "^6.1.3",
-    "typescript": "^4.3.5"
+    "typescript": "4.4.4"
   },
   "files": [
-    "bin",
-    "lib",
-    "index.js"
+    "lib"
   ],
   "scripts": {
     "lint": "eslint .",
@@ -48,9 +46,8 @@
     "tsc": "tsc -p ./tsconfig.json",
     "tsc:clean": "tsc -b --clean",
     "tsc:esm": "tsc -p ./tsconfig.esm.json",
-    "tsc:cjs": "tsc -p ./tsconfig.cjs.json && npm run cjs",
+    "tsc:cjs": "tsc -p ./tsconfig.cjs.json",
     "build": "npm run tsc:clean && npm run tsc:esm && npm run tsc:cjs",
-    "cjs": "for f in lib/cjs/*.js; do mv -- \"$f\" \"${f%}.cjs\"; done",
     "prepublishOnly": "npm run build"
   },
   "jest": {

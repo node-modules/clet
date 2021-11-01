@@ -1,5 +1,5 @@
 
-import { promises as fs } from 'fs';
+import { promises as fs, MakeDirectoryOptions, RmOptions } from 'fs';
 import { types as nativeTypes } from 'util';
 import path from 'path';
 
@@ -75,10 +75,7 @@ export function isParent(parent: string, child: string): boolean {
  * @param {string} dir - dir path
  * @param {Object} [opts] - see fsPromises.mkdirp
  */
-export async function mkdir(dir: string, opts?: {
-  recursive?: boolean;
-  mode?: string | number;
-}) {
+export async function mkdir(dir: string, opts?: MakeDirectoryOptions) {
   return await fs.mkdir(dir, { recursive: true, ...opts });
 }
 
@@ -91,15 +88,18 @@ export async function mkdir(dir: string, opts?: {
  * @param {Object} [opts] - options of [trash](https://github.com/sindresorhus/trash) or [fsPromises.rm](https://nodejs.org/api/fs.html#fs_fspromises_rm_path_options)
  * @param {Boolean} [opts.trash=true] - whether to move to [trash](https://github.com/sindresorhus/trash) or permanently delete
  */
-export async function rm(p, opts: {
+export async function rm(p: string | readonly string[], opts: RmOptions & trash.Options & {
   trash?: boolean;
-  glob?: boolean;
 } = {}): Promise<void> {
   /* istanbul ignore if */
   if (opts.trash === false) {
-    return await fs.rm(p, { force: true, recursive: true, ...opts });
+    if (typeof p === 'string') {
+      p = [ p ];
+    }
+    const tasks = p.map(f => fs.rm(f, { force: true, recursive: true, ...opts }));
+    await Promise.all(tasks);
   }
-  return await trash(p, opts);
+  await trash(p, opts);
 }
 
 
@@ -155,7 +155,7 @@ export function resolve(meta: ImportMeta, ...args: string[]): string {
  *
  * @param {Number} ms - millisecond
  */
-export function sleep(ms): Promise<void> {
+export function sleep(ms: number): Promise<void> {
   return new Promise(resolve => {
     setTimeout(resolve, ms);
   });

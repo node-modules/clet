@@ -1,19 +1,13 @@
 import { promises as fs } from 'fs';
-import isMatch from 'lodash.ismatch';
 import { strict as strictAssert } from 'assert';
-import { types, exists } from './utils';
+import { types, exists, isMatch } from './utils.js';
 
 const assert: typeof strictAssert & {
   matchRule: typeof matchRule,
   doesNotMatchRule: typeof doesNotMatchRule,
   matchFile: typeof matchFile,
-  doesNotMatchFile: typeof doesNotMatchFile,
-} = strictAssert as any;
-
-assert.matchRule = matchRule;
-assert.doesNotMatchRule = doesNotMatchRule;
-assert.matchFile = matchFile;
-assert.doesNotMatchFile = doesNotMatchFile;
+  doesNotMatchFile: typeof doesNotMatchFile
+} = Object.assign(strictAssert, { matchRule, doesNotMatchRule, matchFile, doesNotMatchFile });
 
 export { assert };
 
@@ -112,7 +106,9 @@ export async function matchFile(filePath: string, expected: Expected): Promise<v
     try {
       assert.matchRule(content, expected);
     } catch (err) {
-      err.message = `file(${filePath}) with content: ${err.message}`;
+      if (err instanceof assert.AssertionError) {
+        err.message = `file(${filePath}) with content: ${err.message}`;
+      }
       throw err;
     }
   }
@@ -141,7 +137,9 @@ export async function doesNotMatchFile(filePath: string, expected: Expected): Pr
     try {
       assert.doesNotMatchRule(content, expected);
     } catch (err) {
-      err.message = `file(${filePath}) with content: ${err.message}`;
+      if (err instanceof assert.AssertionError) {
+        err.message = `file(${filePath}) with content: ${err.message}`;
+      }
       throw err;
     }
   }

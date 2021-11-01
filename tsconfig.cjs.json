@@ -2,7 +2,7 @@
   "extends": "@eggjs/tsconfig",
   "compilerOptions": {
     "outDir": "./lib/cjs",
-    "module": "CommonJS",
-    "moduleResolution": "Node"
+    "module": "commonjs",
+    "moduleResolution": "node"
   }
 }

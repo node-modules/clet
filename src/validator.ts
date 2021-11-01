@@ -1,8 +1,8 @@
 import path from 'path';
 import { assert, Expected } from './assert.js';
 import * as utils from './utils.js';
-import type { Runner, TestRunnerChainFunction } from './runner';
-import { ChainType } from './runner';
+import type { Runner, TestRunnerChainFunction } from './runner.js';
+import { ChainType } from './runner.js';
 
 const extractPathRegex = /\s+at.*[(\s](.*):\d+:\d+\)?/;
 // TODO import.meta only allow for esm

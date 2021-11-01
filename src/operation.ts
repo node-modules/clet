@@ -4,7 +4,7 @@ import path from 'path';
 import stripFinalNewline from 'strip-final-newline';
 import * as utils from './utils.js';
 import { assert } from './assert.js';
-import type { Runner, TestRunnerChainFunction } from './runner';
+import type { Runner, TestRunnerChainFunction } from './runner.js';
 
 export class OperationPlugin {
   /**

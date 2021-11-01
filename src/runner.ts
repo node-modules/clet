@@ -521,7 +521,7 @@ class Runner extends EventEmitter {
               return utils.validate(ctx.result.stdout.substring(ctx.lastPromptIndex!), expected);
             },
           });
-        } catch (err) {
+        } catch (err: any) {
           const msg = 'wait for prompt, but proccess is terminate with error';
           this.logger.error(msg);
           throw new RunnerError(msg, err);
@@ -623,10 +623,10 @@ class Runner extends EventEmitter {
 interface Runner extends OperationPlugin, ValidatorPlugin {}
 
 
-export * from './constants';
-export * from './assert';
-export * from './logger';
-export * from './utils';
+export * from './constants.js';
+export * from './assert.js';
+export * from './logger.js';
+export * from './utils.js';
 export { Runner };
 
 /**
