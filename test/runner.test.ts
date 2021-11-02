@@ -1,11 +1,11 @@
 import path from 'path';
 import { strict as assert } from 'assert';
-import { runner, Runner } from '../lib/esm/runner.js';
-import * as utils from './test-utils.js';
+import { runner, Runner } from '../src/runner';
+import * as utils from './test-utils';
 
 describe('test/runner.test.js', () => {
   const fixtures = path.resolve('test/fixtures');
-  const tmpDir = utils.getTempDir();
+  const tmpDir = utils.getTempDir('test', 'runner');
 
   beforeEach(() => utils.initDir(tmpDir));
 
@@ -63,8 +63,8 @@ describe('test/runner.test.js', () => {
       .cwd(fixtures)
       .env('a', 'b')
       .spawn('node -v')
-      .tap(ctx => {
-        ctx.assert(ctx.cwd === fixtures);
+      .tap((ctx: any) => {
+        ctx.assert(1, 'aaa');
         ctx.assert(ctx.env.a === 'b');
         ctx.assert(ctx.proc);
         ctx.assert(ctx.result);

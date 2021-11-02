@@ -13,7 +13,7 @@ export enum LogLevel {
 }
 
 interface LoggerOptions {
-  tag?: string | string [];
+  tag?: string | string[];
   level?: LogLevel;
   indent?: number;
   showTag?: boolean;
@@ -30,7 +30,11 @@ export class Logger {
   };
   readonly childMaps: Record<string, Logger>;
 
-  constructor(tag = '', opts: LoggerOptions = {}) {
+  constructor();
+  constructor(tag: string);
+  constructor(opts: LoggerOptions);
+  constructor(tag: string, opts: LoggerOptions);
+  constructor(tag: string | LoggerOptions = '', opts: LoggerOptions = {}) {
     if (typeof tag === 'string') {
       opts.tag = opts.tag || tag || '';
     } else {
@@ -119,7 +123,7 @@ export class Logger {
     this.options.level = normalize(v);
   }
 
-  child(tag: string, opts: LoggerOptions) {
+  child(tag: string, opts?: LoggerOptions) {
     if (!this.childMaps[tag]) {
       this.childMaps[tag] = new Logger('', {
         ...this.options,

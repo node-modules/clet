@@ -1,16 +1,34 @@
 import path from 'path';
 import { strict as assert } from 'assert';
-import { runner } from '../lib/esm/runner.js';
+import { runner, WaitType, TestRunnerContext, Runner } from '../src/runner';
 
 describe('test/wait.test.js', () => {
   const fixtures = path.resolve('test/fixtures');
   const cliPath = path.join(fixtures, 'wait.js');
-  const timePlugin = {
+
+  type timestamp = number;
+
+  interface customPlugin {
+    time(this: customRunner, label: string): customRunner,
+    timeEnd(this: customRunner, label: string, fn: (cost: number, start?: timestamp, now?: timestamp) => void): customRunner
+  }
+
+  interface customRunner extends Runner {
+    ctx: TestRunnerContext & {
+      timeMapping: {
+        [key: string]: timestamp
+      }
+    },
+    time(): Runner,
+    timeEnd(fn: (cost: number, start?: timestamp, now?: timestamp) => void): Runner
+  }
+
+  const timePlugin: customPlugin = {
     time(label = 'default') {
       return this.tap(() => {
         this.ctx.timeMapping = this.ctx.timeMapping || {};
         this.ctx.timeMapping[label] = Date.now();
-      });
+      }) as customRunner;
     },
     timeEnd(label, fn) {
       if (typeof label === 'function') {
@@ -22,66 +40,66 @@ describe('test/wait.test.js', () => {
         const now = Date.now();
         const cost = now - start;
         fn(cost, start, now);
-      });
+      }) as customRunner;
     },
   };
 
   it('should wait stdout', async () => {
-    await runner()
+    await (((runner()
       .register(timePlugin)
-      .cwd(fixtures)
+      .cwd(fixtures) as customRunner)
       .time()
-      .fork(cliPath)
-      .timeEnd(cost => assert(cost < 500, `Expected ${cost} < 500`))
-      .wait('stdout', /started/)
+      .fork(cliPath) as customRunner)
+      .timeEnd((cost: number) => assert(cost < 500, `Expected ${cost} < 500`))
+      .wait(WaitType.stdout, /started/) as customRunner)
       .timeEnd(cost => assert(cost > 500, `Expected ${cost} > 500`))
       .kill();
   });
 
   it('should wait stderr', async () => {
-    await runner()
+    await (((runner()
       .register(timePlugin)
-      .cwd(fixtures)
+      .cwd(fixtures) as customRunner)
       .time()
-      .fork(cliPath)
+      .fork(cliPath) as customRunner)
       .timeEnd(cost => assert(cost < 500, `Expected ${cost} < 500`))
-      .wait('stderr', /be careful/)
+      .wait(WaitType.stderr, /be careful/) as customRunner)
       .timeEnd(cost => assert(cost > 500, `Expected ${cost} > 500`))
       .kill();
   });
 
   it('should wait message with object', async () => {
-    await runner()
+    await (((runner()
       .register(timePlugin)
-      .cwd(fixtures)
+      .cwd(fixtures) as customRunner)
       .time()
-      .fork(cliPath)
+      .fork(cliPath) as customRunner)
       .timeEnd(cost => assert(cost < 500))
-      .wait('message', { action: 'egg-ready' })
+      .wait(WaitType.message, { action: 'egg-ready' }) as customRunner)
       .timeEnd(cost => assert(cost > 500))
       .kill();
   });
 
   it('should wait message with regex', async () => {
-    await runner()
+    await (((runner()
       .register(timePlugin)
-      .cwd(fixtures)
+      .cwd(fixtures) as customRunner)
       .time()
-      .fork(cliPath)
+      .fork(cliPath) as customRunner)
       .timeEnd(cost => assert(cost < 500))
-      .wait('message', /egg-ready/)
+      .wait(WaitType.message, /egg-ready/) as customRunner)
       .timeEnd(cost => assert(cost > 500))
       .kill();
   });
 
   it('should wait message with fn', async () => {
-    await runner()
+    await (((runner()
       .register(timePlugin)
-      .cwd(fixtures)
+      .cwd(fixtures) as customRunner)
       .time()
-      .fork(cliPath)
+      .fork(cliPath) as customRunner)
       .timeEnd(cost => assert(cost < 500))
-      .wait('message', data => data && data.action === 'egg-ready')
+      .wait(WaitType.message, (data: any) => data && data.action === 'egg-ready') as customRunner)
       .timeEnd(cost => assert(cost > 500))
       .kill();
   });
@@ -90,7 +108,7 @@ describe('test/wait.test.js', () => {
     await runner()
       .cwd(fixtures)
       .fork(cliPath)
-      .wait('close')
+      .wait(WaitType.close)
       .code(0);
   });
 
@@ -106,7 +124,7 @@ describe('test/wait.test.js', () => {
     await runner()
       .cwd(fixtures)
       .fork(cliPath)
-      .wait('message', /not-exist-event/)
+      .wait(WaitType.message, /not-exist-event/)
       .code(0);
   });
 

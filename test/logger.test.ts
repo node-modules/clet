@@ -1,10 +1,10 @@
 import { jest, expect } from '@jest/globals';
-import { Logger, LogLevel } from '../lib/esm/runner.js';
+import { Logger, LogLevel } from '../src/runner';
 
 describe('test/logger.test.js', () => {
   beforeEach(() => {
     for (const name of [ 'error', 'warn', 'info', 'log', 'debug' ]) {
-      jest.spyOn(global.console, name);
+      jest.spyOn(global.console, name as any);
     }
   });
 

@@ -44,7 +44,7 @@ export type ValidateExpected = string | RegExp | ((input: string | object) => bo
  * @param {String|RegExp|Object|Function|Array} expected - rules
  * @return {Boolean} pass or not
  */
-export function validate(input: string | object, expected: ValidateExpected): boolean {
+export function validate(input: string | object, expected?: ValidateExpected): boolean {
   if (Array.isArray(expected)) {
     return expected.some(rule => validate(input, rule));
   } else if (types.isRegExp(expected)) {
@@ -145,7 +145,7 @@ export async function exists(filePath: string): Promise<boolean> {
  * @param  {...String} args - other paths
  * @return {string} file path
  */
-export function resolve(meta: ImportMeta, ...args: string[]): string {
+export function resolve(meta: ImportMeta | string, ...args: string[]): string {
   const p = types.isObject(meta) ? dirname(meta) : meta;
   return path.resolve(p, ...args);
 }

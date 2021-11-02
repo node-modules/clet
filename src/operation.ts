@@ -97,7 +97,9 @@ export class OperationPlugin {
    * @param {execa.NodeOptions} [opts] - cmd options
    * @return {Runner} instance for chain
    */
-  shell(cmd: string, args: any[] = [], opts: execa.Options = {}) {
+  shell(cmd: string);
+  shell(cmd: string, opts: execa.Options);
+  shell(cmd: string, args: any[]| execa.Options = [], opts: execa.Options = {}) {
     assert(cmd, '`cmd` is required');
 
     // exec(cmd, opts)
@@ -106,7 +108,7 @@ export class OperationPlugin {
       args = [];
     }
     return this.tap(async function shell(ctx) {
-      const command = [ cmd, ...args ].join(' ');
+      const command = [ cmd, ...args as any[] ].join(' ');
       (opts as any).cwd = opts.cwd || ctx.cmdOpts.cwd;
 
       const proc = execa.command(command, opts);

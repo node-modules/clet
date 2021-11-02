@@ -5,6 +5,7 @@ import stripAnsi from 'strip-ansi';
 import stripFinalNewline from 'strip-final-newline';
 import pEvent from 'p-event';
 import { compose } from 'throwback';
+import { Promisable } from 'type-fest';
 import * as utils from './utils.js';
 import { assert } from './assert.js';
 import { Logger } from './logger.js';
@@ -57,8 +58,8 @@ export interface TestRunnerContext {
 export type FunctionPlugin = (runner: Runner) => void;
 export type ObjectPlugin = Record<string, any>;
 export type Plugin = FunctionPlugin | ObjectPlugin;
-export type TestRunnerMiddleware = (ctx: TestRunnerContext, next: any) => Promise<void>;
-export type TestRunnerChainFunction = (this: Runner, ctx: TestRunnerContext) => Promise<void>;
+export type TestRunnerMiddleware = (ctx: TestRunnerContext, next: any) => Promise<void> | void;
+export type TestRunnerChainFunction = (this: Runner, ctx: TestRunnerContext) => Promise<void> | void;
 
 export interface TestRunnerChain {
   before: TestRunnerChainFunction[],
@@ -76,7 +77,7 @@ export class RunnerError extends Error {
   }
 }
 
-class Runner extends EventEmitter {
+class Runner extends EventEmitter implements Promisable<any> {
   private readonly chains: TestRunnerChain;
   private proc?: execa.ExecaChildProcess;
   expectedExitCode?: number | ((number) => void);
@@ -313,7 +314,8 @@ class Runner extends EventEmitter {
   }
 
   // suger method for `await runner().end()` -> `await runner()`
-  then(resolve, reject) {
+  then(resolve: ((value: TestRunnerContext) => PromiseLike<void>) | undefined,
+    reject: ((reason: string | Error) => PromiseLike<void>)): Promise<void> {
     return this.end().then(resolve, reject);
   }
 
@@ -330,7 +332,7 @@ class Runner extends EventEmitter {
    * @see https://github.com/sindresorhus/execa#options
    * @return {Runner} instance for chain
    */
-  fork(cmd, args, opts) {
+  fork(cmd, args?, opts?) {
     return this.registerCommand('fork', cmd, args, opts);
   }
 
@@ -342,7 +344,7 @@ class Runner extends EventEmitter {
    * @param {execa.NodeOptions} [opts] - cmd options
    * @return {Runner} runner instance
    */
-  spawn(cmd, args, opts) {
+  spawn(cmd, args?, opts?) {
     assert(cmd, 'cmd is required');
     return this.registerCommand('spawn', cmd, args, opts);
   }
@@ -455,7 +457,7 @@ class Runner extends EventEmitter {
    *  - {Function}: check whether with specified function
    * @return {Runner} instance for chain
    */
-  wait(type: WaitType, expected: ValidateExpected): this {
+  wait(type?: WaitType, expected?: ValidateExpected): this {
     this.options.autoWait = false;
 
     // watch immediately but await later in chains
@@ -634,6 +636,6 @@ export { Runner };
  * @param {Object} opts - options
  * @return {Runner} runner instance
  */
-export function runner(opts) {
+export function runner(opts?) {
   return new Runner(opts);
 }

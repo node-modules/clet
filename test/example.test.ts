@@ -1,11 +1,11 @@
 import path from 'path';
 import request from 'supertest';
-import { runner, KEYS } from '../lib/esm/runner.js';
-import * as utils from './test-utils.js';
+import { runner, KEYS, WaitType } from '../src/runner';
+import * as utils from './test-utils';
 
 describe('test/example.test.js', () => {
   it('should works with boilerplate', async () => {
-    const tmpDir = utils.getTempDir();
+    const tmpDir = utils.getTempDir('test', 'example');
     await runner()
       .cwd(tmpDir, { init: true })
       .spawn('npm init')
@@ -31,7 +31,7 @@ describe('test/example.test.js', () => {
     await runner()
       .cwd('test/fixtures/server')
       .fork('bin/cli.js')
-      .wait('stdout', /server started/)
+      .wait(WaitType.stdout, /server started/)
       .expect(async () => {
         return request('http://localhost:3000')
           .get('/')

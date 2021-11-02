@@ -1,11 +1,11 @@
 import fs from 'fs';
 import path from 'path';
 import { strict as assert } from 'assert';
-import * as utils from '../lib/esm/runner.js';
-import * as testUtils from './test-utils.js';
+import * as utils from '../src/runner';
+import * as testUtils from './test-utils';
 
 describe('test/utils.test.js', () => {
-  const tmpDir = testUtils.getTempDir();
+  const tmpDir = testUtils.getTempDir('test', 'utils');
   beforeEach(() => testUtils.initDir(tmpDir));
 
   it('types', () => {
@@ -20,7 +20,7 @@ describe('test/utils.test.js', () => {
     assert(utils.validate('foo', /fo+/));
     assert(utils.validate('foo', 'o'));
     assert(utils.validate({ name: 'test', config: { port: 8080 } }, { config: { port: 8080 } }));
-    assert(utils.validate('foo', x => x.startsWith('f')));
+    assert(utils.validate('foo', (x: string) => x.startsWith('f')));
     assert(utils.validate('foo', [ /fo+/, 'o' ]));
   });
 

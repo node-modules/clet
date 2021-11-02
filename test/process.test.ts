@@ -1,12 +1,12 @@
 import path from 'path';
 import { strict as assert } from 'assert';
 import fs from 'fs';
-import { runner } from '../lib/esm/runner.js';
-import * as utils from './test-utils.js';
+import { runner, WaitType } from '../src/runner';
+import * as utils from './test-utils';
 
 describe('test/process.test.js', () => {
   const fixtures = path.resolve('test/fixtures');
-  const tmpDir = utils.getTempDir();
+  const tmpDir = utils.getTempDir('test', 'process');
 
   beforeEach(() => utils.initDir(tmpDir));
 
@@ -72,7 +72,7 @@ describe('test/process.test.js', () => {
     await runner()
       .cwd(fixtures)
       .fork('process.js', [ '--delay' ])
-      .wait('stdout', /delay for a while/)
+      .wait(WaitType.stdout, /delay for a while/)
       .code(0);
   });
 
@@ -97,7 +97,7 @@ describe('test/process.test.js', () => {
         .cwd(fixtures)
         .timeout(1000)
         .fork('long-run.js')
-        .wait('stdout', /long run/)
+        .wait(WaitType.stdout, /long run/)
         .sleep(2000);
     }, /timed out after 1000/);
   });
@@ -158,7 +158,7 @@ describe('test/process.test.js', () => {
     await runner()
       .cwd(fixtures)
       .fork('long-run.js')
-      .wait('stdout', /long run/)
+      .wait(WaitType.stdout, /long run/)
       .kill()
       // .stdout(/recieve SIGTERM/)
       .notStdout(/exit long-run/);
@@ -169,7 +169,7 @@ describe('test/process.test.js', () => {
       await runner()
         .cwd(fixtures)
         .fork('long-run.js')
-        .wait('stdout', /long run/)
+        .wait(WaitType.stdout, /long run/)
         .tap(() => {
           throw new Error('fork trigger break');
         });
@@ -179,7 +179,7 @@ describe('test/process.test.js', () => {
       await runner()
         .cwd(fixtures)
         .spawn('node', [ 'long-run.js' ])
-        .wait('stdout', /long run/)
+        .wait(WaitType.stdout, /long run/)
         .tap(() => {
           throw new Error('spawn trigger break');
         });

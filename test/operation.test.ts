@@ -1,11 +1,11 @@
 import { jest, expect } from '@jest/globals';
-import { runner } from '../lib/esm/runner.js';
-import * as utils from './test-utils.js';
+import { runner } from '../src/runner';
+import * as utils from './test-utils';
 
 describe('test/operation.test.js', () => {
   beforeEach(() => {
     for (const name of [ 'error', 'warn', 'info', 'log', 'debug' ]) {
-      jest.spyOn(global.console, name);
+      jest.spyOn(global.console, name as any);
     }
   });
 
@@ -13,7 +13,7 @@ describe('test/operation.test.js', () => {
     jest.resetAllMocks();
   });
 
-  const tmpDir = utils.getTempDir();
+  const tmpDir = utils.getTempDir('test', 'operation');
 
   it('should support mkdir()/rm()', async () => {
     await runner()

@@ -1,22 +1,24 @@
-import { runner } from '../lib/esm/runner.js';
+import { runner, TestRunnerContext } from '../src/runner';
 import { strict as assert } from 'assert';
 
 describe('test/middleware.test.js', () => {
   it('should support middleware', async () => {
-    const tmp = [];
+    const tmp: string[] = [];
     await runner()
       .use(async (ctx, next) => {
+        ctx;
         tmp.push('1');
         await next();
         tmp.push('5');
       })
       .use(async (ctx, next) => {
+        ctx;
         tmp.push('2');
         await next();
         tmp.push('4');
       })
       .spawn('node -p "3"')
-      .tap(ctx => {
+      .tap((ctx: TestRunnerContext) => {
         tmp.push(ctx.result.stdout.replace(/\r?\n/, ''));
       });
 
@@ -25,20 +27,22 @@ describe('test/middleware.test.js', () => {
   });
 
   it('should always fork after middleware', async () => {
-    const tmp = [];
+    const tmp: string[] = [];
     await runner()
       .use(async (ctx, next) => {
+        ctx;
         tmp.push('1');
         await next();
         tmp.push('5');
       })
 
       .spawn('node -p "3"')
-      .tap(ctx => {
+      .tap((ctx: TestRunnerContext) => {
         tmp.push(ctx.result.stdout.replace(/\r?\n/, ''));
       })
 
       .use(async (ctx, next) => {
+        ctx;
         tmp.push('2');
         await next();
         tmp.push('4');

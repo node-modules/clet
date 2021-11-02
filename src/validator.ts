@@ -62,7 +62,7 @@ export class ValidatorPlugin {
    * @param {String|RegExp|Object} [expected] - rule to validate
    * @throws {AssertionError}
    */
-  file(filePath: string, expected: Expected) {
+  file(filePath: string, expected?: Expected) {
     assert(filePath, '`filePath` is required');
     return this.expect(async function file({ cwd, assert }) {
       const fullPath = path.resolve(cwd, filePath);
@@ -82,7 +82,7 @@ export class ValidatorPlugin {
    * @param {String|RegExp|Object} [expected] - rule to validate
    * @throws {AssertionError}
    */
-  notFile(filePath: string, expected: Expected) {
+  notFile(filePath: string, expected?: Expected) {
     assert(filePath, '`filePath` is required');
     return this.expect(async function notFile({ cwd, assert }) {
       const fullPath = path.resolve(cwd, filePath);
