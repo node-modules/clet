@@ -4,5 +4,8 @@
     "outDir": "./lib",
     "module": "es2020",
     "moduleResolution": "node"
-  }
+  },
+  "exclude": [
+    "test"
+  ]
 }
