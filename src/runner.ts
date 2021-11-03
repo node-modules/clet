@@ -204,7 +204,7 @@ class Runner extends EventEmitter implements Promisable<any> {
             Runner.prototype,
             name,
             Object.getOwnPropertyDescriptor(fn.prototype, name) ||
-            Object.create(null),
+            /* istanbul ignore next */ Object.create(null),
           );
         });
       } else if (typeof fn === 'function') {
