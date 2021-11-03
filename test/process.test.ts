@@ -6,7 +6,7 @@ import * as utils from './test-utils';
 
 describe('test/process.test.js', () => {
   const fixtures = path.resolve('test/fixtures');
-  const tmpDir = utils.getTempDir('test', 'process');
+  const tmpDir = utils.getTempDir();
 
   beforeEach(() => utils.initDir(tmpDir));
 

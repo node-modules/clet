@@ -5,7 +5,7 @@ import * as utils from './test-utils';
 
 describe('test/runner.test.js', () => {
   const fixtures = path.resolve('test/fixtures');
-  const tmpDir = utils.getTempDir('test', 'runner');
+  const tmpDir = utils.getTempDir();
 
   beforeEach(() => utils.initDir(tmpDir));
 

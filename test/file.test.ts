@@ -5,7 +5,7 @@ import { strict as assert } from 'assert';
 
 describe('test/file.test.js', () => {
   const fixtures = path.resolve('test/fixtures');
-  const tmpDir = utils.getTempDir('test', 'file');
+  const tmpDir = utils.getTempDir();
   const cliPath = path.resolve(fixtures, 'file.js');
 
   describe('file()', () => {

@@ -9,7 +9,7 @@ export function getTempDir(...p) {
   // `expect` is auto inject by @jest/globals
   const testPath = expect.getState().testPath;
   const testDir = path.join(process.cwd(), 'test');
-  const relativePath = testPath.substring(testDir.length + 1, testPath.lastIndexOf('.test.js'));
+  const relativePath = testPath.substring(testDir.length + 1, testPath.lastIndexOf('.test.ts'));
   const tmpDir = relativePath.split(path.sep).join('-');
   const tmpDirFullPath = path.join(testDir, '../.tmp', tmpDir, ...p);
   return tmpDirFullPath;

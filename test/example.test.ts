@@ -5,7 +5,7 @@ import * as utils from './test-utils';
 
 describe('test/example.test.js', () => {
   it('should works with boilerplate', async () => {
-    const tmpDir = utils.getTempDir('test', 'example');
+    const tmpDir = utils.getTempDir();
     await runner()
       .cwd(tmpDir, { init: true })
       .spawn('npm init')

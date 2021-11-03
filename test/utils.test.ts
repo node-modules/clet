@@ -5,7 +5,7 @@ import * as utils from '../src/runner';
 import * as testUtils from './test-utils';
 
 describe('test/utils.test.js', () => {
-  const tmpDir = testUtils.getTempDir('test', 'utils');
+  const tmpDir = testUtils.getTempDir();
   beforeEach(() => testUtils.initDir(tmpDir));
 
   it('types', () => {

@@ -13,7 +13,7 @@ describe('test/operation.test.js', () => {
     jest.resetAllMocks();
   });
 
-  const tmpDir = utils.getTempDir('test', 'operation');
+  const tmpDir = utils.getTempDir();
 
   it('should support mkdir()/rm()', async () => {
     await runner()
