@@ -90,6 +90,7 @@ export class Logger {
   }
 
   silent(message?: any, ...optionalParams: any[]) {
+    /* istanbul ignore if */
     if (LogLevel.SILENT > this.options.level) return;
     const msg = this.format(message, optionalParams, this.options);
     return console.debug(msg);

@@ -3,7 +3,7 @@ import { Logger, LogLevel } from '../src/runner';
 
 describe('test/logger.test.js', () => {
   beforeEach(() => {
-    for (const name of [ 'error', 'warn', 'info', 'log', 'debug' ]) {
+    for (const name of [ 'error', 'warn', 'info', 'log', 'debug', 'trace' ]) {
       jest.spyOn(global.console, name as any);
     }
   });
@@ -29,14 +29,20 @@ describe('test/logger.test.js', () => {
     const logger = new Logger({ level: LogLevel.VERBOSE });
     logger.error('error log');
     logger.warn('warn log');
+    logger.log('log log');
     logger.info('info log');
     logger.debug('debug log');
+    logger.trace('trace log');
+    logger.silent('silent log');
     logger.verbose('verbose log');
 
     expect(console.error).toHaveBeenCalledWith('error log');
     expect(console.warn).toHaveBeenCalledWith('warn log');
+    expect(console.log).toHaveBeenCalledWith('log log');
     expect(console.info).toHaveBeenCalledWith('info log');
     expect(console.debug).toHaveBeenCalledWith('debug log');
+    expect(console.trace).toHaveBeenCalledWith('trace log');
+    expect(console.debug).toHaveBeenCalledWith('silent log');
     expect(console.debug).toHaveBeenCalledWith('verbose log');
   });
 
@@ -52,6 +58,24 @@ describe('test/logger.test.js', () => {
     expect(console.warn).toHaveBeenCalledWith('warn log');
     expect(console.info).toHaveBeenCalledWith('info log');
     expect(console.debug).not.toHaveBeenCalled();
+  });
+
+  it('should not logger if silent', () => {
+    const logger = new Logger({ level: LogLevel.SILENT });
+    logger.error('error log');
+    logger.warn('warn log');
+    logger.log('log log');
+    logger.info('info log');
+    logger.debug('debug log');
+    logger.trace('trace log');
+    logger.verbose('verbose log');
+
+    expect(console.error).not.toHaveBeenCalled();
+    expect(console.warn).not.toHaveBeenCalled();
+    expect(console.log).not.toHaveBeenCalled();
+    expect(console.info).not.toHaveBeenCalled();
+    expect(console.debug).not.toHaveBeenCalled();
+    expect(console.trace).not.toHaveBeenCalled();
   });
 
   it('should support tag/time', () => {

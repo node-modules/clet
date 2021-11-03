@@ -24,6 +24,7 @@ function mergeError(buildError, runError) {
       if (line.trim() === '') return false;
       const pathMatches = line.match(extractPathRegex);
       if (pathMatches === null || !pathMatches[1]) return true;
+      /* istanbul ignore if */
       if (pathMatches[1].startsWith(__filename)) return false;
       return true;
     })
