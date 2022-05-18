@@ -1,5 +1,5 @@
 import { jest, expect } from '@jest/globals';
-import { runner } from '../lib/runner.js';
+import { runner, KEYS } from '../lib/runner.js';
 import * as utils from './test-utils.js';
 
 describe('test/operation.test.js', () => {
@@ -39,8 +39,10 @@ describe('test/operation.test.js', () => {
   it('should support shell()', async () => {
     await runner()
       .cwd(tmpDir, { init: true })
-      .spawn('npm init -y')
-      .file('package.json', { name: 'operation', version: '1.0.0' })
+      .spawn('npm init')
+      .stdin(/name:/, 'example')
+      .stdin(/version:/, new Array(9).fill(KEYS.ENTER))
+      .file('package.json', { name: 'example', version: '1.0.0' })
       .shell('npm version minor --no-git-tag-version')
       .file('package.json', { version: '1.1.0' })
       .shell('npm test', { reject: false })
