@@ -427,6 +427,9 @@ it('should support shell', async () => {
 });
 ```
 
+The output log could validate by `stdout()` and `stderr()` by default, if you don't want this, just pass `{ collectLog: false }`.
+
+
 ### mkdir(path)
 
 Act like `mkdir -p`.

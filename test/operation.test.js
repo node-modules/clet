@@ -45,7 +45,15 @@ describe('test/operation.test.js', () => {
       .file('package.json', { version: '1.1.0' })
       .shell('npm test', { reject: false })
       .shell('node --no-exists', { reject: false })
-      .sleep(100);
+      .shell('echo "dont collect this log"', { reject: false, collectLog: false })
+      .shell('node --no-collect', { reject: false, collectLog: false })
+      .sleep(100)
+      // should also collect shell output
+      .stdout('v1.1.0')
+      .stdout('no test specified')
+      .stderr('bad option: --no-exists')
+      .notStdout('dont collect this log')
+      .notStderr('bad option: --no-collect');
   });
 
   it('should support log()', async () => {
