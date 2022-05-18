@@ -46,20 +46,6 @@
     "type": "github",
     "npminstall": false
   },
-  "jest": {
-    "preset": "common-jest-preset",
-    "transform": {},
-    "testTimeout": 5000,
-    "reporters": [
-      "default",
-      "jest-summary-reporter",
-      "github-actions"
-    ],
-    "globalSetup": "./test/jest-global-setup.js",
-    "setupFilesAfterEnv": [
-      "<rootDir>/node_modules/common-jest-preset/setup-jest.js"
-    ]
-  },
   "eslintConfig": {
     "extends": "eslint-config-egg",
     "root": true,
