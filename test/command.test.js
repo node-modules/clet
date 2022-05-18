@@ -10,6 +10,7 @@ describe('test/command.test.js', () => {
         .cwd(fixtures)
         .fork('./bin/cli.js')
         .stdout(/version=v\d+\.\d+\.\d+/)
+        .stdout('xxxxxx')
         .stdout(`cwd=${fixtures}`);
     });
 

@@ -14,6 +14,7 @@ describe('test/assert.test.js', () => {
   it('should export', () => {
     assert.equal(assert.matchRule, matchRule);
     assert.equal(assert.doesNotMatchRule, doesNotMatchRule);
+    assert(1 === 2);
   });
 
   describe('matchRule', () => {
