@@ -21,8 +21,9 @@
   },
   "devDependencies": {
     "common-jest-preset": "^1.0.0",
+    "jest-summary-reporter": "^0.0.2",
     "cross-env": "^7.0.3",
-    "egg-ci": "^1",
+    "egg-ci": "^1.19.0",
     "enquirer": "^2.3.6",
     "eslint": "^7",
     "eslint-config-egg": "^9",
@@ -41,21 +42,40 @@
     "ci": "npm run lint && npm run cov"
   },
   "ci": {
-    "version": "14, 16",
-    "type": "github"
+    "version": "14, 16, 18",
+    "type": "github",
+    "npminstall": false
   },
   "jest": {
     "preset": "common-jest-preset",
     "transform": {},
     "testTimeout": 5000,
+    "reporters": [
+      "default",
+      "jest-summary-reporter",
+      "github-actions"
+    ],
     "globalSetup": "./test/jest-global-setup.js",
     "setupFilesAfterEnv": [
       "<rootDir>/node_modules/common-jest-preset/setup-jest.js"
     ]
   },
-  "eslintIgnore": [
-    "coverage",
-    "dist"
-  ],
+  "eslintConfig": {
+    "extends": "eslint-config-egg",
+    "root": true,
+    "env": {
+      "node": true,
+      "browser": false,
+      "jest": true
+    },
+    "parserOptions": {
+      "sourceType": "module"
+    },
+    "ignorePatterns": [
+      "dist",
+      "coverage",
+      "node_modules"
+    ]
+  },
   "license": "MIT"
 }
