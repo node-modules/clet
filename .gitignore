@@ -7,6 +7,7 @@ run/
 .DS_Store
 *.swp
 *-lock.json
+*-lock.yaml
 .vscode/history
 .tmp
 .vscode
