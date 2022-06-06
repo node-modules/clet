@@ -5,6 +5,7 @@
   "type": "module",
   "main": "./lib/runner.js",
   "exports": "./lib/runner.js",
+  "types": "./lib/index.d.ts",
   "author": "TZ <atian25@qq.com> (https://github.com/atian25)",
   "homepage": "https://github.com/node-modules/clet",
   "repository": "git@github.com:node-modules/clet.git",
