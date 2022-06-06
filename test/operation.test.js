@@ -1,5 +1,5 @@
 import { jest, expect } from '@jest/globals';
-import { runner } from '../lib/runner.js';
+import { runner, KEYS } from '../lib/runner.js';
 import * as utils from './test-utils.js';
 
 describe('test/operation.test.js', () => {
@@ -37,15 +37,23 @@ describe('test/operation.test.js', () => {
   });
 
   it('should support shell()', async () => {
+    jest.setTimeout(10000);
     await runner()
       .cwd(tmpDir, { init: true })
-      .spawn('npm init -y')
-      .file('package.json', { name: 'operation', version: '1.0.0' })
-      .shell('npm version minor --no-git-tag-version')
-      .file('package.json', { version: '1.1.0' })
+      .spawn('npm init')
+      .stdin(/name:/, 'example')
+      .stdin(/version:/, new Array(9).fill(KEYS.ENTER))
+      .file('package.json', { name: 'example', version: '1.0.0' })
       .shell('npm test', { reject: false })
       .shell('node --no-exists', { reject: false })
-      .sleep(100);
+      .shell('echo "dont collect this log"', { reject: false, collectLog: false })
+      .shell('node --no-collect', { reject: false, collectLog: false })
+      .sleep(100)
+      // should also collect shell output
+      .stdout('no test specified')
+      .stderr('bad option: --no-exists')
+      .notStdout('dont collect this log')
+      .notStderr('bad option: --no-collect');
   });
 
   it('should support log()', async () => {

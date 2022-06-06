@@ -1,6 +1,6 @@
 {
   "name": "clet",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Command Line E2E Testing",
   "type": "module",
   "main": "./lib/runner.js",
@@ -11,24 +11,25 @@
   "repository": "git@github.com:node-modules/clet.git",
   "dependencies": {
     "dirname-filename-esm": "^1.1.1",
-    "dot-prop": "^6.0.1",
-    "execa": "^5.1.1",
+    "dot-prop": "^7.2.0",
+    "execa": "^6.1.0",
     "lodash.ismatch": "^4.4.0",
-    "p-event": "^4.2.0",
-    "strip-ansi": "^7.0.0",
+    "p-event": "^5.0.1",
+    "strip-ansi": "^7.0.1",
     "strip-final-newline": "^3.0.0",
     "throwback": "^4.1.0",
-    "trash": "^7.2.0"
+    "trash": "^8.1.0"
   },
   "devDependencies": {
     "common-jest-preset": "^1.0.0",
+    "jest-summary-reporter": "^0.0.2",
     "cross-env": "^7.0.3",
-    "egg-ci": "^1",
+    "egg-ci": "^1.19.0",
     "enquirer": "^2.3.6",
     "eslint": "^7",
     "eslint-config-egg": "^9",
-    "jest": "^27.0.4",
-    "supertest": "^6.1.3"
+    "jest": "^28.1.0",
+    "supertest": "^6.2.3"
   },
   "files": [
     "bin",
@@ -42,21 +43,26 @@
     "ci": "npm run lint && npm run cov"
   },
   "ci": {
-    "version": "14, 16",
-    "type": "github"
+    "version": "14, 16, 18",
+    "type": "github",
+    "npminstall": false
   },
-  "jest": {
-    "preset": "common-jest-preset",
-    "transform": {},
-    "testTimeout": 5000,
-    "globalSetup": "./test/jest-global-setup.js",
-    "setupFilesAfterEnv": [
-      "<rootDir>/node_modules/common-jest-preset/setup-jest.js"
+  "eslintConfig": {
+    "extends": "eslint-config-egg",
+    "root": true,
+    "env": {
+      "node": true,
+      "browser": false,
+      "jest": true
+    },
+    "parserOptions": {
+      "sourceType": "module"
+    },
+    "ignorePatterns": [
+      "dist",
+      "coverage",
+      "node_modules"
     ]
   },
-  "eslintIgnore": [
-    "coverage",
-    "dist"
-  ],
   "license": "MIT"
 }
