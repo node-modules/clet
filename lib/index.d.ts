@@ -2,7 +2,8 @@ import { EventEmitter } from 'events';
 import * as execa from 'execa';
 import { strict as assert } from 'assert';
 import { types } from 'util';
-import isMatch from 'lodash.ismatch';
+import { mkdir } from 'fs/promises';
+import { isMatch as isMatchFn } from 'lodash.ismatch';
 import { Options as TrashOptions } from 'trash';
 
 export type KEYS = {
@@ -18,50 +19,69 @@ export type FunctionPlugin = (runner: TestRunner) => void;
 export type ObjectPlugin = Record<string, any>;
 export type Plugin = FunctionPlugin | ObjectPlugin;
 
+// Logger
+export enum LogLevel {
+  ERROR = 0,
+  WARN = 1,
+  LOG = 2,
+  INFO = 3,
+  DEBUG = 4,
+  TRACE = 5,
+  Silent = -Infinity,
+  Verbose = Infinity,
+}
+
 interface LoggerOptions {
-  level: LogLevel;
-  indent: number;
-  showTag: boolean;
-  showTime: boolean;
+  level?: LogLevel;
+  indent?: number;
+  showTag?: boolean;
+  showTime?: boolean;
+  tag?: string | string[];
 }
 
 export class Logger {
   constructor(tag: string, options?: LoggerOptions);
-  constructor(options: LoggerOptions);
+  constructor(options?: LoggerOptions);
 
-  format(message: string, args: any[], options: LoggerOptions);
+  format(message: string, args?: any[], options?: LoggerOptions): string;
 
   level: LogLevel;
 
-  child(tag: string, options: LoggerOptions);
+  child(tag: string, options?: LoggerOptions): Logger;
 }
 
+// Assertion
 type AssertType = typeof assert;
+type ExpectedAssertion = string | RegExp | object;
 
 export interface CletAssert extends AssertType {
-  matchRule(actual: string | object, expected: string | RegExp | object)
+  matchRule(actual: string | object, expected: ExpectedAssertion): void;
 
-  doseNotMatchRule(actual: string | object, expected: string | RegExp | object)
+  doseNotMatchRule(actual: string | object, expected: ExpectedAssertion): never;
 
-  matchFile(filePath: string, expected: string | RegExp | object);
+  matchFile(filePath: string, expected: ExpectedAssertion): void;
 
-  doesNotMatchFile(filePath: string, expected: string | RegExp | object);
+  doesNotMatchFile(filePath: string, expected: ExpectedAssertion): void;
 }
+
+// Utils
+export type WaitAssert = ExpectedAssertion | ExpectedAssertion[] | ((input: string | object) => void);
 
 export interface CletUtils {
   types: typeof types;
-  isMatch: isMatch;
+  isMatch: isMatchFn;
 
-  validate(input: string | object, WaitAssert);
+  isString(input: any): boolean;
+  isObject(input: any): boolean;
+  isFunction(input: any): boolean;
 
-  isParent(parent: string, child: string);
+  validate(input: string | object, expected: WaitAssert): boolean;
 
-  mkdir(dir: string, opts?: {
-    recursive?: boolean;
-    mode?: string | number;
-  }): Promise<void>;
+  isParent(parent: string, child: string): boolean;
 
-  rm(p: string | any[], opts: TrashOptions);
+  mkdir: typeof mkdir;
+
+  rm(p: string | string[], opts: { trash?: boolean }): Promise<void>;
 
   writeFile(filePath: string, content: string | object, opts?: {
     encoding?: string;
@@ -72,11 +92,11 @@ export interface CletUtils {
 
   exist(filePath: string): Promise<boolean>;
 
-  resolve(meta: object, ...args: string[]);
+  resolve(meta: string | object, ...args: string[]): string;
   sleep(ms: number): Promise<void>;
 }
 
-
+// Runner
 export interface TestRunnerContext {
   instance: TestRunner;
   logger: Logger;
@@ -109,8 +129,6 @@ export enum WaitType {
   close = 'close',
 }
 
-export type WaitAssert = string | RegExp | object | ((input: string | object) => void);
-
 export type TestRunnerMiddleware = (ctx: TestRunnerContext, next: any) => Promise<void>;
 
 export interface TestRunnerOptions {
@@ -134,13 +152,13 @@ export class TestRunner extends EventEmitter {
 
   end(): Promise<void>;
 
-  fork(cmd: string, args: any[], opts: execa.NodeOptions): this;
+  fork(cmd: string, args?: string[], opts: execa.NodeOptions): this;
 
-  spawn(cmd: string, args: any[], opts: execa.NodeOptions): this;
+  spawn(cmd: string, args?: string[], opts: execa.NodeOptions): this;
 
   wait(type: WaitType, expect: WaitAssert): this;
 
-  stdin(expected: string | RegExp, respond: string | any[]): this;
+  stdin(expected: string | RegExp, respond: string | string[]): this;
 
   cwd(dir: string, options?: {
     clean?: boolean;
@@ -151,18 +169,39 @@ export class TestRunner extends EventEmitter {
 
   timeout(ms: number): this;
 
-  kill()
+  kill(): this;
+
+  // Operation
+  tap(fn: (ctx: TestRunnerContext) => void): this;
+
+  log(format: string, ...args?: string[]): this;
+
+  sleep(ms: number): this;
+
+  mkdir(dir: string): this;
+
+  rm(dir: string): this;
+
+  writeFile(filePath: string, content: string | object): this;
+
+  shell(cmd: string, args?: string[], opts: execa.NodeOptions): this;
+
+  // Validator
+  expect(fn: (ctx: TestRunnerContext) => void): this;
+
+  file(filePath: string, expected: ExpectedAssertion): this;
+
+  noFile(filePath: string, unexpected: ExpectedAssertion): this;
+
+  stdout(expected: ExpectedAssertion): this;
+
+  notStdout(unexpected: ExpectedAssertion): this;
+
+  stderr(expected: ExpectedAssertion): this;
+
+  notStderr(unexpected: ExpectedAssertion): this;
+
+  code(n: number): this;
 }
 
-export enum LogLevel {
-  ERROR = 0,
-  WARN = 1,
-  LOG = 2,
-  INFO = 3,
-  DEBUG = 4,
-  TRACE = 5,
-  Silent = -Infinity,
-  Verbose = Infinity,
-}
-
-export function runner(options: TestRunnerOptions): TestRunner;
+export function runner(options?: TestRunnerOptions): TestRunner;
