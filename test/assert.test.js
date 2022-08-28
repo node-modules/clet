@@ -1,5 +1,6 @@
 
 import path from 'path';
+import { it, describe } from 'vitest';
 import { assert, matchRule, doesNotMatchRule } from '../lib/assert.js';
 
 describe('test/assert.test.js', () => {

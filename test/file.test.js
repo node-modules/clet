@@ -1,4 +1,5 @@
 import path from 'path';
+import { it, describe } from 'vitest';
 import { runner } from '../lib/runner.js';
 import * as utils from './test-utils.js';
 import { strict as assert } from 'assert';

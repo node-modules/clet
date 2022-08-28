@@ -1,4 +1,5 @@
 
+import { it, describe } from 'vitest';
 import path from 'path';
 import { strict as assert } from 'assert';
 import { runner, KEYS } from '../lib/runner.js';

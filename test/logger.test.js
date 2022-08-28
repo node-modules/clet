@@ -1,16 +1,16 @@
 
-import { jest, expect } from '@jest/globals';
+import { it, describe, beforeEach, afterEach, expect, vi } from 'vitest';
 import { Logger, LogLevel } from '../lib/logger.js';
 
 describe('test/logger.test.js', () => {
   beforeEach(() => {
     for (const name of [ 'error', 'warn', 'info', 'log', 'debug' ]) {
-      jest.spyOn(global.console, name);
+      vi.spyOn(global.console, name);
     }
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('should support level', () => {

@@ -1,5 +1,6 @@
 
 import path from 'path';
+import { it, describe } from 'vitest';
 import request from 'supertest';
 import { runner, KEYS } from '../lib/runner.js';
 import * as utils from './test-utils.js';

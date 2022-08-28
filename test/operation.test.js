@@ -1,16 +1,16 @@
-import { jest, expect } from '@jest/globals';
+import { it, describe, beforeEach, afterEach, expect, vi } from 'vitest';
 import { runner, KEYS } from '../lib/runner.js';
 import * as utils from './test-utils.js';
 
 describe('test/operation.test.js', () => {
   beforeEach(() => {
     for (const name of [ 'error', 'warn', 'info', 'log', 'debug' ]) {
-      jest.spyOn(global.console, name);
+      vi.spyOn(global.console, name);
     }
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   const tmpDir = utils.getTempDir();
@@ -37,7 +37,6 @@ describe('test/operation.test.js', () => {
   });
 
   it('should support shell()', async () => {
-    jest.setTimeout(10000);
     await runner()
       .cwd(tmpDir, { init: true })
       .spawn('npm init')
@@ -54,7 +53,7 @@ describe('test/operation.test.js', () => {
       .stderr('bad option: --no-exists')
       .notStdout('dont collect this log')
       .notStderr('bad option: --no-collect');
-  });
+  }, 10000);
 
   it('should support log()', async () => {
     await runner()
