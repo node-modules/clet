@@ -1,5 +1,6 @@
 const assert = require('assert');
 const path = require('path');
+import { it, describe, beforeAll } from 'vitest';
 
 describe('test/commonjs.test.cjs', () => {
   const fixtures = path.resolve('test/fixtures');

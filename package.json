@@ -21,15 +21,14 @@
     "trash": "^8.1.0"
   },
   "devDependencies": {
-    "common-jest-preset": "^1.0.0",
-    "jest-summary-reporter": "^0.0.2",
+    "@vitest/ui": "^0.22.1",
     "cross-env": "^7.0.3",
     "egg-ci": "^1.19.0",
     "enquirer": "^2.3.6",
     "eslint": "^7",
     "eslint-config-egg": "^9",
-    "jest": "^28.1.0",
-    "supertest": "^6.2.3"
+    "supertest": "^6.2.3",
+    "vitest": "^0.22.1"
   },
   "files": [
     "bin",
@@ -38,8 +37,8 @@
   ],
   "scripts": {
     "lint": "eslint .",
-    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest",
-    "cov": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --coverage",
+    "test": "vitest",
+    "cov": "vitest run --coverage",
     "ci": "npm run lint && npm run cov"
   },
   "ci": {

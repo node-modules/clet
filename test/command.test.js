@@ -1,3 +1,4 @@
+import { it, describe } from 'vitest';
 import { runner } from '../lib/runner.js';
 import path from 'path';
 

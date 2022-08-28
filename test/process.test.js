@@ -1,3 +1,4 @@
+import { it, describe, beforeEach } from 'vitest';
 import path from 'path';
 import { strict as assert } from 'assert';
 import fs from 'fs';
