@@ -21,6 +21,7 @@
     "trash": "^8.1.0"
   },
   "devDependencies": {
+    "@vitest/coverage-c8": "^0.22.1",
     "@vitest/ui": "^0.22.1",
     "cross-env": "^7.0.3",
     "egg-ci": "^1.19.0",
