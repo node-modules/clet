@@ -185,5 +185,5 @@ describe('test/process.test.js', () => {
           throw new Error('spawn trigger break');
         });
     }, /spawn trigger break/);
-  });
+  }, 10000);
 });
