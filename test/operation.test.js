@@ -55,12 +55,13 @@ describe('test/operation.test.js', () => {
       .notStderr('bad option: --no-collect');
   }, 10000);
 
-  it('should support log()', async () => {
+  it.only('should support log()', async () => {
     await runner()
       .spawn('npm -v')
       .log('stdout: %s, code: %d', 'result.stdout', 'result.code')
       .log('result');
 
+    console.warn('@@@ "%s"...', console.info.calls.join('\n'));
     expect(console.info).toHaveBeenCalledWith(expect.stringMatching(/\[CLET\] stdout: \d+\.\d+\.\d+, code: 0/));
     expect(console.info).toHaveBeenCalledWith(expect.stringMatching(/\[CLET\] \{ stdout:.*/));
   });
