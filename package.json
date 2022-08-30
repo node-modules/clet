@@ -55,6 +55,9 @@
       "browser": false,
       "jest": true
     },
+    "rules": {
+      "node/file-extension-in-import": ["error", "always"]
+    },
     "parserOptions": {
       "sourceType": "module"
     },
