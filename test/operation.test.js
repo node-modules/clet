@@ -62,6 +62,6 @@ describe('test/operation.test.js', () => {
       .log('result');
 
     expect(console.info).toHaveBeenCalledWith(expect.stringMatching(/\[CLET\] stdout: \d+\.\d+\.\d+, code: 0/));
-    expect(console.info).toHaveBeenCalledWith(expect.stringMatching(/\[CLET\] \{ stdout:.*\}/));
+    expect(console.info).toHaveBeenCalledWith(expect.stringMatching(/\[CLET\] \{ stdout:.*/));
   });
 });
