@@ -1,0 +1,14 @@
+{
+  "extends": "@artus/tsconfig",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "noUnusedParameters": false,
+    "noUnusedLocals":false,
+    "resolveJsonModule": true,
+    "outDir": "dist"
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.json"
+  ]
+}

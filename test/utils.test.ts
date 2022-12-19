@@ -2,10 +2,10 @@ import { it, describe, beforeEach } from 'vitest';
 import fs from 'fs';
 import path from 'path';
 import { strict as assert } from 'assert';
-import * as utils from '../lib/utils.js';
+import * as utils from '../src/utils.js';
 import * as testUtils from './test-utils.js';
 
-describe('test/utils.test.js', () => {
+describe.only('test/utils.test.ts', () => {
   const tmpDir = testUtils.getTempDir();
   beforeEach(() => testUtils.initDir(tmpDir));
 

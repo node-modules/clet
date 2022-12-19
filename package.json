@@ -2,7 +2,7 @@
   "name": "clet",
   "version": "1.0.1",
   "description": "Command Line E2E Testing",
-  "type": "module",
+  "type": "commonjs",
   "main": "./lib/runner.js",
   "exports": "./lib/runner.js",
   "types": "./lib/index.d.ts",
@@ -21,31 +21,33 @@
     "trash": "^8.1.0"
   },
   "devDependencies": {
+    "@artus/eslint-config-artus": "^0.0.1",
+    "@artus/tsconfig": "^1",
+    "@types/mocha": "^9.1.1",
+    "@types/node": "^18.7.14",
     "@vitest/coverage-c8": "^0.22.1",
     "@vitest/ui": "^0.22.1",
     "cross-env": "^7.0.3",
-    "egg-ci": "^1.19.0",
     "enquirer": "^2.3.6",
     "eslint": "^7",
     "eslint-config-egg": "^9",
     "supertest": "^6.2.3",
-    "vitest": "^0.22.1"
+    "vitest": "^0.22.1",
+    "ts-node": "^10.9.1",
+    "tslib": "^2.4.0",
+    "typescript": "^4.8.2"
   },
   "files": [
-    "bin",
-    "lib",
-    "index.js"
+    "dist"
   ],
   "scripts": {
-    "lint": "eslint .",
+    "lint": "eslint . --ext .ts",
+    "postlint": "tsc --noEmit",
     "test": "vitest",
     "cov": "vitest run --coverage",
-    "ci": "npm run lint && npm run cov"
-  },
-  "ci": {
-    "version": "14, 16, 18",
-    "type": "github",
-    "npminstall": false
+    "ci": "npm run cov",
+    "tsc": "rm -rf dist && tsc",
+    "prepack": "npm run tsc"
   },
   "eslintConfig": {
     "extends": "eslint-config-egg",
