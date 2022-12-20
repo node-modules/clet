@@ -1,9 +1,9 @@
 
 import path from 'path';
 import { it, describe } from 'vitest';
-import { assert, matchRule, doesNotMatchRule } from '../lib/assert.js';
+import { assert, matchRule, doesNotMatchRule } from '../src/assert.js';
 
-describe('test/assert.test.js', () => {
+describe('test/assert.test.ts', () => {
   const pkgInfo = {
     name: 'clet',
     version: '1.0.0',
@@ -12,6 +12,7 @@ describe('test/assert.test.js', () => {
     },
   };
 
+  assert.deepEqual(1, 2);
   it('should export', () => {
     assert.equal(assert.matchRule, matchRule);
     assert.equal(assert.doesNotMatchRule, doesNotMatchRule);

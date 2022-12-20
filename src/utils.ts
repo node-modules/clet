@@ -1,6 +1,6 @@
-import { promises as fs } from 'fs';
-import util from 'util';
-import path from 'path';
+import fs from 'node:fs/promises';
+import util from 'node:util';
+import path from 'node:path';
 
 import { dirname } from 'dirname-filename-esm';
 import isMatch from 'lodash.ismatch';

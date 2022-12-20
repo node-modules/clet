@@ -43,34 +43,11 @@
   "scripts": {
     "lint": "eslint . --ext .ts",
     "postlint": "tsc --noEmit",
-    "test": "vitest",
+    "test": "vitest run",
     "cov": "vitest run --coverage",
     "ci": "npm run cov",
     "tsc": "rm -rf dist && tsc",
     "prepack": "npm run tsc"
-  },
-  "eslintConfig": {
-    "extends": "eslint-config-egg",
-    "root": true,
-    "env": {
-      "node": true,
-      "browser": false,
-      "jest": true
-    },
-    "rules": {
-      "node/file-extension-in-import": [
-        "error",
-        "always"
-      ]
-    },
-    "parserOptions": {
-      "sourceType": "module"
-    },
-    "ignorePatterns": [
-      "dist",
-      "coverage",
-      "node_modules"
-    ]
   },
   "license": "MIT"
 }
