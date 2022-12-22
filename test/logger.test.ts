@@ -1,10 +1,10 @@
 
 import { it, describe, beforeEach, afterEach, expect, vi } from 'vitest';
-import { Logger, LogLevel } from '../lib/logger.js';
+import { Logger, LogLevel } from '../src/logger.js';
 
-describe('test/logger.test.js', () => {
+describe.skip('test/logger.test.js', () => {
   beforeEach(() => {
-    for (const name of [ 'error', 'warn', 'info', 'log', 'debug' ]) {
+    for (const name of [ 'error', 'warn', 'info', 'log', 'debug' ] as const) {
       vi.spyOn(global.console, name);
     }
   });

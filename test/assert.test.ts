@@ -1,7 +1,9 @@
 
-import path from 'path';
+import path from 'node:path';
+import assert from 'node:assert/strict';
+
 import { it, describe } from 'vitest';
-import { assert, matchRule, doesNotMatchRule } from '../src/assert.js';
+import { matchRule, doesNotMatchRule, matchFile, doesNotMatchFile } from '../src/assert.js';
 
 describe('test/assert.test.ts', () => {
   const pkgInfo = {
@@ -11,12 +13,6 @@ describe('test/assert.test.ts', () => {
       port: 8080,
     },
   };
-
-  assert.deepEqual(1, 2);
-  it('should export', () => {
-    assert.equal(assert.matchRule, matchRule);
-    assert.equal(assert.doesNotMatchRule, doesNotMatchRule);
-  });
 
   describe('matchRule', () => {
     it('should support regexp', () => {
@@ -126,19 +122,19 @@ describe('test/assert.test.ts', () => {
   describe('matchFile', () => {
     const fixtures = path.resolve('test/fixtures/file');
     it('should check exists', async () => {
-      await assert.matchFile(`${fixtures}/test.md`);
+      await matchFile(`${fixtures}/test.md`);
       await assert.rejects(async () => {
-        await assert.matchFile(`${fixtures}/not-exist.md`);
+        await matchFile(`${fixtures}/not-exist.md`);
       }, /not-exist.md to be exists/);
     });
 
     it('should check content', async () => {
-      await assert.matchFile(`${fixtures}/test.md`, 'this is a README');
-      await assert.matchFile(`${fixtures}/test.md`, /this is a README/);
-      await assert.matchFile(`${fixtures}/test.json`, { name: 'test', config: { port: 8080 } });
+      await matchFile(`${fixtures}/test.md`, 'this is a README');
+      await matchFile(`${fixtures}/test.md`, /this is a README/);
+      await matchFile(`${fixtures}/test.json`, { name: 'test', config: { port: 8080 } });
 
       await assert.rejects(async () => {
-        await assert.matchFile(`${fixtures}/test.md`, 'abc');
+        await matchFile(`${fixtures}/test.md`, 'abc');
       }, /file.*test\.md.*this is.*should includes 'abc'/);
     });
   });
@@ -146,20 +142,20 @@ describe('test/assert.test.ts', () => {
   describe('doesNotMatchFile', () => {
     const fixtures = path.resolve('test/fixtures/file');
     it('should check not exists', async () => {
-      await assert.doesNotMatchFile(`${fixtures}/a/b/c/d.md`);
+      await doesNotMatchFile(`${fixtures}/a/b/c/d.md`);
 
       await assert.rejects(async () => {
-        await assert.doesNotMatchFile(`${fixtures}/not-exist.md`, 'abc');
+        await doesNotMatchFile(`${fixtures}/not-exist.md`, 'abc');
       }, /Expected file\(.*not-exist.md\) not to match.*but file not exists/);
     });
 
     it('should check not content', async () => {
-      await assert.doesNotMatchFile(`${fixtures}/test.md`, 'abc');
-      await assert.doesNotMatchFile(`${fixtures}/test.md`, /abcccc/);
-      await assert.doesNotMatchFile(`${fixtures}/test.json`, { name: 'test', config: { a: 1 } });
+      await doesNotMatchFile(`${fixtures}/test.md`, 'abc');
+      await doesNotMatchFile(`${fixtures}/test.md`, /abcccc/);
+      await doesNotMatchFile(`${fixtures}/test.json`, { name: 'test', config: { a: 1 } });
 
       await assert.rejects(async () => {
-        await assert.doesNotMatchFile(`${fixtures}/test.md`, 'this is a README');
+        await doesNotMatchFile(`${fixtures}/test.md`, 'this is a README');
       }, /file.*test\.md.*this is.*should not includes 'this is a README'/);
     });
   });
