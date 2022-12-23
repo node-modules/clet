@@ -13,16 +13,18 @@ export class TestRunner extends EventEmitter {
     // before: [],
     // running: [],
     // after: [],
+    prepare: [],
     prerun: [],
     run: [],
     postrun: [],
     end: [],
   };
 
-  // prerun 准备现场环境
+  // prepare 准备现场环境
+  // prerun 检查参数，在 fork 定义之后
   // run 处理 stdin
   // postrun 检查 assert
-  // end 检查 code，清理现场
+  // end 检查 code，清理现场，相当于 finnaly
 
   plugin(plugins: PluginLike): MountPlugin<PluginLike, this> {
     for (const key of Object.keys(plugins)) {
@@ -30,7 +32,7 @@ export class TestRunner extends EventEmitter {
 
       this[key] = (...args: RestParam<typeof initFn>) => {
         console.log('mount %s with %j', key, ...args);
-        this.use(initFn(this, ...args));
+        initFn(this, ...args);
         return this;
       };
     }
@@ -42,10 +44,10 @@ export class TestRunner extends EventEmitter {
     return this;
   }
 
-  async runHook(event: string) {
+  async runHook(event: string, ctx) {
     for (const fn of this.hooks[event]) {
       // TODO: ctx
-      await fn();
+      await fn(ctx);
     }
   }
 
@@ -59,12 +61,21 @@ export class TestRunner extends EventEmitter {
     return this;
   }
 
-  end() {
+  async end() {
     try {
+      const ctx = { a: 1};
       // prerun
+      await this.runHook('prerun', ctx);
+
       // run
+      await this.runHook('run', ctx);
+
       // postrun
+      await this.runHook('postrun', ctx);
+
       // end
+      await this.runHook('end', ctx);
+
       this.logger.info('✔ Test pass.\n');
     } catch (err) {
       this.logger.error('⚠ Test failed.\n');
@@ -85,29 +96,40 @@ export class TestRunner extends EventEmitter {
     // end
     //   - clean up, kill, log result, error hander
 
-    console.log(this.middlewares);
-    return Promise.all(this.middlewares.map(fn => fn()));
+    // console.log(this.middlewares);
+    // return Promise.all(this.middlewares.map(fn => fn()));
   }
+}
+
+function fork(runner: TestRunner, cmd, args, opts) {
+  runner.hook('prerun', async ctx => {
+    ctx.cmd = cmd;
+    ctx.args = args;
+    ctx.opts = opts;
+    console.log('run fork', cmd, args, opts);
+  });
 }
 
 
 function file(runner: TestRunner, opts: { a: string }) {
-  runner.someMethod();
-  return async function fileMiddleare() {
-    console.log('run file');
-  };
+  runner.hook('postrun', async ctx => {
+    console.log('run file', ctx, opts);
+  });
 }
 
 function sleep(runner: TestRunner, b: number) {
-  // console.log('sleep init', b);
-  return async function sleepMiddleare() {
-    console.log('run sleep');
-  };
+  runner.hook('postrun', async ctx => {
+    console.log('run sleep', ctx, b);
+  });
 }
 
 new TestRunner()
-  .plugin({ file, sleep })
+  .plugin({ file, sleep, fork })
   .file({ 'a': 'b' })
+  .fork('node', '-v')
   .sleep(1)
   .sleep(222)
   .end().then(() => console.log('done'));
+
+// koa middleware
+// 初始化 -> fork -> await next() -> 校验 -> 结束
