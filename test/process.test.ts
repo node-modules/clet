@@ -28,23 +28,33 @@ describe('test/process.test.ts', () => {
   });
 
   it('should fork', async () => {
-    const cli = path.resolve(__dirname, 'fixtures/version.ts');
-    const proc = new Process('fork', cli, [], { nodeOptions: ['--inspect'] });
+    const cli = path.resolve(__dirname, 'fixtures/process/fork.ts');
+    const proc = new Process('fork', cli);
     await proc.exec();
     // console.log(proc.result);
     assert.match(proc.result.stdout, /v\d+\.\d+\.\d+/);
-    assert.match(proc.result.stderr, /Debugger listening on/);
+    assert.match(proc.result.stderr, /this is testing/);
     assert.strictEqual(proc.result.code, 0);
   });
 
   it('should strip color', async () => {
-    const cli = path.resolve(__dirname, 'fixtures/color.ts');
+    const cli = path.resolve(__dirname, 'fixtures/process/color.ts');
     const proc = new Process('fork', cli, []);
     await proc.exec();
-    console.log(proc.result);
+    // console.log(proc.result);
     assert.match(proc.result.stdout, /CLIHub/);
     assert.match(proc.result.stderr, /MSGHub/);
     assert.strictEqual(proc.result.code, 0);
+  });
+
+  it('should exit with fail', async () => {
+    const cli = path.resolve(__dirname, 'fixtures/process/error.ts');
+    const proc = new Process('fork', cli, []);
+    await proc.exec();
+    console.log(proc.result);
+    assert.match(proc.result.stdout, /this is an error test/);
+    assert.match(proc.result.stderr, /Error: some error/);
+    assert.strictEqual(proc.result.code, 1);
   });
 
 
