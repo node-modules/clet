@@ -1,6 +1,9 @@
 import EventEmitter from 'events';
+import assert from 'node:assert/strict';
 
 import { MountPlugin, PluginLike, AsyncFunction, RestParam } from './types';
+import { Process, ProcessOptions } from './process';
+
 
 // interface Pluginable<T> {
 //   [key: string]: (runner: T, options?: any) => AsyncFunction;
@@ -8,6 +11,7 @@ import { MountPlugin, PluginLike, AsyncFunction, RestParam } from './types';
 
 export class TestRunner extends EventEmitter {
   private logger = console;
+  private proc: Process;
   private middlewares: any[] = [];
   private hooks = {
     // before: [],
@@ -51,6 +55,18 @@ export class TestRunner extends EventEmitter {
     }
   }
 
+  fork(cmd: string, args?: string[], opts?: ProcessOptions) {
+    assert(!this.proc, 'cmd can not be registered twice');
+    this.proc = new Process('fork', cmd, args, opts);
+    return this;
+  }
+
+  spawn(cmd: string, args?: string[], opts?: ProcessOptions) {
+    assert(!this.proc, 'cmd can not be registered twice');
+    this.proc = new Process('spawn', cmd, args, opts);
+    return this;
+  }
+
   someMethod() {
     console.log('someMethod');
   }
@@ -67,6 +83,9 @@ export class TestRunner extends EventEmitter {
       // prerun
       await this.runHook('prerun', ctx);
 
+      // exec child process, don't await it
+      this.proc.exec();
+
       // run
       await this.runHook('run', ctx);
 
@@ -82,6 +101,7 @@ export class TestRunner extends EventEmitter {
       throw err;
     } finally {
       // clean up
+      this.proc.kill();
     }
 
     // prepare/prerun

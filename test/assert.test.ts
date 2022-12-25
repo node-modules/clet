@@ -2,7 +2,6 @@
 import path from 'node:path';
 import assert from 'node:assert/strict';
 
-import { it, describe } from 'vitest';
 import { matchRule, doesNotMatchRule, matchFile, doesNotMatchFile } from '../src/assert.js';
 
 describe('test/assert.test.ts', () => {

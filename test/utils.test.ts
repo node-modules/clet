@@ -3,10 +3,11 @@ import fs from 'fs';
 import path from 'path';
 import { strict as assert } from 'assert';
 import * as utils from '../src/utils.js';
-import * as testUtils from './test-utils.js';
+import * as testUtils from '../test-old/test-utils.js';
 
-describe.only('test/utils.test.ts', () => {
-  const tmpDir = testUtils.getTempDir();
+describe('test/utils.test.ts', () => {
+  const tmpDir = path.join(__dirname, './tmp');
+
   beforeEach(() => testUtils.initDir(tmpDir));
 
   it('types', () => {
@@ -43,11 +44,17 @@ describe.only('test/utils.test.ts', () => {
   });
 
   it('writeFile', async () => {
-    await utils.writeFile(`${tmpDir}/test.md`, 'this is a test');
-    assert(fs.readFileSync(`${tmpDir}/test.md`, 'utf-8') === 'this is a test');
+    const targetDir = path.resolve(tmpDir, './b');
+    await utils.mkdir(targetDir);
 
-    await utils.writeFile(`${tmpDir}/test.json`, { name: 'test' });
-    assert(fs.readFileSync(`${tmpDir}/test.json`, 'utf-8').match(/"name": "test"/));
+    const fileName = `${targetDir}/test-${Date.now()}.md`;
+    await utils.writeFile(`${tmpDir}/${fileName}.md`, 'this is a test');
+    assert(fs.readFileSync(`${tmpDir}/${fileName}.md`, 'utf-8') === 'this is a test');
+
+    await utils.writeFile(`${tmpDir}/${fileName}.json`, { name: 'test' });
+    assert(fs.readFileSync(`${tmpDir}/${fileName}.json`, 'utf-8').match(/"name": "test"/));
+
+    await utils.mkdir(targetDir);
   });
 
   it('exists', async () => {

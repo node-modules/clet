@@ -1,5 +1,5 @@
 
-import { it, describe, beforeEach, afterEach, expect, vi } from 'vitest';
+import { expect, vi } from 'vitest';
 import { Logger, LogLevel } from '../src/logger.js';
 
 describe.skip('test/logger.test.js', () => {

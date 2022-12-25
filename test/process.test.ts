@@ -1,10 +1,7 @@
 import path from 'node:path';
 import assert from 'node:assert/strict';
-import { PassThrough } from 'node:stream';
-import { it, describe } from 'vitest';
 import execa from 'execa';
 import { Process } from '../src/process.js';
-import fs from 'fs';
 
 describe('test/process.test.ts', () => {
   describe('options', () => {
@@ -63,17 +60,17 @@ describe('test/process.test.ts', () => {
       nodeOptions: [ '--require', 'ts-node/register' ],
     });
 
-    proc.stdout.on('data', data => {
+    proc.stdout?.on('data', data => {
       console.log('stdout', data.toString());
     });
-    proc.stdin.setEncoding('utf8');
+    // proc.stdin.setEncoding('utf8');
 
     // const stdin = new PassThrough();
     // stdin.pipe(proc.stdin);
 
     setTimeout(() => {
       console.log('write stdin');
-      proc.stdin.write('hello\n');
+      proc.stdin?.write('hello\n');
       proc.stdin?.end();
       // stdin.end();
     }, 1500);

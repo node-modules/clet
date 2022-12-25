@@ -123,6 +123,11 @@ export class Process extends EventEmitter {
     return this.proc;
   }
 
+  kill(signal?: string) {
+    // TODO: kill process use cancel()?
+    this.proc.kill(signal);
+  }
+
   // stdin -> wait(stdout) -> write
   async wait(type, expected) {
     let promise;

@@ -13,9 +13,10 @@ export default defineConfig({
   //   }),
   // } ],
   test: {
-    // globals: true,
+    globals: true,
+    include: [ 'test/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}' ],
     globalSetup: [
-      './test/setup.js',
+      // './test/setup.js',
     ],
   },
 });
