@@ -7,5 +7,5 @@ export type AsyncFunction = (...args: any[]) => Promise<any>;
 export type RestParam<T> = T extends (first: any, ...args: infer R) => any ? R : any;
 
 export interface PluginLike {
-  [key: string]: (core: any, ...args: any[]) => void;
+  [key: string]: (core: any, ...args: any[]) => any;
 }

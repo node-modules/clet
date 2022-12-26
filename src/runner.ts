@@ -2,27 +2,42 @@ import EventEmitter from 'events';
 import assert from 'node:assert/strict';
 
 import { MountPlugin, PluginLike, AsyncFunction, RestParam } from './types';
-import { Process, ProcessOptions } from './process';
+import { Process, ProcessEvents, ProcessOptions } from './lib/process';
+import * as validator from './plugins/validator';
+import { doesNotMatchRule, matchRule, matchFile, doesNotMatchFile } from './lib/assert';
+import path from 'node:path';
 
-
-// interface Pluginable<T> {
-//   [key: string]: (runner: T, options?: any) => AsyncFunction;
-// }
+interface RunnerOptions {
+  autoWait?: boolean;
+}
 
 export class TestRunner extends EventEmitter {
   private logger = console;
   private proc: Process;
+  private options: RunnerOptions = {};
   private middlewares: any[] = [];
   private hooks = {
-    // before: [],
-    // running: [],
-    // after: [],
-    prepare: [],
-    prerun: [],
-    run: [],
-    postrun: [],
+    before: [],
+    running: [],
+    after: [],
+    // prepare: [],
+    // prerun: [],
+    // run: [],
+    // postrun: [],
     end: [],
   };
+
+  private waitType: 'end' | 'custom' = 'end';
+
+  constructor(opts?: RunnerOptions) {
+    super();
+    this.options = {
+      autoWait: true,
+      ...opts,
+    };
+
+    // this.plugin({ ...validator });
+  }
 
   // prepare 准备现场环境
   // prerun 检查参数，在 fork 定义之后
@@ -67,10 +82,6 @@ export class TestRunner extends EventEmitter {
     return this;
   }
 
-  someMethod() {
-    console.log('someMethod');
-  }
-
   // hook?
   use(fn: AsyncFunction) {
     this.middlewares.push(fn);
@@ -79,18 +90,27 @@ export class TestRunner extends EventEmitter {
 
   async end() {
     try {
-      const ctx = { a: 1};
-      // prerun
-      await this.runHook('prerun', ctx);
+      const ctx = {
+        proc: this.proc,
+        cwd: this.proc.opts.cwd,
+        result: this.proc.result,
+      };
+
+      // before
+      await this.runHook('before', ctx);
 
       // exec child process, don't await it
-      this.proc.exec();
+      await this.proc.start();
 
-      // run
-      await this.runHook('run', ctx);
+      // running
+      await this.runHook('running', ctx);
+
+      if (this.options.autoWait) {
+        await this.proc.end();
+      }
 
       // postrun
-      await this.runHook('postrun', ctx);
+      await this.runHook('after', ctx);
 
       // end
       await this.runHook('end', ctx);
@@ -103,53 +123,95 @@ export class TestRunner extends EventEmitter {
       // clean up
       this.proc.kill();
     }
-
-    // prepare/prerun
-    //   - init dir, init env, init ctx
-    // run
-    //   - run cli
-    //   - collect stdout/stderr, emit event
-    //   - stdin (expect)
-    // postrun
-    //   - wait event(end, message, error, stdout, stderr)
-    //   - check assert
-    // end
-    //   - clean up, kill, log result, error hander
-
-    // console.log(this.middlewares);
-    // return Promise.all(this.middlewares.map(fn => fn()));
   }
+
+  wait(type: ProcessEvents, expected) {
+    this.options.autoWait = false;
+    // wait for process ready then assert
+    return this.hook('running', async ({ proc }) => {
+      // ctx.autoWait = false;
+      await proc.wait(type, expected);
+    });
+  }
+
+  // stdout(expected: string | RegExp) {
+  //   return this.hook('postrun', async ctx => {
+  //     matchRule(ctx.result.stdout, expected);
+  //   });
+  // }
+
+  // notStdout(expected: string | RegExp) {
+  //   return this.hook('postrun', async ctx => {
+  //     doesNotMatchRule(ctx.result.stdout, expected);
+  //   });
+  // }
+
+  // stderr(expected: string | RegExp) {
+  //   return this.hook('postrun', async ctx => {
+  //     matchRule(ctx.result.stderr, expected);
+  //   });
+  // }
+
+  // notStderr(expected: string | RegExp) {
+  //   return this.hook('postrun', async ({ result }) => {
+  //     doesNotMatchRule(result.stderr, expected);
+  //   });
+  // }
+
+  // file(filePath: string, expected: string | RegExp) {
+  //   return this.hook('postrun', async ({ cwd }) => {
+  //     const fullPath = path.resolve(cwd, filePath);
+  //     await matchFile(fullPath, expected);
+  //   });
+  // }
+
+  // notFile(filePath: string, expected: string | RegExp) {
+  //   return this.hook('postrun', async ({ cwd }) => {
+  //     const fullPath = path.resolve(cwd, filePath);
+  //     await doesNotMatchFile(fullPath, expected);
+  //   });
+  // }
+
+  // code(expected: number) {
+  //   return this.hook('postrun', async ({ result }) => {
+  //     assert.equal(result.code, expected);
+  //   });
+  // }
 }
 
-function fork(runner: TestRunner, cmd, args, opts) {
-  runner.hook('prerun', async ctx => {
-    ctx.cmd = cmd;
-    ctx.args = args;
-    ctx.opts = opts;
-    console.log('run fork', cmd, args, opts);
-  });
+export function runner() {
+  return new TestRunner().plugin({ ...validator });
 }
 
+// function fork(runner: TestRunner, cmd, args, opts) {
+//   runner.hook('prerun', async ctx => {
+//     ctx.cmd = cmd;
+//     ctx.args = args;
+//     ctx.opts = opts;
+//     console.log('run fork', cmd, args, opts);
+//   });
+// }
 
-function file(runner: TestRunner, opts: { a: string }) {
-  runner.hook('postrun', async ctx => {
-    console.log('run file', ctx, opts);
-  });
-}
 
-function sleep(runner: TestRunner, b: number) {
-  runner.hook('postrun', async ctx => {
-    console.log('run sleep', ctx, b);
-  });
-}
+// function file(runner: TestRunner, opts: { a: string }) {
+//   runner.hook('postrun', async ctx => {
+//     console.log('run file', ctx, opts);
+//   });
+// }
 
-new TestRunner()
-  .plugin({ file, sleep, fork })
-  .file({ 'a': 'b' })
-  .fork('node', '-v')
-  .sleep(1)
-  .sleep(222)
-  .end().then(() => console.log('done'));
+// function sleep(runner: TestRunner, b: number) {
+//   runner.hook('postrun', async ctx => {
+//     console.log('run sleep', ctx, b);
+//   });
+// }
+
+// new TestRunner()
+//   .plugin({ file, sleep, fork })
+//   .file({ 'a': 'b' })
+//   .fork('node', '-v')
+//   .sleep(1)
+//   .sleep(222)
+//   .end().then(() => console.log('done'));
 
 // koa middleware
 // 初始化 -> fork -> await next() -> 校验 -> 结束

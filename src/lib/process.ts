@@ -1,12 +1,13 @@
 import assert from 'node:assert/strict';
 import EventEmitter from 'node:events';
 import { PassThrough } from 'node:stream';
+import { EOL } from 'node:os';
 
 import * as execa from 'execa';
 import pEvent from 'p-event';
 import stripFinalNewline from 'strip-final-newline';
 import stripAnsi from 'strip-ansi';
-import { EOL } from 'node:os';
+import { exists } from './utils';
 
 export interface ProcessResult {
   code: number;
@@ -19,6 +20,8 @@ export type ProcessOptions = {
 } & {
   execArgv?: execa.NodeOptions['nodeOptions'];
 };
+
+export type ProcessEvents = 'stdout' | 'stderr' | 'message' | 'exit' | 'close';
 
 export class Process extends EventEmitter {
   type: 'fork' | 'spawn';
@@ -78,13 +81,23 @@ export class Process extends EventEmitter {
     this.opts.cwd = cwd;
   }
 
-  async exec() {
+  async start() {
     if (this.type === 'fork') {
       this.proc = execa.node(this.cmd, this.args, this.opts);
     } else {
       const cmdString = [ this.cmd, ...this.args ].join(' ');
       this.proc = execa.command(cmdString, this.opts);
     }
+
+    this.proc.then(res => {
+      if (res instanceof Error) {
+        this.result.code = res.exitCode;
+        if ((res as any).code === 'ENOENT') {
+          this.result.code = 127;
+          this.result.stderr += (res as any).originalMessage;
+        }
+      }
+    });
 
     // this.proc.stdin.setEncoding('utf8');
 
@@ -119,8 +132,12 @@ export class Process extends EventEmitter {
     //   this.result.code = code;
     //   // console.log('close event:', code);
     // });
+    // return this.proc;
+    return this;
+  }
 
-    return this.proc;
+  async end() {
+    return await this.proc;
   }
 
   kill(signal?: string) {
@@ -129,7 +146,7 @@ export class Process extends EventEmitter {
   }
 
   // stdin -> wait(stdout) -> write
-  async wait(type, expected) {
+  async wait(type: ProcessEvents, expected) {
     let promise;
     switch (type) {
       case 'stdout':
@@ -152,9 +169,14 @@ export class Process extends EventEmitter {
         break;
       }
 
+      case 'exit': {
+        promise = pEvent(this.proc, 'exit');
+        break;
+      }
+
       case 'close':
       default: {
-        promise = pEvent(this.proc, 'close')//.then(() => this.result);
+        promise = pEvent(this.proc, 'close');
         break;
       }
     }

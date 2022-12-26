@@ -1,5 +1,4 @@
 import assert from 'node:assert/strict';
-import { info } from 'node:console';
 import util from 'node:util';
 
 export enum LogLevel {
