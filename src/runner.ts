@@ -5,27 +5,22 @@ import { MountPlugin, PluginLike, AsyncFunction, RestParam } from './types';
 import { Process, ProcessEvents, ProcessOptions } from './lib/process';
 import * as validator from './plugins/validator';
 import * as operation from './plugins/operation';
-import { doesNotMatchRule, matchRule, matchFile, doesNotMatchFile } from './lib/assert';
+// import { doesNotMatchRule, matchRule, matchFile, doesNotMatchFile } from './lib/assert';
 
-interface RunnerOptions {
+export interface RunnerOptions {
   autoWait?: boolean;
 }
 
-type BuiltinPlugin<T extends PluginLike, Core> = {
-  [key in keyof T]: (...args: RestParam<T[key]>) => Core;
-};
-
 export function runner(opts?: RunnerOptions) {
-  return new TestRunner(opts); // .plugin({ ...validator, ...operation });
+  return new TestRunner(opts)
+    .plugin({ ...validator, ...operation });
 }
-
-export interface TestRunner extends BuiltinPlugin<typeof validator, TestRunner>, BuiltinPlugin<typeof operation, TestRunner> {}
 
 export class TestRunner extends EventEmitter {
   private logger = console;
   private proc: Process;
   private options: RunnerOptions = {};
-  private hooks = {
+  private hooks: Record<string, AsyncFunction[]> = {
     before: [],
     running: [],
     after: [],
@@ -38,8 +33,6 @@ export class TestRunner extends EventEmitter {
       autoWait: true,
       ...opts,
     };
-
-    this.plugin({ ...validator, ...operation });
   }
 
   // prepare 准备现场环境
@@ -62,6 +55,8 @@ export class TestRunner extends EventEmitter {
   }
 
   hook(event: string, fn: AsyncFunction) {
+    const buildError = new Error('only for stack');
+    console.log(buildError.stack);
     this.hooks[event].push(fn);
     return this;
   }
@@ -131,81 +126,4 @@ export class TestRunner extends EventEmitter {
       await proc.wait(type, expected);
     });
   }
-
-  // stdout(expected: string | RegExp) {
-  //   return this.hook('postrun', async ctx => {
-  //     matchRule(ctx.result.stdout, expected);
-  //   });
-  // }
-
-  // notStdout(expected: string | RegExp) {
-  //   return this.hook('postrun', async ctx => {
-  //     doesNotMatchRule(ctx.result.stdout, expected);
-  //   });
-  // }
-
-  // stderr(expected: string | RegExp) {
-  //   return this.hook('postrun', async ctx => {
-  //     matchRule(ctx.result.stderr, expected);
-  //   });
-  // }
-
-  // notStderr(expected: string | RegExp) {
-  //   return this.hook('postrun', async ({ result }) => {
-  //     doesNotMatchRule(result.stderr, expected);
-  //   });
-  // }
-
-  // file(filePath: string, expected: string | RegExp) {
-  //   return this.hook('postrun', async ({ cwd }) => {
-  //     const fullPath = path.resolve(cwd, filePath);
-  //     await matchFile(fullPath, expected);
-  //   });
-  // }
-
-  // notFile(filePath: string, expected: string | RegExp) {
-  //   return this.hook('postrun', async ({ cwd }) => {
-  //     const fullPath = path.resolve(cwd, filePath);
-  //     await doesNotMatchFile(fullPath, expected);
-  //   });
-  // }
-
-  // code(expected: number) {
-  //   return this.hook('postrun', async ({ result }) => {
-  //     assert.equal(result.code, expected);
-  //   });
-  // }
 }
-
-// function fork(runner: TestRunner, cmd, args, opts) {
-//   runner.hook('prerun', async ctx => {
-//     ctx.cmd = cmd;
-//     ctx.args = args;
-//     ctx.opts = opts;
-//     console.log('run fork', cmd, args, opts);
-//   });
-// }
-
-
-// function file(runner: TestRunner, opts: { a: string }) {
-//   runner.hook('postrun', async ctx => {
-//     console.log('run file', ctx, opts);
-//   });
-// }
-
-// function sleep(runner: TestRunner, b: number) {
-//   runner.hook('postrun', async ctx => {
-//     console.log('run sleep', ctx, b);
-//   });
-// }
-
-// new TestRunner()
-//   .plugin({ file, sleep, fork })
-//   .file({ 'a': 'b' })
-//   .fork('node', '-v')
-//   .sleep(1)
-//   .sleep(222)
-//   .end().then(() => console.log('done'));
-
-// koa middleware
-// 初始化 -> fork -> await next() -> 校验 -> 结束

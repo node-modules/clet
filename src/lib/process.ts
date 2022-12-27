@@ -1,4 +1,3 @@
-import assert from 'node:assert/strict';
 import EventEmitter from 'node:events';
 import { PassThrough } from 'node:stream';
 import { EOL } from 'node:os';
@@ -7,10 +6,9 @@ import * as execa from 'execa';
 import pEvent from 'p-event';
 import stripFinalNewline from 'strip-final-newline';
 import stripAnsi from 'strip-ansi';
-import { exists } from './utils';
 
 export interface ProcessResult {
-  code: number;
+  code: number | null;
   stdout: string;
   stderr: string;
 }
@@ -57,7 +55,7 @@ export class Process extends EventEmitter {
     // need to test color
 
     this.result = {
-      code: undefined,
+      code: null,
       stdout: '',
       stderr: '',
     };
@@ -66,7 +64,7 @@ export class Process extends EventEmitter {
   write(data: string) {
     // FIXME: when stdin.write, stdout will recieve duplicate output
     // auto add \n
-    this.proc.stdin.write(data.replace(/\r?\n$/, '') + EOL);
+    this.proc.stdin!.write(data.replace(/\r?\n$/, '') + EOL);
     // (this.opts.input as PassThrough).write(data);
     // (this.opts.stdin as Readable).write(data);
 
@@ -74,7 +72,7 @@ export class Process extends EventEmitter {
   }
 
   env(key: string, value: string) {
-    this.opts.env[key] = value;
+    this.opts.env![key] = value;
   }
 
   cwd(cwd: string) {
@@ -101,7 +99,7 @@ export class Process extends EventEmitter {
 
     // this.proc.stdin.setEncoding('utf8');
 
-    this.proc.stdout.on('data', data => {
+    this.proc.stdout!.on('data', data => {
       const origin = stripFinalNewline(data.toString());
       const content = stripAnsi(origin);
       this.result.stdout += content;
@@ -109,7 +107,7 @@ export class Process extends EventEmitter {
       console.log(origin);
     });
 
-    this.proc.stderr.on('data', data => {
+    this.proc.stderr!.on('data', data => {
       const origin = stripFinalNewline(data.toString());
       const content = stripAnsi(origin);
       this.result.stderr += content;
@@ -137,7 +135,7 @@ export class Process extends EventEmitter {
   }
 
   async end() {
-    return await this.proc;
+    return this.proc;
   }
 
   kill(signal?: string) {
@@ -151,12 +149,12 @@ export class Process extends EventEmitter {
     switch (type) {
       case 'stdout':
       case 'stderr': {
-        promise = pEvent(this.proc[type], 'data', {
+        promise = pEvent(this.proc[type] as any, 'data', {
           rejectionEvents: ['close'],
           filter: () => {
             return expected.test(this.result[type]);
           },
-        })//.then(() => this.result[type]);
+        }); // .then(() => this.result[type]);
         break;
       }
 

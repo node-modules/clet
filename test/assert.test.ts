@@ -1,8 +1,7 @@
-
 import path from 'node:path';
 import assert from 'node:assert/strict';
 
-import { matchRule, doesNotMatchRule, matchFile, doesNotMatchFile } from '../src/assert.js';
+import { matchRule, doesNotMatchRule, matchFile, doesNotMatchFile } from '../src/lib/assert';
 
 describe('test/assert.test.ts', () => {
   const pkgInfo = {
@@ -15,11 +14,10 @@ describe('test/assert.test.ts', () => {
 
   describe('matchRule', () => {
     it('should support regexp', () => {
-      matchRule(123456, /\d+/);
       matchRule('abc', /\w+/);
 
       assert.throws(() => {
-        matchRule(123456, /abc/);
+        matchRule('123456', /abc/);
       }, {
         name: 'AssertionError',
         message: /The input did not match the regular expression/,
@@ -68,11 +66,10 @@ describe('test/assert.test.ts', () => {
 
   describe('doesNotMatchRule', () => {
     it('should support regexp', () => {
-      doesNotMatchRule(123456, /abc/);
       doesNotMatchRule('abc', /\d+/);
 
       assert.throws(() => {
-        doesNotMatchRule(123456, /\d+/);
+        doesNotMatchRule('123456', /\d+/);
       }, {
         name: 'AssertionError',
         message: /The input was expected to not match the regular expression/,
@@ -159,5 +156,5 @@ describe('test/assert.test.ts', () => {
     });
   });
 
-  it.todo('error stack');
+  // it.todo('error stack');
 });

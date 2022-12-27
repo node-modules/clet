@@ -2,26 +2,33 @@ import { runner } from '../src/runner';
 
 describe('test/runner.test.ts', () => {
   describe('process', () => {
-    it('should spawn', async () => {
-      await runner()
-        .spawn('node', [ '-p', 'process.version', '--inspect' ])
-        .stdout(/v\d+\.\d+\.\d+/)
-        .notStdout('some text')
-        .stderr(/Debugger listening on/)
-        .notStderr('some error')
-        .tap(async runner => {
-          console.log('@@@', runner);
-        })
-        .end();
-    });
+    // it('should spawn', async () => {
+    //   await runner()
+    //     .spawn('node', [ '-p', 'process.version', '--inspect' ])
+    //     .stdout(/v\d+\.\d+\.\d+/)
+    //     .notStdout('some text')
+    //     .stderr(/Debugger listening on/)
+    //     .notStderr('some error')
+    //     .tap(async runner => {
+    //       console.log('@@@', runner);
+    //     })
+    //     .end();
+    // });
 
-    it('should fork', async () => {
+    // it('should fork', async () => {
+    //   await runner()
+    //     .fork('test/fixtures/process/fork.ts')
+    //     .stdout(/v\d+\.\d+\.\d+/)
+    //     .notStdout('some text')
+    //     .stderr(/this is testing/)
+    //     .notStderr('some error')
+    //     .end();
+    // });
+
+    it.only('should correct error stack', async () => {
       await runner()
         .fork('test/fixtures/process/fork.ts')
-        .stdout(/v\d+\.\d+\.\d+/)
-        .notStdout('some text')
-        .stderr(/this is testing/)
-        .notStderr('some error')
+        .stdout(/abc/)
         .end();
     });
 

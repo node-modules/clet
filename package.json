@@ -3,12 +3,30 @@
   "version": "1.0.1",
   "description": "Command Line E2E Testing",
   "type": "commonjs",
-  "main": "./lib/runner.js",
-  "exports": "./lib/runner.js",
-  "types": "./lib/index.d.ts",
+  "main": "./dist/runner.js",
+  "types": "./lib/runner.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/runner.js",
+      "require": "./dist/runner.js"
+    },
+    "./package.json": "./package.json"
+  },
   "author": "TZ <atian25@qq.com> (https://github.com/atian25)",
   "homepage": "https://github.com/node-modules/clet",
   "repository": "git@github.com:node-modules/clet.git",
+  "scripts": {
+    "lint": "eslint . --ext .ts",
+    "postlint": "tsc --noEmit",
+    "test": "cross-env TS_NODE_PROJECT=test/tsconfig.json mocha",
+    "cov": "c8 -n src/ npm test",
+    "ci": "npm run cov",
+    "tsc": "rm -rf dist && tsc",
+    "prepack": "npm run tsc"
+  },
+  "files": [
+    "dist"
+  ],
   "dependencies": {
     "consola": "^2.15.3",
     "dirname-filename-esm": "^1.1.1",
@@ -26,8 +44,6 @@
     "@artus/tsconfig": "^1",
     "@types/mocha": "^9.1.1",
     "@types/node": "^18.7.14",
-    "@vitest/coverage-c8": "^0.22.1",
-    "@vitest/ui": "^0.22.1",
     "cross-env": "^7.0.3",
     "enquirer": "^2.3.6",
     "eslint": "^7",
@@ -36,19 +52,9 @@
     "ts-node": "^10.9.1",
     "tslib": "^2.4.0",
     "typescript": "^4.8.2",
-    "vitest": "^0.22.1"
-  },
-  "files": [
-    "dist"
-  ],
-  "scripts": {
-    "lint": "eslint . --ext .ts",
-    "postlint": "tsc --noEmit",
-    "test": "vitest run",
-    "cov": "vitest run --coverage",
-    "ci": "npm run cov",
-    "tsc": "rm -rf dist && tsc",
-    "prepack": "npm run tsc"
+    "c8": "^7.12.0",
+    "mocha": "^10.0.0",
+    "ts-mocha": "^10.0.0"
   },
   "license": "MIT"
 }

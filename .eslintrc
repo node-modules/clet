@@ -3,17 +3,5 @@
   "parserOptions": {
     "project": "./tsconfig.json",
     "createDefaultProgram": true
-  },
-  "rules": {
-    "prefer-spread": "off",
-    "no-return-assign": "off",
-    "no-case-declarations": "off",
-    "prefer-const": "off",
-    "no-regex-spaces": "off",
-    "no-return-await": "off",
-    "@typescript-eslint/no-unused-vars": "off",
-    "@typescript-eslint/no-use-before-define": "off",
-    "@typescript-eslint/no-empty-function": "off",
-    "@typescript-eslint/no-var-requires": "off"
   }
 }

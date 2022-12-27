@@ -1,7 +1,7 @@
 import path from 'node:path';
 import assert from 'node:assert/strict';
 import execa from 'execa';
-import { Process } from '../src/process.js';
+import { Process } from '../src/lib/process';
 
 describe('test/process.test.ts', () => {
   describe('options', () => {

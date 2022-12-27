@@ -5,7 +5,7 @@ import { match, doesNotMatch, AssertionError } from 'node:assert/strict';
 import isMatch from 'lodash.ismatch';
 import { types, exists } from './utils';
 
-type Actual = string | number | Record<string, any>;
+type Actual = string | Record<string, any>;
 type Expected = string | RegExp | Record<string, any>;
 
 /**

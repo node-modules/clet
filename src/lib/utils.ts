@@ -2,7 +2,6 @@ import fs from 'node:fs/promises';
 import util from 'node:util';
 import path from 'node:path';
 
-import { dirname } from 'dirname-filename-esm';
 import isMatch from 'lodash.ismatch';
 import trash from 'trash';
 
@@ -74,9 +73,9 @@ export async function mkdir(dir: string, opts?: any) {
  */
 export async function rm(p, opts = {}) {
   /* istanbul ignore if */
-  if (opts.trash === false || process.env.CI) {
-    return await fs.rm(p, { force: true, recursive: true, ...opts });
-  }
+  // if (opts.trash === false || process.env.CI) {
+  //   return await fs.rm(p, { force: true, recursive: true, ...opts });
+  // }
   /* istanbul ignore next */
   return await trash(p, opts);
 }
@@ -111,10 +110,10 @@ export async function exists(filePath: string) {
  * @param  {...String} args - other paths
  * @return {String} file path
  */
-export function resolve(meta, ...args) {
-  const p = types.isObject(meta) ? dirname(meta) : meta;
-  return path.resolve(p, ...args);
-}
+// export function resolve(meta, ...args) {
+//   // const p = types.isObject(meta) ? dirname(meta) : meta;
+//   // return path.resolve(p, ...args);
+// }
 
 /**
  * take a sleep

@@ -1,0 +1,13 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "inlineSourceMap": true,
+  },
+  "ts-node": {
+    "transpileOnly": true,
+    "require": []
+  },
+  "include": [
+    "**/*.ts"
+  ]
+}

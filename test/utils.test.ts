@@ -1,8 +1,7 @@
-import { it, describe, beforeEach } from 'vitest';
 import fs from 'fs';
 import path from 'path';
 import { strict as assert } from 'assert';
-import * as utils from '../src/utils.js';
+import * as utils from '../src/lib/utils.js';
 import * as testUtils from '../test-old/test-utils.js';
 
 describe('test/utils.test.ts', () => {

@@ -17,3 +17,6 @@
     // prerun: [],
     // run: [],
     // postrun: [],
+
+// koa middleware
+// 初始化 -> fork -> await next() -> 校验 -> 结束
