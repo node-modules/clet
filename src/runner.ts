@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 
 import { MountPlugin, PluginLike, AsyncFunction, RestParam } from './types';
 import { Process, ProcessEvents, ProcessOptions } from './lib/process';
+import { mergeError, wrapFn } from './lib/utils';
 import * as validator from './plugins/validator';
 import * as operation from './plugins/operation';
 // import { doesNotMatchRule, matchRule, matchFile, doesNotMatchFile } from './lib/assert';
@@ -55,9 +56,7 @@ export class TestRunner extends EventEmitter {
   }
 
   hook(event: string, fn: AsyncFunction) {
-    const buildError = new Error('only for stack');
-    console.log(buildError.stack);
-    this.hooks[event].push(fn);
+    this.hooks[event].push(wrapFn(fn));
     return this;
   }
 

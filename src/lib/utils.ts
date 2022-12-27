@@ -4,6 +4,7 @@ import path from 'node:path';
 
 import isMatch from 'lodash.ismatch';
 import trash from 'trash';
+import { EOL } from 'node:os';
 
 const types = {
   ...util.types,
@@ -19,6 +20,36 @@ const types = {
 };
 
 export { types, isMatch };
+
+const extractPathRegex = /\s+at.*[(\s](.*):\d+:\d+\)?/;
+export function wrapFn(fn: (...args: any[]) => Promise<any>) {
+  let end = false;
+  const buildError = new Error('only for stack');
+  Error.captureStackTrace(buildError, wrapFn);
+  const additionalStack = buildError.stack!
+    .split(EOL)
+    .filter(line => {
+      const [, file] = line.match(extractPathRegex) || [];
+      if (!file || end) return false;
+      if (file.endsWith('.test.ts')) {
+        end = true;
+      }
+      return true;
+    })
+    .reverse()
+    .slice(0, 10)
+    .join(EOL);
+
+  return async (...args: any[]) => {
+    try {
+      return await fn(...args);
+    } catch (err) {
+      const index = err.stack!.indexOf('    at ');
+      err.stack = err.stack!.slice(0, index) + additionalStack + EOL + err.stack.slice(index);
+      throw err;
+    }
+  };
+}
 
 /**
  * validate input with expected rules

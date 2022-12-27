@@ -36,7 +36,7 @@ describe('test/process.test.ts', () => {
     assert.strictEqual(proc.result.code, 0);
   });
 
-  it.only('should spawn not-exits', async () => {
+  it('should spawn not-exits', async () => {
     const proc = new Process('spawn', 'not-exists');
     await proc.start();
     const a = await proc.end();
@@ -45,7 +45,7 @@ describe('test/process.test.ts', () => {
     assert.strictEqual(proc.result.code, 127);
   });
 
-  it.only('should fork not-exits', async () => {
+  it('should fork not-exits', async () => {
     const proc = new Process('fork', 'not-exists.ts');
     await proc.start();
     const a = await proc.end();
