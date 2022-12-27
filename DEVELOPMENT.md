@@ -12,3 +12,8 @@
 
     // console.log(this.middlewares);
     // return Promise.all(this.middlewares.map(fn => fn()));
+
+    // prepare: [],
+    // prerun: [],
+    // run: [],
+    // postrun: [],

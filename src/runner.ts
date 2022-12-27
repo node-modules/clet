@@ -4,30 +4,33 @@ import assert from 'node:assert/strict';
 import { MountPlugin, PluginLike, AsyncFunction, RestParam } from './types';
 import { Process, ProcessEvents, ProcessOptions } from './lib/process';
 import * as validator from './plugins/validator';
+import * as operation from './plugins/operation';
 import { doesNotMatchRule, matchRule, matchFile, doesNotMatchFile } from './lib/assert';
-import path from 'node:path';
 
 interface RunnerOptions {
   autoWait?: boolean;
 }
 
+type BuiltinPlugin<T extends PluginLike, Core> = {
+  [key in keyof T]: (...args: RestParam<T[key]>) => Core;
+};
+
+export function runner(opts?: RunnerOptions) {
+  return new TestRunner(opts); // .plugin({ ...validator, ...operation });
+}
+
+export interface TestRunner extends BuiltinPlugin<typeof validator, TestRunner>, BuiltinPlugin<typeof operation, TestRunner> {}
+
 export class TestRunner extends EventEmitter {
   private logger = console;
   private proc: Process;
   private options: RunnerOptions = {};
-  private middlewares: any[] = [];
   private hooks = {
     before: [],
     running: [],
     after: [],
-    // prepare: [],
-    // prerun: [],
-    // run: [],
-    // postrun: [],
     end: [],
   };
-
-  private waitType: 'end' | 'custom' = 'end';
 
   constructor(opts?: RunnerOptions) {
     super();
@@ -36,7 +39,7 @@ export class TestRunner extends EventEmitter {
       ...opts,
     };
 
-    // this.plugin({ ...validator });
+    this.plugin({ ...validator, ...operation });
   }
 
   // prepare 准备现场环境
@@ -50,7 +53,7 @@ export class TestRunner extends EventEmitter {
       const initFn = plugins[key];
 
       this[key] = (...args: RestParam<typeof initFn>) => {
-        console.log('mount %s with %j', key, ...args);
+        console.log('mount %s with %s', key, ...args);
         initFn(this, ...args);
         return this;
       };
@@ -63,10 +66,48 @@ export class TestRunner extends EventEmitter {
     return this;
   }
 
-  async runHook(event: string, ctx) {
-    for (const fn of this.hooks[event]) {
-      // TODO: ctx
-      await fn(ctx);
+  async end() {
+    try {
+      const ctx = {
+        proc: this.proc,
+        cwd: this.proc.opts.cwd,
+        result: this.proc.result,
+      };
+
+      // before
+      for (const fn of this.hooks['before']) {
+        await fn(ctx);
+      }
+
+      // exec child process, don't await it
+      await this.proc.start();
+
+      // running
+      for (const fn of this.hooks['running']) {
+        await fn(ctx);
+      }
+
+      if (this.options.autoWait) {
+        await this.proc.end();
+      }
+
+      // postrun
+      for (const fn of this.hooks['after']) {
+        await fn(ctx);
+      }
+
+      // end
+      for (const fn of this.hooks['end']) {
+        await fn(ctx);
+      }
+
+      this.logger.info('✔ Test pass.\n');
+    } catch (err) {
+      this.logger.error('⚠ Test failed.\n');
+      throw err;
+    } finally {
+      // clean up
+      this.proc.kill();
     }
   }
 
@@ -80,49 +121,6 @@ export class TestRunner extends EventEmitter {
     assert(!this.proc, 'cmd can not be registered twice');
     this.proc = new Process('spawn', cmd, args, opts);
     return this;
-  }
-
-  // hook?
-  use(fn: AsyncFunction) {
-    this.middlewares.push(fn);
-    return this;
-  }
-
-  async end() {
-    try {
-      const ctx = {
-        proc: this.proc,
-        cwd: this.proc.opts.cwd,
-        result: this.proc.result,
-      };
-
-      // before
-      await this.runHook('before', ctx);
-
-      // exec child process, don't await it
-      await this.proc.start();
-
-      // running
-      await this.runHook('running', ctx);
-
-      if (this.options.autoWait) {
-        await this.proc.end();
-      }
-
-      // postrun
-      await this.runHook('after', ctx);
-
-      // end
-      await this.runHook('end', ctx);
-
-      this.logger.info('✔ Test pass.\n');
-    } catch (err) {
-      this.logger.error('⚠ Test failed.\n');
-      throw err;
-    } finally {
-      // clean up
-      this.proc.kill();
-    }
   }
 
   wait(type: ProcessEvents, expected) {
@@ -177,10 +175,6 @@ export class TestRunner extends EventEmitter {
   //     assert.equal(result.code, expected);
   //   });
   // }
-}
-
-export function runner() {
-  return new TestRunner().plugin({ ...validator });
 }
 
 // function fork(runner: TestRunner, cmd, args, opts) {

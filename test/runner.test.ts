@@ -9,6 +9,9 @@ describe('test/runner.test.ts', () => {
         .notStdout('some text')
         .stderr(/Debugger listening on/)
         .notStderr('some error')
+        .tap(async runner => {
+          console.log('@@@', runner);
+        })
         .end();
     });
 
