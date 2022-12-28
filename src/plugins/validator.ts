@@ -1,7 +1,13 @@
 import path from 'node:path';
 import assert from 'node:assert/strict';
-import type { TestRunner } from '../runner';
+import type { TestRunner, HookFunction } from '../runner';
 import { matchRule, doesNotMatchRule, matchFile, doesNotMatchFile } from '../lib/assert';
+
+export function expect(runner: TestRunner, fn: HookFunction) {
+  return runner.hook('after', async ctx => {
+    await fn.call(runner, ctx);
+  });
+}
 
 export function stdout(runner: TestRunner, expected: string | RegExp) {
   return runner.hook('after', async ctx => {

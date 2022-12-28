@@ -1,27 +1,38 @@
 import EventEmitter from 'events';
 import assert from 'node:assert/strict';
 
-import { MountPlugin, PluginLike, AsyncFunction, RestParam } from './types';
-import { Process, ProcessEvents, ProcessOptions } from './lib/process';
-import { mergeError, wrapFn } from './lib/utils';
-import * as validator from './plugins/validator';
-import * as operation from './plugins/operation';
+import { Process, ProcessEvents, ProcessOptions, ProcessResult } from './lib/process';
+import { wrapFn } from './lib/utils';
 // import { doesNotMatchRule, matchRule, matchFile, doesNotMatchFile } from './lib/assert';
+
+export type HookFunction = (ctx: RunnerContext) => void | Promise<void>;
+export type RestParam<T> = T extends (first: any, ...args: infer R) => any ? R : any;
+
+export type MountPlugin<T, TestRunner> = {
+  [key in keyof T]: T[key] extends (core: TestRunner, ...args: infer I) => any ? (...args: I) => MountPlugin<T, TestRunner> : undefined;
+} & TestRunner;
+
+// use `satisfies`
+export interface PluginLike {
+  [key: string]: (core: TestRunner, ...args: any[]) => any;
+}
 
 export interface RunnerOptions {
   autoWait?: boolean;
 }
 
-export function runner(opts?: RunnerOptions) {
-  return new TestRunner(opts)
-    .plugin({ ...validator, ...operation });
+export interface RunnerContext {
+  proc: Process;
+  cwd: string;
+  result: ProcessResult;
+  autoWait?: boolean;
 }
 
 export class TestRunner extends EventEmitter {
   private logger = console;
   private proc: Process;
   private options: RunnerOptions = {};
-  private hooks: Record<string, AsyncFunction[]> = {
+  private hooks: Record<string, HookFunction[]> = {
     before: [],
     running: [],
     after: [],
@@ -31,23 +42,17 @@ export class TestRunner extends EventEmitter {
   constructor(opts?: RunnerOptions) {
     super();
     this.options = {
-      autoWait: true,
+      // autoWait: true,
       ...opts,
     };
+    // console.log(this.options);
   }
 
-  // prepare 准备现场环境
-  // prerun 检查参数，在 fork 定义之后
-  // run 处理 stdin
-  // postrun 检查 assert
-  // end 检查 code，清理现场，相当于 finnaly
-
-  plugin(plugins: PluginLike): MountPlugin<PluginLike, this> {
+  plugin<T extends PluginLike>(plugins: T): MountPlugin<T, this> {
     for (const key of Object.keys(plugins)) {
       const initFn = plugins[key];
 
       this[key] = (...args: RestParam<typeof initFn>) => {
-        console.log('mount %s with %s', key, ...args);
         initFn(this, ...args);
         return this;
       };
@@ -55,17 +60,18 @@ export class TestRunner extends EventEmitter {
     return this as any;
   }
 
-  hook(event: string, fn: AsyncFunction) {
+  hook(event: string, fn: HookFunction) {
     this.hooks[event].push(wrapFn(fn));
     return this;
   }
 
   async end() {
     try {
-      const ctx = {
+      const ctx: RunnerContext = {
         proc: this.proc,
-        cwd: this.proc.opts.cwd,
+        cwd: this.proc.opts.cwd!,
         result: this.proc.result,
+        autoWait: true,
       };
 
       // before
@@ -81,7 +87,7 @@ export class TestRunner extends EventEmitter {
         await fn(ctx);
       }
 
-      if (this.options.autoWait) {
+      if (ctx.autoWait) {
         await this.proc.end();
       }
 
@@ -118,11 +124,20 @@ export class TestRunner extends EventEmitter {
   }
 
   wait(type: ProcessEvents, expected) {
-    this.options.autoWait = false;
+    // prevent auto wait
+    this.hook('before', ctx => {
+      ctx.autoWait = false;
+    });
+
     // wait for process ready then assert
-    return this.hook('running', async ({ proc }) => {
-      // ctx.autoWait = false;
+    this.hook('running', async ({ proc }) => {
       await proc.wait(type, expected);
     });
+
+    return this;
   }
+
+  // stdin() {
+  //   // return this.proc.stdin();
+  // }
 }

@@ -67,10 +67,10 @@ describe('test/utils.test.ts', () => {
   //   assert(isExist);
   // });
 
-  it('resolve', async () => {
-    const p = utils.resolve('test', './fixtures');
-    assert(fs.existsSync(p));
-  });
+  // it('resolve', async () => {
+  //   const p = utils.resolve('test', './fixtures');
+  //   assert(fs.existsSync(p));
+  // });
 
   it('sleep', async () => {
     const start = Date.now();

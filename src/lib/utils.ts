@@ -1,10 +1,10 @@
 import fs from 'node:fs/promises';
 import util from 'node:util';
 import path from 'node:path';
+import { EOL } from 'node:os';
 
 import isMatch from 'lodash.ismatch';
 import trash from 'trash';
-import { EOL } from 'node:os';
 
 const types = {
   ...util.types,
@@ -22,17 +22,19 @@ const types = {
 export { types, isMatch };
 
 const extractPathRegex = /\s+at.*[(\s](.*):\d+:\d+\)?/;
-export function wrapFn(fn: (...args: any[]) => Promise<any>) {
-  let end = false;
+const testFileRegex = /\.(test|spec)\.(ts|mts|cts|js|cjs|mjs)$/;
+
+export function wrapFn<T extends (...args: any[]) => any>(fn: T): T {
+  let testFile;
   const buildError = new Error('only for stack');
   Error.captureStackTrace(buildError, wrapFn);
   const additionalStack = buildError.stack!
     .split(EOL)
     .filter(line => {
       const [, file] = line.match(extractPathRegex) || [];
-      if (!file || end) return false;
-      if (file.endsWith('.test.ts')) {
-        end = true;
+      if (!file || testFile) return false;
+      if (file.match(testFileRegex)) {
+        testFile = file;
       }
       return true;
     })
@@ -40,15 +42,22 @@ export function wrapFn(fn: (...args: any[]) => Promise<any>) {
     .slice(0, 10)
     .join(EOL);
 
-  return async (...args: any[]) => {
+  const wrappedFn = async function (...args: Parameters<T>) {
     try {
       return await fn(...args);
     } catch (err) {
       const index = err.stack!.indexOf('    at ');
-      err.stack = err.stack!.slice(0, index) + additionalStack + EOL + err.stack.slice(index);
+      const lineEndIndex = err.stack!.indexOf('\n', index);
+      const line = err.stack!.slice(index, lineEndIndex);
+      if (!line.includes(testFile)) {
+        err.stack = err.stack!.slice(0, index) + additionalStack + EOL + err.stack.slice(index);
+      }
+      err.cause = buildError;
       throw err;
     }
   };
+
+  return wrappedFn as T;
 }
 
 /**

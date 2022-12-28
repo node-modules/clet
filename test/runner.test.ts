@@ -1,35 +1,41 @@
-import { runner } from '../src/runner';
+import assert from 'node:assert/strict';
+import { runner } from '../src/index';
 
 describe('test/runner.test.ts', () => {
   describe('process', () => {
-    // it('should spawn', async () => {
-    //   await runner()
-    //     .spawn('node', [ '-p', 'process.version', '--inspect' ])
-    //     .stdout(/v\d+\.\d+\.\d+/)
-    //     .notStdout('some text')
-    //     .stderr(/Debugger listening on/)
-    //     .notStderr('some error')
-    //     .tap(async runner => {
-    //       console.log('@@@', runner);
-    //     })
-    //     .end();
-    // });
+    it('should spawn', async () => {
+      await runner()
+        .spawn('node', [ '-p', 'process.version', '--inspect' ])
+        .stdout(/v\d+\.\d+\.\d+/)
+        .notStdout('some text')
+        .stderr(/Debugger listening on/)
+        .notStderr('some error')
+        .end();
+    });
 
-    // it('should fork', async () => {
-    //   await runner()
-    //     .fork('test/fixtures/process/fork.ts')
-    //     .stdout(/v\d+\.\d+\.\d+/)
-    //     .notStdout('some text')
-    //     .stderr(/this is testing/)
-    //     .notStderr('some error')
-    //     .end();
-    // });
-
-    it.only('should correct error stack', async () => {
+    it('should fork', async () => {
       await runner()
         .fork('test/fixtures/process/fork.ts')
-        .stdout(/abc/)
+        .stdout(/v\d+\.\d+\.\d+/)
+        .notStdout('some text')
+        .stderr(/this is testing/)
+        .notStderr('some error')
         .end();
+    });
+
+    it('should correct error stack', async function test_stack() {
+      try {
+        await runner()
+          .spawn('npm', [ '-v' ])
+          .stdout(/abc/)
+          .end();
+      } catch (err) {
+        const index = err.stack!.indexOf('    at ');
+        const lineEndIndex = err.stack!.indexOf('\n', index);
+        const line = err.stack!.slice(index, lineEndIndex);
+        // console.log(line);
+        assert(line.startsWith('    at Context.test_stack'));
+      }
     });
 
     // it.only('should wait stdout', async () => {

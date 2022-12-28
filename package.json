@@ -3,12 +3,12 @@
   "version": "1.0.1",
   "description": "Command Line E2E Testing",
   "type": "commonjs",
-  "main": "./dist/runner.js",
-  "types": "./lib/runner.d.ts",
+  "main": "./dist/index.js",
+  "types": "./lib/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/runner.js",
-      "require": "./dist/runner.js"
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
     },
     "./package.json": "./package.json"
   },
@@ -18,7 +18,7 @@
   "scripts": {
     "lint": "eslint . --ext .ts",
     "postlint": "tsc --noEmit",
-    "test": "cross-env TS_NODE_PROJECT=test/tsconfig.json mocha",
+    "test": "mocha",
     "cov": "c8 -n src/ npm test",
     "ci": "npm run cov",
     "tsc": "rm -rf dist && tsc",

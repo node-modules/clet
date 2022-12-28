@@ -29,6 +29,8 @@ export class Process extends EventEmitter {
   result: ProcessResult;
   proc: execa.ExecaChildProcess;
 
+  private isDebug = false;
+
   constructor(type: Process['type'], cmd: string, args: string[] = [], opts: ProcessOptions = {}) {
     super();
     // assert(!this.cmd, 'cmd can not be registered twice');
@@ -79,6 +81,10 @@ export class Process extends EventEmitter {
     this.opts.cwd = cwd;
   }
 
+  debug() {
+    this.isDebug = true;
+  }
+
   async start() {
     if (this.type === 'fork') {
       this.proc = execa.node(this.cmd, this.args, this.opts);
@@ -90,10 +96,14 @@ export class Process extends EventEmitter {
     this.proc.then(res => {
       if (res instanceof Error) {
         this.result.code = res.exitCode;
-        if ((res as any).code === 'ENOENT') {
+        const { code, message } = res as any;
+        if (code === 'ENOENT') {
           this.result.code = 127;
-          this.result.stderr += (res as any).originalMessage;
+          this.result.stderr += message;
         }
+        // TODO: failed to start
+        // this.result.stdout = res.stdout;
+        // this.result.stderr = res.stderr;
       }
     });
 
@@ -103,16 +113,14 @@ export class Process extends EventEmitter {
       const origin = stripFinalNewline(data.toString());
       const content = stripAnsi(origin);
       this.result.stdout += content;
-      // console.log('stdout', origin);
-      console.log(origin);
+      if (this.isDebug) console.log(origin);
     });
 
     this.proc.stderr!.on('data', data => {
       const origin = stripFinalNewline(data.toString());
       const content = stripAnsi(origin);
       this.result.stderr += content;
-      // console.log('stderr', origin);
-      console.error(origin);
+      if (this.isDebug) console.error(origin);
     });
 
     this.proc.on('message', data => {
@@ -123,6 +131,10 @@ export class Process extends EventEmitter {
     this.proc.once('exit', code => {
       this.result.code = code;
       // console.log('close event:', code);
+    });
+
+    this.proc.on('error', err => {
+      if (this.isDebug) console.error(err);
     });
 
     // this.proc.once('close', code => {
