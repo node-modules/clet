@@ -18,22 +18,26 @@ export interface PluginLike {
   [key: string]: (core: TestRunner, ...args: any[]) => any;
 }
 
+export type HookEventType = 'before' | 'running' | 'after' | 'end' | 'error';
+
 export interface RunnerContext {
   proc: Process;
   cwd: string;
   result: ProcessResult;
   autoWait?: boolean;
+  autoCheckCode?: boolean;
   debug?: boolean;
 }
 
 export class TestRunner extends EventEmitter {
   private logger = logger;
   private proc: Process;
-  private hooks: Record<string, HookFunction[]> = {
+  private hooks: Record<HookEventType, HookFunction[]> = {
     before: [],
     running: [],
     after: [],
     end: [],
+    error: [],
   };
 
   plugin<T extends PluginLike>(plugins: T): MountPlugin<T, this> {
@@ -48,12 +52,12 @@ export class TestRunner extends EventEmitter {
     return this as any;
   }
 
-  hook(event: string, fn: HookFunction) {
+  hook(event: HookEventType, fn: HookFunction) {
     this.hooks[event].push(wrapFn(fn));
     return this;
   }
 
-  async runHook(event: string, ctx: RunnerContext) {
+  async runHook(event: HookEventType, ctx: RunnerContext) {
     for (const fn of this.hooks[event]) {
       await fn(ctx);
     }
@@ -64,8 +68,12 @@ export class TestRunner extends EventEmitter {
       const ctx: RunnerContext = {
         proc: this.proc,
         cwd: this.proc.opts.cwd!,
-        result: this.proc.result,
+        // use getter
+        get result() {
+          return this.proc.result;
+        },
         autoWait: true,
+        autoCheckCode: true,
       };
 
       assert(this.proc, 'cmd is not registered yet');
@@ -107,6 +115,13 @@ export class TestRunner extends EventEmitter {
       // end
       for (const fn of this.hooks['end']) {
         await fn(ctx);
+      }
+
+      // if developer don't call `.code()`, will rethrow proc error in order to avoid omissions
+      if (ctx.autoCheckCode) {
+        // `killed` is true only if call `kill()/cancel()` manually
+        const { failed, isCanceled, killed } = ctx.result;
+        if (failed && !isCanceled && !killed) throw ctx.result;
       }
 
       this.logger.success('Test pass.\n');

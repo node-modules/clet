@@ -23,6 +23,23 @@ describe('test/runner.test.ts', () => {
         .end();
     });
 
+    describe('code()', () => {
+      it('should skip auto check code when .code(1)', async () => {
+        await runner()
+          .fork('test/fixtures/process/error.ts')
+          .code(1)
+          .end();
+      });
+
+      it('should auto check code when fail', async () => {
+        await assert.rejects(async () => {
+          await runner()
+            .fork('test/fixtures/process/error.ts')
+            .end();
+        }, /Command failed with exit code 1/);
+      });
+    });
+
     it('should correct error stack', async function test_stack() {
       try {
         await runner()

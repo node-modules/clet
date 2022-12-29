@@ -22,8 +22,8 @@ export class Process extends EventEmitter {
   cmd: string;
   args: string[];
   opts: ProcessOptions;
-  result: ProcessResult;
   proc: ExecaChildProcess;
+  result: ProcessResult;
 
   constructor(type: Process['type'], cmd: string, args: string[] = [], opts: ProcessOptions = {}) {
     super();
@@ -83,10 +83,9 @@ export class Process extends EventEmitter {
     }
 
     this.proc.then(res => {
-      this.result = {
-        ...res,
-        ...this.result,
-      };
+      this.result = res;
+      this.result.stdout = stripAnsi(this.result.stdout);
+      this.result.stderr = stripAnsi(this.result.stderr);
 
       if (res instanceof Error) {
         // when spawn not exist, code is ENOENT

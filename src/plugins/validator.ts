@@ -42,7 +42,18 @@ export function notFile(runner: TestRunner, filePath: string, expected: string |
 }
 
 export function code(runner: TestRunner, expected: number) {
-  return runner.expect(async ({ result }) => {
-    assert.equal(result.exitCode, expected);
+  runner.expect(async ctx => {
+    ctx.autoCheckCode = false;
+    // when using `.wait()`, it could maybe not exit at this time, so skip and will double check it later
+    if (ctx.result.exitCode !== undefined) {
+      assert.equal(ctx.result.exitCode, expected);
+    }
   });
+
+  // double check
+  runner.hook('end', async ctx => {
+    assert.equal(ctx.result.exitCode, expected);
+  });
+
+  return runner;
 }
