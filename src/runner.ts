@@ -1,8 +1,9 @@
 import EventEmitter from 'events';
 import assert from 'node:assert/strict';
+import logger from 'consola';
 
 import { Process, ProcessEvents, ProcessOptions, ProcessResult } from './lib/process';
-import { wrapFn } from './lib/utils';
+import { wrapFn, color } from './lib/utils';
 // import { doesNotMatchRule, matchRule, matchFile, doesNotMatchFile } from './lib/assert';
 
 export type HookFunction = (ctx: RunnerContext) => void | Promise<void>;
@@ -17,36 +18,23 @@ export interface PluginLike {
   [key: string]: (core: TestRunner, ...args: any[]) => any;
 }
 
-export interface RunnerOptions {
-  autoWait?: boolean;
-}
-
 export interface RunnerContext {
   proc: Process;
   cwd: string;
   result: ProcessResult;
   autoWait?: boolean;
+  debug?: boolean;
 }
 
 export class TestRunner extends EventEmitter {
-  private logger = console;
+  private logger = logger;
   private proc: Process;
-  private options: RunnerOptions = {};
   private hooks: Record<string, HookFunction[]> = {
     before: [],
     running: [],
     after: [],
     end: [],
   };
-
-  constructor(opts?: RunnerOptions) {
-    super();
-    this.options = {
-      // autoWait: true,
-      ...opts,
-    };
-    // console.log(this.options);
-  }
 
   plugin<T extends PluginLike>(plugins: T): MountPlugin<T, this> {
     for (const key of Object.keys(plugins)) {
@@ -65,6 +53,12 @@ export class TestRunner extends EventEmitter {
     return this;
   }
 
+  async runHook(event: string, ctx: RunnerContext) {
+    for (const fn of this.hooks[event]) {
+      await fn(ctx);
+    }
+  }
+
   async end() {
     try {
       const ctx: RunnerContext = {
@@ -74,26 +68,40 @@ export class TestRunner extends EventEmitter {
         autoWait: true,
       };
 
+      assert(this.proc, 'cmd is not registered yet');
+
       // before
-      for (const fn of this.hooks['before']) {
-        await fn(ctx);
-      }
+      await this.runHook('before', ctx);
 
       // exec child process, don't await it
       await this.proc.start();
 
+      this.proc.on('stdout', data => {
+        console.log(color(data, 2, 22));
+      });
+
+      this.proc.on('stderr', data => {
+        console.error(color(data, 2, 22));
+      });
+
       // running
-      for (const fn of this.hooks['running']) {
-        await fn(ctx);
-      }
+      await this.runHook('running', ctx);
 
       if (ctx.autoWait) {
         await this.proc.end();
       }
 
-      // postrun
-      for (const fn of this.hooks['after']) {
-        await fn(ctx);
+      // after
+      await this.runHook('after', ctx);
+
+      // ensure proc is exit if user forgot to call `wait('close')` after wait other event
+      if (!ctx.autoWait) {
+        await this.proc.end();
+      }
+
+      // error
+      if (ctx.result instanceof Error) {
+        await this.runHook('error', ctx);
       }
 
       // end
@@ -101,9 +109,9 @@ export class TestRunner extends EventEmitter {
         await fn(ctx);
       }
 
-      this.logger.info('✔ Test pass.\n');
+      this.logger.success('Test pass.\n');
     } catch (err) {
-      this.logger.error('⚠ Test failed.\n');
+      this.logger.error('Test failed.\n');
       throw err;
     } finally {
       // clean up
@@ -121,6 +129,24 @@ export class TestRunner extends EventEmitter {
     assert(!this.proc, 'cmd can not be registered twice');
     this.proc = new Process('spawn', cmd, args, opts);
     return this;
+  }
+
+  debug(enabled = true) {
+    return this.hook('before', ctx => {
+      ctx.debug = enabled;
+      // this.proc.debug(enabled);
+    });
+  }
+
+  tap(fn: HookFunction) {
+    return this.hook(this.proc ? 'after' : 'before', fn);
+  }
+
+  expect(fn: HookFunction) {
+    return this.tap(async ctx => {
+      // TODO: wrapfn here
+      await fn.call(this, ctx);
+    });
   }
 
   wait(type: ProcessEvents, expected) {

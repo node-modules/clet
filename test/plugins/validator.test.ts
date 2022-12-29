@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
 import { runner } from '../../src/index';
 
-describe.only('test/plugins/validator.test.ts', () => {
-  it.only('should stdout() / stderr()', async () => {
+describe('test/plugins/validator.test.ts', () => {
+  it('should stdout() / stderr()', async () => {
     await runner()
-      .spawn('node1', ['-p', 'process.version', '--inspect'])
+      .spawn('node', ['-p', 'process.version', '--inspect'])
       .stdout(/v\d+\.\d+\.\d+/)
       .notStdout('some text')
       .stderr(/Debugger listening on/)
@@ -24,7 +24,7 @@ describe.only('test/plugins/validator.test.ts', () => {
     await runner()
       .spawn('npm', ['-v'])
       .expect(ctx => {
-        assert.equal(ctx.result.code, 0);
+        assert.equal(ctx.result.exitCode, 0);
       })
       .end();
 
@@ -32,14 +32,14 @@ describe.only('test/plugins/validator.test.ts', () => {
       await runner()
         .spawn('npm', ['-v'])
         .expect(ctx => {
-          assert.equal(ctx.result.code, 1);
+          assert.equal(ctx.result.exitCode, 1);
         })
         .end();
     }, /Expected values to be strictly equal/);
   });
 
   describe('error stack', () => {
-    it.only('should correct error stack', async function test_stack() {
+    it('should correct error stack', async function test_stack() {
       try {
         await runner()
           .spawn('npm', ['-v'])

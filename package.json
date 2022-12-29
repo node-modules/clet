@@ -19,7 +19,7 @@
     "lint": "eslint . --ext .ts",
     "postlint": "tsc --noEmit",
     "test": "mocha",
-    "cov": "c8 -n src/ npm test",
+    "cov": "c8 -n src/ -r html -r text npm test",
     "ci": "npm run cov",
     "tsc": "rm -rf dist && tsc",
     "prepack": "npm run tsc"

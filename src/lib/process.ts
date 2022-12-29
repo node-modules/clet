@@ -3,22 +3,18 @@ import { PassThrough } from 'node:stream';
 import { EOL } from 'node:os';
 
 import * as execa from 'execa';
+import { NodeOptions, ExecaReturnValue, ExecaChildProcess } from 'execa';
 import pEvent from 'p-event';
 import stripFinalNewline from 'strip-final-newline';
 import stripAnsi from 'strip-ansi';
 
-export interface ProcessResult {
-  code: number | null;
-  stdout: string;
-  stderr: string;
-}
-
 export type ProcessOptions = {
-  -readonly [ key in keyof execa.NodeOptions ]: execa.NodeOptions[key];
+  -readonly [ key in keyof NodeOptions ]: NodeOptions[key];
 } & {
-  execArgv?: execa.NodeOptions['nodeOptions'];
+  execArgv?: NodeOptions['nodeOptions'];
 };
 
+export type ProcessResult = ExecaReturnValue;
 export type ProcessEvents = 'stdout' | 'stderr' | 'message' | 'exit' | 'close';
 
 export class Process extends EventEmitter {
@@ -27,9 +23,7 @@ export class Process extends EventEmitter {
   args: string[];
   opts: ProcessOptions;
   result: ProcessResult;
-  proc: execa.ExecaChildProcess;
-
-  private isDebug = false;
+  proc: ExecaChildProcess;
 
   constructor(type: Process['type'], cmd: string, args: string[] = [], opts: ProcessOptions = {}) {
     super();
@@ -57,10 +51,9 @@ export class Process extends EventEmitter {
     // need to test color
 
     this.result = {
-      code: null,
       stdout: '',
       stderr: '',
-    };
+    } as any;
   }
 
   write(data: string) {
@@ -81,10 +74,6 @@ export class Process extends EventEmitter {
     this.opts.cwd = cwd;
   }
 
-  debug() {
-    this.isDebug = true;
-  }
-
   async start() {
     if (this.type === 'fork') {
       this.proc = execa.node(this.cmd, this.args, this.opts);
@@ -94,33 +83,33 @@ export class Process extends EventEmitter {
     }
 
     this.proc.then(res => {
+      this.result = {
+        ...res,
+        ...this.result,
+      };
+
       if (res instanceof Error) {
-        this.result.code = res.exitCode;
+        // when spawn not exist, code is ENOENT
         const { code, message } = res as any;
         if (code === 'ENOENT') {
-          this.result.code = 127;
+          this.result.exitCode = 127;
           this.result.stderr += message;
         }
-        // TODO: failed to start
-        // this.result.stdout = res.stdout;
-        // this.result.stderr = res.stderr;
       }
     });
-
-    // this.proc.stdin.setEncoding('utf8');
 
     this.proc.stdout!.on('data', data => {
       const origin = stripFinalNewline(data.toString());
       const content = stripAnsi(origin);
       this.result.stdout += content;
-      if (this.isDebug) console.log(origin);
+      this.emit('stdout', origin);
     });
 
     this.proc.stderr!.on('data', data => {
       const origin = stripFinalNewline(data.toString());
       const content = stripAnsi(origin);
       this.result.stderr += content;
-      if (this.isDebug) console.error(origin);
+      this.emit('stderr', origin);
     });
 
     this.proc.on('message', data => {
@@ -128,14 +117,14 @@ export class Process extends EventEmitter {
       // console.log('message event:', data);
     });
 
-    this.proc.once('exit', code => {
-      this.result.code = code;
-      // console.log('close event:', code);
-    });
+    // this.proc.once('exit', code => {
+    //   this.result.exitCode = code;
+    //   // console.log('close event:', code);
+    // });
 
-    this.proc.on('error', err => {
-      if (this.isDebug) console.error(err);
-    });
+    // this.proc.on('error', err => {
+    //   console.log('@@error', err);
+    // });
 
     // this.proc.once('close', code => {
     //   // this.emit('close', code);

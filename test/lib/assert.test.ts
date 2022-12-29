@@ -1,9 +1,9 @@
 import path from 'node:path';
 import assert from 'node:assert/strict';
 
-import { matchRule, doesNotMatchRule, matchFile, doesNotMatchFile } from '../src/lib/assert';
+import { matchRule, doesNotMatchRule, matchFile, doesNotMatchFile } from '../../src/lib/assert';
 
-describe('test/assert.test.ts', () => {
+describe('test/lib/assert.test.ts', () => {
   const pkgInfo = {
     name: 'clet',
     version: '1.0.0',

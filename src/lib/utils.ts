@@ -2,6 +2,7 @@ import fs from 'node:fs/promises';
 import util from 'node:util';
 import path from 'node:path';
 import { EOL } from 'node:os';
+import tty from 'node:tty';
 
 import isMatch from 'lodash.ismatch';
 import trash from 'trash';
@@ -47,7 +48,7 @@ export function wrapFn<T extends (...args: any[]) => any>(fn: T): T {
       return await fn(...args);
     } catch (err) {
       const index = err.stack!.indexOf('    at ');
-      const lineEndIndex = err.stack!.indexOf('\n', index);
+      const lineEndIndex = err.stack!.indexOf(EOL, index);
       const line = err.stack!.slice(index, lineEndIndex);
       if (!line.includes(testFile)) {
         err.stack = err.stack!.slice(0, index) + additionalStack + EOL + err.stack.slice(index);
@@ -164,4 +165,11 @@ export async function sleep(ms: number) {
   return new Promise(resolve => {
     setTimeout(resolve, ms);
   });
+}
+
+export function color(str: string, startCode: number, endCode: number) {
+  // https://github.com/sindresorhus/yoctocolors
+  const hasColors = tty.WriteStream.prototype.hasColors();
+  if (!hasColors) return str;
+  return '\u001B[' + startCode + 'm' + str + '\u001B[' + endCode + 'm';
 }
