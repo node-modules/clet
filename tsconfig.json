@@ -1,0 +1,13 @@
+{
+  "extends": "@artus/tsconfig",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "strictNullChecks": true,
+    "resolveJsonModule": true,
+    "outDir": "dist"
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.json"
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "extends": "@artus/eslint-config-artus/typescript",
+  "parserOptions": {
+    "project": "./tsconfig.json",
+    "createDefaultProgram": true
+  }
+}

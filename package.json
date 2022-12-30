@@ -2,73 +2,60 @@
   "name": "clet",
   "version": "1.0.1",
   "description": "Command Line E2E Testing",
-  "type": "module",
-  "main": "./lib/runner.js",
-  "exports": "./lib/runner.js",
+  "type": "commonjs",
+  "main": "./dist/index.js",
   "types": "./lib/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
   "author": "TZ <atian25@qq.com> (https://github.com/atian25)",
   "homepage": "https://github.com/node-modules/clet",
   "repository": "git@github.com:node-modules/clet.git",
+  "scripts": {
+    "lint": "eslint . --ext .ts",
+    "postlint": "tsc --noEmit",
+    "test": "mocha",
+    "cov": "c8 -n src/ -r html -r text npm test",
+    "ci": "npm run cov",
+    "tsc": "rm -rf dist && tsc",
+    "prepack": "npm run tsc"
+  },
+  "files": [
+    "dist"
+  ],
   "dependencies": {
+    "consola": "^2.15.3",
     "dirname-filename-esm": "^1.1.1",
     "dot-prop": "^7.2.0",
-    "execa": "^6.1.0",
+    "execa": "^5",
+    "extract-stack": "^2",
     "lodash.ismatch": "^4.4.0",
-    "p-event": "^5.0.1",
-    "strip-ansi": "^7.0.1",
-    "strip-final-newline": "^3.0.0",
+    "p-event": "^4",
+    "strip-ansi": "^6",
+    "strip-final-newline": "^2",
     "throwback": "^4.1.0",
-    "trash": "^8.1.0"
+    "trash": "^7"
   },
   "devDependencies": {
-    "@vitest/coverage-c8": "^0.22.1",
-    "@vitest/ui": "^0.22.1",
+    "@artus/eslint-config-artus": "^0.0.1",
+    "@artus/tsconfig": "^1",
+    "@types/mocha": "^9.1.1",
+    "@types/node": "^18.7.14",
+    "c8": "^7.12.0",
     "cross-env": "^7.0.3",
-    "egg-ci": "^1.19.0",
     "enquirer": "^2.3.6",
     "eslint": "^7",
     "eslint-config-egg": "^9",
+    "mocha": "^10.0.0",
     "supertest": "^6.2.3",
-    "vitest": "^0.22.1"
-  },
-  "files": [
-    "bin",
-    "lib",
-    "index.js"
-  ],
-  "scripts": {
-    "lint": "eslint .",
-    "test": "vitest",
-    "cov": "vitest run --coverage",
-    "ci": "npm run lint && npm run cov"
-  },
-  "ci": {
-    "version": "14, 16, 18",
-    "type": "github",
-    "npminstall": false
-  },
-  "eslintConfig": {
-    "extends": "eslint-config-egg",
-    "root": true,
-    "env": {
-      "node": true,
-      "browser": false,
-      "jest": true
-    },
-    "rules": {
-      "node/file-extension-in-import": [
-        "error",
-        "always"
-      ]
-    },
-    "parserOptions": {
-      "sourceType": "module"
-    },
-    "ignorePatterns": [
-      "dist",
-      "coverage",
-      "node_modules"
-    ]
+    "ts-mocha": "^10.0.0",
+    "ts-node": "^10.9.1",
+    "tslib": "^2.4.0",
+    "typescript": "^4.8.2"
   },
   "license": "MIT"
 }
