@@ -38,7 +38,7 @@ describe('test/plugins/validator.test.ts', () => {
     }, /Expected values to be strictly equal/);
   });
 
-  describe('error stack', () => {
+  describe.only('error stack', () => {
     it('should correct error stack', async function test_stack() {
       try {
         await runner()

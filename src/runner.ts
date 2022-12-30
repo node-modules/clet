@@ -9,8 +9,8 @@ import { wrapFn, color } from './lib/utils';
 export type HookFunction = (ctx: RunnerContext) => void | Promise<void>;
 export type RestParam<T> = T extends (first: any, ...args: infer R) => any ? R : any;
 
-export type MountPlugin<T, TestRunner> = {
-  [key in keyof T]: T[key] extends (core: TestRunner, ...args: infer I) => any ? (...args: I) => MountPlugin<T, TestRunner> : undefined;
+export type MountPlugin<T> = {
+  [P in keyof T]: T[P] extends (core: TestRunner, ...args: infer I) => any ? (...args: I) => MountPlugin<T> : undefined;
 } & TestRunner;
 
 // use `satisfies`
@@ -40,7 +40,7 @@ export class TestRunner extends EventEmitter {
     error: [],
   };
 
-  plugin<T extends PluginLike>(plugins: T): MountPlugin<T, this> {
+  plugin<T extends PluginLike>(plugins: T) {
     for (const key of Object.keys(plugins)) {
       const initFn = plugins[key];
 
@@ -49,18 +49,12 @@ export class TestRunner extends EventEmitter {
         return this;
       };
     }
-    return this as any;
+    return this as MountPlugin<T>;
   }
 
   hook(event: HookEventType, fn: HookFunction) {
     this.hooks[event].push(wrapFn(fn));
     return this;
-  }
-
-  async runHook(event: HookEventType, ctx: RunnerContext) {
-    for (const fn of this.hooks[event]) {
-      await fn(ctx);
-    }
   }
 
   async end() {
@@ -79,7 +73,9 @@ export class TestRunner extends EventEmitter {
       assert(this.proc, 'cmd is not registered yet');
 
       // before
-      await this.runHook('before', ctx);
+      for (const fn of this.hooks['before']) {
+        await fn(ctx);
+      }
 
       // exec child process, don't await it
       await this.proc.start();
@@ -93,14 +89,18 @@ export class TestRunner extends EventEmitter {
       });
 
       // running
-      await this.runHook('running', ctx);
+      for (const fn of this.hooks['running']) {
+        await fn(ctx);
+      }
 
       if (ctx.autoWait) {
         await this.proc.end();
       }
 
       // after
-      await this.runHook('after', ctx);
+      for (const fn of this.hooks['after']) {
+        await fn(ctx);
+      }
 
       // ensure proc is exit if user forgot to call `wait('close')` after wait other event
       if (!ctx.autoWait) {
@@ -108,8 +108,10 @@ export class TestRunner extends EventEmitter {
       }
 
       // error
-      if (ctx.result instanceof Error) {
-        await this.runHook('error', ctx);
+      for (const fn of this.hooks['error']) {
+        if (ctx.result instanceof Error) {
+          await fn(ctx);
+        }
       }
 
       // end

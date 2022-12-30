@@ -23,6 +23,13 @@ describe('test/runner.test.ts', () => {
         .end();
     });
 
+    it('should color', async () => {
+      await runner()
+        .fork('test/fixtures/process/color.ts')
+        .stdout(/CLIHub/)
+        .end();
+    });
+
     describe('code()', () => {
       it('should skip auto check code when .code(1)', async () => {
         await runner()
